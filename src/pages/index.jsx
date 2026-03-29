@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import ThreeJetHero from '../components/ThreeJetHero.jsx'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const tickerItems = [
     'VABB → EGLL | G650ER | $185,000 charter',
@@ -87,13 +91,52 @@ const testimonials = [
 
 export default function Homepage() {
     const [annual, setAnnual] = useState(false)
+    const heroRef = useRef()
+    const topTextRef = useRef()
+    const bottomTextRef = useRef()
+    const canvasWrapRef = useRef()
+    const progress = useRef(0)
 
     useEffect(() => {
-        fetch('/api/insights').catch(() => { })
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: heroRef.current,
+                    start: 'top top',
+                    end: '+=2000',
+                    pin: true,
+                    scrub: 1,
+                    onUpdate: (self) => {
+                        progress.current = self.progress
+                    }
+                }
+            })
+
+            // Phase 1 (0–50%): jet flies in, text stays
+            tl.to({}, { duration: 0.5 })
+
+            // Phase 2 (50–100%): text splits apart as jet passes through
+            tl.to(topTextRef.current, {
+                y: -180,
+                opacity: 0,
+                duration: 0.5,
+                ease: 'power2.in'
+            }, 0.5)
+
+            tl.to(bottomTextRef.current, {
+                y: 180,
+                opacity: 0,
+                duration: 0.5,
+                ease: 'power2.in'
+            }, 0.5)
+
+        }, heroRef)
+
+        return () => ctx.revert()
     }, [])
 
     return (
-        <div className="min-h-screen bg-jet text-white overflow-x-hidden">
+        <div className="bg-jet text-white overflow-x-hidden">
             <div className="noise-overlay" />
 
             {/* Nav */}
@@ -113,41 +156,53 @@ export default function Homepage() {
                 </div>
             </nav>
 
-            {/* Hero — tall so animation has room */}
-            <section className="relative grid-bg" style={{ height: '280vh' }}>
-                <div className="sticky top-0 h-screen flex flex-col items-center justify-center pt-20 overflow-hidden">
-                    <div className="absolute inset-0 z-0">
-                        <ThreeJetHero />
-                    </div>
-                    <div className="relative z-10 text-center px-6 max-w-4xl mx-auto pointer-events-none">
-                        <p className="section-label mb-4">EST. MUMBAI 2024 — VARSANO METHOD</p>
-                        <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none mb-6">
-                            <span className="text-gold-gradient">KNOW MORE.</span>
-                            <br />
-                            <span className="text-white">CLOSE MORE.</span>
+            {/* Hero — pinned via GSAP ScrollTrigger */}
+            <section ref={heroRef} className="relative h-screen grid-bg overflow-hidden">
+
+                {/* 3D Canvas — full background */}
+                <div ref={canvasWrapRef} className="absolute inset-0 z-0">
+                    <ThreeJetHero progress={progress} />
+                </div>
+
+                {/* Text — split into top and bottom halves */}
+                <div className="relative z-10 flex flex-col items-center justify-center h-full pt-20 pointer-events-none">
+                    <p className="section-label mb-6">EST. MUMBAI 2024 — VARSANO METHOD</p>
+
+                    {/* Top half of heading */}
+                    <div ref={topTextRef} className="overflow-hidden">
+                        <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none text-gold-gradient text-center">
+                            KNOW MORE.
                         </h1>
-                        <p className="font-body text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-3 leading-relaxed">
-                            The broker who educates wins. Altus Aero gives you the data, the 3D models,
-                            and the market intelligence to become the most trusted advisor in the room.
-                        </p>
-                        <p className="font-mono text-sm text-gold mb-10">
-                            Inspired by Steve Varsano's philosophy: teach first, sell second.
-                        </p>
-                        <div className="pointer-events-auto flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link to="/app/jets" className="btn-primary text-base">EXPLORE THE FLEET →</Link>
-                            <Link to="/app/flights" className="btn-secondary text-base">SEE LIVE MARKET DATA</Link>
-                        </div>
                     </div>
 
-                    {/* Ticker */}
-                    <div className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-jet/80 overflow-hidden py-2">
-                        <div className="flex animate-ticker whitespace-nowrap">
-                            {[...tickerItems, ...tickerItems].map((item, i) => (
-                                <span key={i} className="font-mono text-xs text-gold mx-8">
-                                    ◆ {item}
-                                </span>
-                            ))}
-                        </div>
+                    {/* Bottom half of heading */}
+                    <div ref={bottomTextRef} className="overflow-hidden">
+                        <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none text-white text-center">
+                            CLOSE MORE.
+                        </h1>
+                    </div>
+
+                    <p className="font-body text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mt-8 mb-3 leading-relaxed text-center">
+                        The broker who educates wins. Altus Aero gives you the data, the 3D models,
+                        and the market intelligence to become the most trusted advisor in the room.
+                    </p>
+                    <p className="font-mono text-sm text-gold mb-10">
+                        Inspired by Steve Varsano's philosophy: teach first, sell second.
+                    </p>
+                    <div className="pointer-events-auto flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <Link to="/app/jets" className="btn-primary text-base">EXPLORE THE FLEET →</Link>
+                        <Link to="/app/flights" className="btn-secondary text-base">SEE LIVE MARKET DATA</Link>
+                    </div>
+                </div>
+
+                {/* Ticker */}
+                <div className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-jet/80 overflow-hidden py-2 z-10">
+                    <div className="flex animate-ticker whitespace-nowrap">
+                        {[...tickerItems, ...tickerItems].map((item, i) => (
+                            <span key={i} className="font-mono text-xs text-gold mx-8">
+                                ◆ {item}
+                            </span>
+                        ))}
                     </div>
                 </div>
             </section>
