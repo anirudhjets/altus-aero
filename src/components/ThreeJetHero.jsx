@@ -28,20 +28,47 @@ function JetModel({ progress }) {
         if (!groupRef.current) return
         const p = progress.current
 
-        // Jet starts far away (z=4) and flies toward and past camera (z=-18)
-        const targetZ = 4 - p * 22
-        const targetY = -0.5 + p * 0.5
+        // Phase 1 (0-0.6): jet flies from far toward camera
+        // Phase 2 (0.6-0.85): jet is huge filling screen, slicing through text
+        // Phase 3 (0.85-1.0): jet fades out and disappears
 
-        groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.08
-        groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.08
+        let targetZ, targetY, scale, opacity
 
-        // Grows larger as it approaches
-        const scale = 0.05 + p * 0.25
+        if (p < 0.6) {
+            const t = p / 0.6
+            targetZ = 8 - t * 10
+            targetY = -0.3
+            scale = 0.02 + t * 0.18
+            opacity = 1
+        } else if (p < 0.85) {
+            const t = (p - 0.6) / 0.25
+            targetZ = -2 - t * 2
+            targetY = -0.3 + t * 0.3
+            scale = 0.2 + t * 0.15
+            opacity = 1
+        } else {
+            const t = (p - 0.85) / 0.15
+            targetZ = -4 - t * 3
+            targetY = 0
+            scale = 0.35
+            opacity = 1 - t
+        }
+
+        groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.07
+        groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.07
         groupRef.current.scale.setScalar(scale)
+
+        // Fade out at the end
+        groupRef.current.traverse((child) => {
+            if (child.isMesh && child.material) {
+                child.material.transparent = true
+                child.material.opacity = opacity
+            }
+        })
     })
 
     return (
-        <group ref={groupRef} position={[0, -0.5, 4]}>
+        <group ref={groupRef} position={[0, -0.3, 8]}>
             <primitive object={scene} />
         </group>
     )
@@ -50,21 +77,22 @@ function JetModel({ progress }) {
 export default function ThreeJetHero({ progress }) {
     return (
         <Canvas
-            camera={{ position: [0, 0, 5], fov: 50 }}
+            camera={{ position: [0, 0.5, 5], fov: 45 }}
             gl={{
                 antialias: true,
                 toneMapping: THREE.ACESFilmicToneMapping,
-                toneMappingExposure: 1.5,
+                toneMappingExposure: 1.6,
                 alpha: true,
             }}
             style={{ background: 'transparent', width: '100%', height: '100%' }}
         >
             <Suspense fallback={null}>
                 <Stars radius={120} depth={60} count={5000} factor={4} saturation={0} fade speed={0.5} />
-                <ambientLight intensity={0.8} color="#ffffff" />
-                <directionalLight position={[10, 10, 5]} color="#ffffff" intensity={4} />
+                <ambientLight intensity={0.9} color="#ffffff" />
+                <directionalLight position={[10, 10, 5]} color="#ffffff" intensity={5} />
                 <directionalLight position={[-8, 4, -5]} color="#D4AF37" intensity={2} />
-                <pointLight position={[0, 5, 8]} color="#b0c4ff" intensity={2} distance={25} />
+                <pointLight position={[0, 5, 3]} color="#b0c4ff" intensity={2} distance={20} />
+                <pointLight position={[0, -3, 2]} color="#ffffff" intensity={1} distance={10} />
                 <JetModel progress={progress} />
             </Suspense>
         </Canvas>
