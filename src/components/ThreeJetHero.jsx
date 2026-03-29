@@ -18,6 +18,7 @@ function JetModel({ progress }) {
                         color: '#dce8f5',
                         metalness: 0.92,
                         roughness: 0.08,
+                        transparent: true,
                     })
                 }
             })
@@ -28,16 +29,22 @@ function JetModel({ progress }) {
         if (!groupRef.current) return
         const p = progress.current
 
-        // Jet starts far away (z=4) and flies toward and past camera (z=-18)
         const targetZ = 4 - p * 22
         const targetY = -0.5 + p * 0.5
 
         groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.08
         groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.08
 
-        // Grows larger as it approaches
         const scale = 0.05 + p * 0.25
         groupRef.current.scale.setScalar(scale)
+
+        // Fade out in the last 20% of the animation
+        const opacity = p < 0.8 ? 1 : 1 - ((p - 0.8) / 0.2)
+        groupRef.current.traverse((child) => {
+            if (child.isMesh && child.material) {
+                child.material.opacity = Math.max(0, opacity)
+            }
+        })
     })
 
     return (
