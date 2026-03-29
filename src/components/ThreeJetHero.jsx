@@ -28,21 +28,20 @@ function JetModel({ progress }) {
         if (!groupRef.current) return
         const p = progress.current
 
-        // Jet starts at z=-18 (tiny in distance) and flies to z=4 (past camera)
-        const targetZ = -18 + p * 22
-        // Slight vertical drift upward as it approaches
+        // Jet starts far away (z=4) and flies toward and past camera (z=-18)
+        const targetZ = 4 - p * 22
         const targetY = -0.5 + p * 0.5
 
         groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.08
         groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.08
 
-        // Scale up as it approaches — starts tiny, gets huge
+        // Grows larger as it approaches
         const scale = 0.05 + p * 0.25
         groupRef.current.scale.setScalar(scale)
     })
 
     return (
-        <group ref={groupRef} position={[0, -0.5, -18]}>
+        <group ref={groupRef} position={[0, -0.5, 4]}>
             <primitive object={scene} />
         </group>
     )
