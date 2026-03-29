@@ -50,7 +50,7 @@ function JetModel({ progress }) {
         <group
             ref={groupRef}
             position={[0, -0.5, 4]}
-            rotation={[0.3, 0, 0]}
+            rotation={[0.3, Math.PI, 0]}
         >
             <primitive object={scene} />
         </group>
