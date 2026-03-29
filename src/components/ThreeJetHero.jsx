@@ -38,7 +38,7 @@ function JetModel({ progress }) {
         const scale = 0.05 + p * 0.25
         groupRef.current.scale.setScalar(scale)
 
-        // Fade out in the last 20% of the animation
+        // Fade out in last 20%
         const opacity = p < 0.8 ? 1 : 1 - ((p - 0.8) / 0.2)
         groupRef.current.traverse((child) => {
             if (child.isMesh && child.material) {
@@ -48,7 +48,12 @@ function JetModel({ progress }) {
     })
 
     return (
-        <group ref={groupRef} position={[0, -0.5, 4]}>
+        // Rotated so we see it from slightly above and front — nose pointing toward camera and slightly down
+        <group
+            ref={groupRef}
+            position={[0, -0.5, 4]}
+            rotation={[0.35, Math.PI, 0]}
+        >
             <primitive object={scene} />
         </group>
     )
@@ -57,7 +62,7 @@ function JetModel({ progress }) {
 export default function ThreeJetHero({ progress }) {
     return (
         <Canvas
-            camera={{ position: [0, 0, 5], fov: 50 }}
+            camera={{ position: [0, 1.5, 6], fov: 50 }}
             gl={{
                 antialias: true,
                 toneMapping: THREE.ACESFilmicToneMapping,
@@ -72,6 +77,7 @@ export default function ThreeJetHero({ progress }) {
                 <directionalLight position={[10, 10, 5]} color="#ffffff" intensity={4} />
                 <directionalLight position={[-8, 4, -5]} color="#D4AF37" intensity={2} />
                 <pointLight position={[0, 5, 8]} color="#b0c4ff" intensity={2} distance={25} />
+                <pointLight position={[0, -2, 3]} color="#ffffff" intensity={1.5} distance={15} />
                 <JetModel progress={progress} />
             </Suspense>
         </Canvas>
