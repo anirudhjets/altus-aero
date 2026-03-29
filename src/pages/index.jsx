@@ -17,18 +17,9 @@ const tickerItems = [
 ]
 
 const principles = [
-    {
-        label: 'EDUCATE',
-        desc: 'Show clients exactly what each aircraft costs to own, charter, and operate. No surprises. No pressure.'
-    },
-    {
-        label: 'ILLUMINATE',
-        desc: 'Live flight data, 3D models, real pricing. Walk them through the decision like a trusted advisor, not a salesperson.'
-    },
-    {
-        label: 'ADVISE',
-        desc: 'When a client trusts your knowledge, the close is a formality. Build that trust with every interaction.'
-    }
+    { label: 'EDUCATE', desc: 'Show clients exactly what each aircraft costs to own, charter, and operate. No surprises. No pressure.' },
+    { label: 'ILLUMINATE', desc: 'Live flight data, 3D models, real pricing. Walk them through the decision like a trusted advisor, not a salesperson.' },
+    { label: 'ADVISE', desc: 'When a client trusts your knowledge, the close is a formality. Build that trust with every interaction.' }
 ]
 
 const features = [
@@ -49,23 +40,17 @@ const stats = [
 
 const plans = [
     {
-        name: 'Starter',
-        price: 49,
-        tag: 'Learn the market',
+        name: 'Starter', price: 49, tag: 'Learn the market',
         features: ['Flight data access', 'Cost calculators', 'Fleet specifications', 'Email support'],
         highlight: false
     },
     {
-        name: 'Pro',
-        price: 99,
-        tag: 'Master the fleet',
+        name: 'Pro', price: 99, tag: 'Master the fleet',
         features: ['Everything in Starter', '3D aircraft models', 'Live flight tracking', 'Branded client proposals', 'Priority support'],
         highlight: true
     },
     {
-        name: 'Enterprise',
-        price: 199,
-        tag: 'Own the intelligence',
+        name: 'Enterprise', price: 199, tag: 'Own the intelligence',
         features: ['Everything in Pro', 'JETNET market data', 'White-label reports', 'Team access', 'Dedicated account manager'],
         highlight: false
     }
@@ -74,18 +59,15 @@ const plans = [
 const testimonials = [
     {
         quote: 'I walked into a client meeting knowing the exact pre-owned market range for the G650. They asked how I knew. I said I track it daily. That is when they signed.',
-        name: 'Rahul M.',
-        role: 'Senior Broker, Mumbai'
+        name: 'Rahul M.', role: 'Senior Broker, Mumbai'
     },
     {
         quote: 'The 3D viewer changed everything. My client had never seen a Phenom 300E cabin. Once they saw it, the conversation changed from is this big enough to when can we fly.',
-        name: 'Priya S.',
-        role: 'Charter Ops, Delhi'
+        name: 'Priya S.', role: 'Charter Ops, Delhi'
     },
     {
         quote: 'Altus Aero taught me more about aircraft economics in a month than two years of googling. I show up to every meeting as the expert.',
-        name: 'Amir K.',
-        role: 'FBO Director, Ahmedabad'
+        name: 'Amir K.', role: 'FBO Director, Ahmedabad'
     }
 ]
 
@@ -94,7 +76,6 @@ export default function Homepage() {
     const heroRef = useRef()
     const topTextRef = useRef()
     const bottomTextRef = useRef()
-    const canvasWrapRef = useRef()
     const progress = useRef(0)
 
     useEffect(() => {
@@ -103,32 +84,32 @@ export default function Homepage() {
                 scrollTrigger: {
                     trigger: heroRef.current,
                     start: 'top top',
-                    end: '+=2000',
+                    end: '+=2500',
                     pin: true,
-                    scrub: 1,
+                    scrub: 1.5,
                     onUpdate: (self) => {
                         progress.current = self.progress
                     }
                 }
             })
 
-            // Phase 1 (0–50%): jet flies in, text stays
-            tl.to({}, { duration: 0.5 })
+            // Jet flies in for first 70% — text stays visible
+            tl.to({}, { duration: 0.7 })
 
-            // Phase 2 (50–100%): text splits apart as jet passes through
+            // Text splits apart as jet slices through at 70-100%
             tl.to(topTextRef.current, {
-                y: -180,
+                y: -200,
                 opacity: 0,
-                duration: 0.5,
-                ease: 'power2.in'
-            }, 0.5)
+                duration: 0.3,
+                ease: 'power3.in'
+            }, 0.7)
 
             tl.to(bottomTextRef.current, {
-                y: 180,
+                y: 200,
                 opacity: 0,
-                duration: 0.5,
-                ease: 'power2.in'
-            }, 0.5)
+                duration: 0.3,
+                ease: 'power3.in'
+            }, 0.7)
 
         }, heroRef)
 
@@ -156,27 +137,22 @@ export default function Homepage() {
                 </div>
             </nav>
 
-            {/* Hero — pinned via GSAP ScrollTrigger */}
-            <section ref={heroRef} className="relative h-screen grid-bg overflow-hidden">
-
-                {/* 3D Canvas — full background */}
-                <div ref={canvasWrapRef} className="absolute inset-0 z-0">
+            {/* Hero — pinned */}
+            <section ref={heroRef} className="relative h-screen overflow-hidden grid-bg">
+                <div className="absolute inset-0 z-0">
                     <ThreeJetHero progress={progress} />
                 </div>
 
-                {/* Text — split into top and bottom halves */}
-                <div className="relative z-10 flex flex-col items-center justify-center h-full pt-20 pointer-events-none">
-                    <p className="section-label mb-6">EST. MUMBAI 2024 — VARSANO METHOD</p>
+                <div className="relative z-10 flex flex-col items-center justify-center h-full pt-20 pointer-events-none select-none">
+                    <p className="section-label mb-6 tracking-widest">EST. MUMBAI 2026 — VARSANO METHOD</p>
 
-                    {/* Top half of heading */}
-                    <div ref={topTextRef} className="overflow-hidden">
+                    <div ref={topTextRef}>
                         <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none text-gold-gradient text-center">
                             KNOW MORE.
                         </h1>
                     </div>
 
-                    {/* Bottom half of heading */}
-                    <div ref={bottomTextRef} className="overflow-hidden">
+                    <div ref={bottomTextRef}>
                         <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none text-white text-center">
                             CLOSE MORE.
                         </h1>
@@ -196,12 +172,10 @@ export default function Homepage() {
                 </div>
 
                 {/* Ticker */}
-                <div className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-jet/80 overflow-hidden py-2 z-10">
+                <div className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-jet/90 overflow-hidden py-2 z-10">
                     <div className="flex animate-ticker whitespace-nowrap">
                         {[...tickerItems, ...tickerItems].map((item, i) => (
-                            <span key={i} className="font-mono text-xs text-gold mx-8">
-                                ◆ {item}
-                            </span>
+                            <span key={i} className="font-mono text-xs text-gold mx-8">◆ {item}</span>
                         ))}
                     </div>
                 </div>
@@ -214,9 +188,7 @@ export default function Homepage() {
                     <p className="font-display text-3xl md:text-5xl text-white leading-tight mb-6">
                         "The client who understands the market buys with confidence. Your job is not to sell a jet — it's to make them an expert."
                     </p>
-                    <p className="font-mono text-sm text-gold">
-                        — Inspired by Steve Varsano, The Jet Business, London
-                    </p>
+                    <p className="font-mono text-sm text-gold">— Inspired by Steve Varsano, The Jet Business, London</p>
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
                     {principles.map((p, i) => (
@@ -239,9 +211,7 @@ export default function Homepage() {
                         {features.map((f, i) => (
                             <div key={i} className="glass p-6 group">
                                 <p className="font-mono text-xs text-gulf mb-3">{f.tag}</p>
-                                <p className="font-body text-white leading-relaxed group-hover:text-gold transition-colors">
-                                    {f.title}
-                                </p>
+                                <p className="font-body text-white leading-relaxed group-hover:text-gold transition-colors">{f.title}</p>
                             </div>
                         ))}
                     </div>
@@ -266,7 +236,7 @@ export default function Homepage() {
                         Altus Aero is the tool I wish existed when I started learning this industry.
                         Every feature was built to answer a question I had, a gap I felt, a meeting I wanted to walk into better prepared.
                     </p>
-                    <p className="font-mono text-sm text-gold mt-6">Mumbai, India · 2024</p>
+                    <p className="font-mono text-sm text-gold mt-6">Mumbai, India · 2026</p>
                 </div>
             </section>
 
@@ -320,9 +290,9 @@ export default function Homepage() {
                         <span className={`font-mono text-sm ${!annual ? 'text-gold' : 'text-gray-500'}`}>Monthly</span>
                         <button
                             onClick={() => setAnnual(!annual)}
-                            className={`w-12 h-6 rounded-full transition-colors ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
                         >
-                            <span className={`block w-5 h-5 rounded-full bg-jet mx-0.5 transition-transform ${annual ? 'translate-x-6' : ''}`} />
+                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-jet transition-transform ${annual ? 'translate-x-6' : ''}`} />
                         </button>
                         <span className={`font-mono text-sm ${annual ? 'text-gold' : 'text-gray-500'}`}>
                             Annual <span className="text-green-400">-20%</span>
@@ -385,7 +355,7 @@ export default function Homepage() {
                 <p className="font-mono text-xs text-gray-500">
                     Anirudh A Shinde | Aspiring Jet Broker | Mumbai, India | Inspired by The Varsano Method
                 </p>
-                <p className="font-mono text-xs text-gray-700 mt-4">© 2024 Altus Aero. All rights reserved.</p>
+                <p className="font-mono text-xs text-gray-700 mt-4">© 2026 Altus Aero. All rights reserved.</p>
             </footer>
         </div>
     )

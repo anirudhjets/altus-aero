@@ -29,16 +29,19 @@ function JetModel({ progress }) {
         if (!groupRef.current) return
         const p = progress.current
 
-        const targetZ = 4 - p * 22
-        const targetY = -0.5 + p * 0.5
+        // Starts far away at z=-18, flies toward camera at z=4
+        const targetZ = -18 + p * 22
+        const targetY = -0.5 + p * 0.3
 
         groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.08
         groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.08
 
-        const scale = 0.05 + p * 0.25
+        // Grows as it approaches
+        const scale = 0.02 + p * 0.28
         groupRef.current.scale.setScalar(scale)
 
-        const opacity = p < 0.8 ? 1 : 1 - ((p - 0.8) / 0.2)
+        // Fade out in last 15%
+        const opacity = p < 0.85 ? 1 : 1 - ((p - 0.85) / 0.15)
         groupRef.current.traverse((child) => {
             if (child.isMesh && child.material) {
                 child.material.opacity = Math.max(0, opacity)
@@ -49,7 +52,7 @@ function JetModel({ progress }) {
     return (
         <group
             ref={groupRef}
-            position={[0, -0.5, 4]}
+            position={[0, -0.5, -18]}
             rotation={[0.3, Math.PI, 0]}
         >
             <primitive object={scene} />
