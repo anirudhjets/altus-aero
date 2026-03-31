@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
@@ -29,57 +29,48 @@ const currencies = [
 ]
 
 const airports = [
-    // India
-    { code: 'VABB', name: 'Chhatrapati Shivaji', city: 'Mumbai, India', lat: 19.0896, lng: 72.8656, country: 'IN' },
-    { code: 'VIDP', name: 'Indira Gandhi Intl', city: 'Delhi, India', lat: 28.5562, lng: 77.1000, country: 'IN' },
-    { code: 'VOBL', name: 'Kempegowda Intl', city: 'Bangalore, India', lat: 13.1986, lng: 77.7066, country: 'IN' },
-    { code: 'VOGO', name: 'Mopa Intl', city: 'Goa, India', lat: 15.3808, lng: 73.8314, country: 'IN' },
-    { code: 'VOCI', name: 'Cochin Intl', city: 'Kochi, India', lat: 10.1520, lng: 76.4019, country: 'IN' },
-    { code: 'VOHY', name: 'Rajiv Gandhi Intl', city: 'Hyderabad, India', lat: 17.2313, lng: 78.4298, country: 'IN' },
-    { code: 'VOMM', name: 'Chennai Intl', city: 'Chennai, India', lat: 12.9900, lng: 80.1693, country: 'IN' },
-    { code: 'VAAH', name: 'Sardar Vallabhbhai', city: 'Ahmedabad, India', lat: 23.0772, lng: 72.6347, country: 'IN' },
-    // UK & Europe
-    { code: 'EGLL', name: 'Heathrow', city: 'London, UK', lat: 51.4775, lng: -0.4614, country: 'GB' },
-    { code: 'EGLF', name: 'Farnborough', city: 'Farnborough, UK', lat: 51.2775, lng: -0.7764, country: 'GB' },
-    { code: 'LFPB', name: 'Le Bourget', city: 'Paris, France', lat: 48.9694, lng: 2.4414, country: 'FR' },
-    { code: 'LFPO', name: 'Orly', city: 'Paris, France', lat: 48.7233, lng: 2.3794, country: 'FR' },
-    { code: 'EDDB', name: 'Brandenburg', city: 'Berlin, Germany', lat: 52.3667, lng: 13.5033, country: 'DE' },
-    { code: 'LIML', name: 'Linate', city: 'Milan, Italy', lat: 45.4453, lng: 9.2768, country: 'IT' },
-    { code: 'LEMD', name: 'Barajas', city: 'Madrid, Spain', lat: 40.4936, lng: -3.5668, country: 'ES' },
-    { code: 'LSZH', name: 'Zurich', city: 'Zurich, Switzerland', lat: 47.4647, lng: 8.5492, country: 'CH' },
-    { code: 'EHAM', name: 'Schiphol', city: 'Amsterdam, Netherlands', lat: 52.3086, lng: 4.7639, country: 'NL' },
-    { code: 'LOWW', name: 'Vienna Intl', city: 'Vienna, Austria', lat: 48.1103, lng: 16.5697, country: 'AT' },
-    // Middle East
-    { code: 'OMDB', name: 'Dubai Intl', city: 'Dubai, UAE', lat: 25.2528, lng: 55.3644, country: 'AE' },
-    { code: 'OMDW', name: 'Al Maktoum Intl', city: 'Dubai World Central, UAE', lat: 24.8963, lng: 55.1614, country: 'AE' },
-    { code: 'OMAA', name: 'Zayed Intl', city: 'Abu Dhabi, UAE', lat: 24.4330, lng: 54.6511, country: 'AE' },
-    { code: 'OTHH', name: 'Hamad Intl', city: 'Doha, Qatar', lat: 25.2731, lng: 51.6081, country: 'QA' },
-    { code: 'OERK', name: 'King Khalid Intl', city: 'Riyadh, Saudi Arabia', lat: 24.9578, lng: 46.6989, country: 'SA' },
-    { code: 'OEJN', name: 'King Abdulaziz Intl', city: 'Jeddah, Saudi Arabia', lat: 21.6796, lng: 39.1565, country: 'SA' },
-    { code: 'OKBK', name: 'Kuwait Intl', city: 'Kuwait City, Kuwait', lat: 29.2267, lng: 47.9689, country: 'KW' },
-    // USA
-    { code: 'KTEB', name: 'Teterboro', city: 'New York, USA', lat: 40.8501, lng: -74.0608, country: 'US' },
-    { code: 'KJFK', name: 'JFK Intl', city: 'New York, USA', lat: 40.6413, lng: -73.7781, country: 'US' },
-    { code: 'KLAX', name: 'LAX', city: 'Los Angeles, USA', lat: 33.9425, lng: -118.4081, country: 'US' },
-    { code: 'KVNY', name: 'Van Nuys', city: 'Los Angeles, USA', lat: 34.2098, lng: -118.4898, country: 'US' },
-    { code: 'KORD', name: "O'Hare Intl", city: 'Chicago, USA', lat: 41.9742, lng: -87.9073, country: 'US' },
-    { code: 'KMIA', name: 'Miami Intl', city: 'Miami, USA', lat: 25.7959, lng: -80.2870, country: 'US' },
-    { code: 'KSFO', name: 'San Francisco Intl', city: 'San Francisco, USA', lat: 37.6213, lng: -122.3790, country: 'US' },
-    { code: 'KHOU', name: 'Hobby Airport', city: 'Houston, USA', lat: 29.6454, lng: -95.2789, country: 'US' },
-    // Asia Pacific
-    { code: 'VHHH', name: 'Hong Kong Intl', city: 'Hong Kong', lat: 22.3080, lng: 113.9185, country: 'HK' },
-    { code: 'WSSS', name: 'Changi', city: 'Singapore', lat: 1.3644, lng: 103.9915, country: 'SG' },
-    { code: 'RJTT', name: 'Haneda', city: 'Tokyo, Japan', lat: 35.5494, lng: 139.7798, country: 'JP' },
-    { code: 'RKSS', name: 'Gimpo Intl', city: 'Seoul, South Korea', lat: 37.5583, lng: 126.7906, country: 'KR' },
-    { code: 'ZBAA', name: 'Capital Intl', city: 'Beijing, China', lat: 40.0799, lng: 116.6031, country: 'CN' },
-    { code: 'ZSSS', name: 'Hongqiao', city: 'Shanghai, China', lat: 31.1979, lng: 121.3364, country: 'CN' },
-    { code: 'VTBS', name: 'Suvarnabhumi', city: 'Bangkok, Thailand', lat: 13.6900, lng: 100.7501, country: 'TH' },
-    { code: 'WMKK', name: 'KLIA', city: 'Kuala Lumpur, Malaysia', lat: 2.7456, lng: 101.7072, country: 'MY' },
-    // Australia & Africa
-    { code: 'YSSY', name: 'Kingsford Smith', city: 'Sydney, Australia', lat: -33.9461, lng: 151.1772, country: 'AU' },
-    { code: 'YMML', name: 'Melbourne Intl', city: 'Melbourne, Australia', lat: -37.6733, lng: 144.8433, country: 'AU' },
-    { code: 'FAOR', name: 'O.R. Tambo Intl', city: 'Johannesburg, South Africa', lat: -26.1392, lng: 28.2460, country: 'ZA' },
-    { code: 'HECA', name: 'Cairo Intl', city: 'Cairo, Egypt', lat: 30.1219, lng: 31.4056, country: 'EG' },
+    { code: 'VABB', name: 'Chhatrapati Shivaji', city: 'Mumbai, India', lat: 19.0896, lng: 72.8656 },
+    { code: 'VIDP', name: 'Indira Gandhi Intl', city: 'Delhi, India', lat: 28.5562, lng: 77.1000 },
+    { code: 'VOBL', name: 'Kempegowda Intl', city: 'Bangalore, India', lat: 13.1986, lng: 77.7066 },
+    { code: 'VOGO', name: 'Mopa Intl', city: 'Goa, India', lat: 15.3808, lng: 73.8314 },
+    { code: 'VOCI', name: 'Cochin Intl', city: 'Kochi, India', lat: 10.1520, lng: 76.4019 },
+    { code: 'VOHY', name: 'Rajiv Gandhi Intl', city: 'Hyderabad, India', lat: 17.2313, lng: 78.4298 },
+    { code: 'VOMM', name: 'Chennai Intl', city: 'Chennai, India', lat: 12.9900, lng: 80.1693 },
+    { code: 'VAAH', name: 'Sardar Vallabhbhai', city: 'Ahmedabad, India', lat: 23.0772, lng: 72.6347 },
+    { code: 'EGLL', name: 'Heathrow', city: 'London, UK', lat: 51.4775, lng: -0.4614 },
+    { code: 'EGLF', name: 'Farnborough', city: 'Farnborough, UK', lat: 51.2775, lng: -0.7764 },
+    { code: 'LFPB', name: 'Le Bourget', city: 'Paris, France', lat: 48.9694, lng: 2.4414 },
+    { code: 'LFPO', name: 'Orly', city: 'Paris, France', lat: 48.7233, lng: 2.3794 },
+    { code: 'EDDB', name: 'Brandenburg', city: 'Berlin, Germany', lat: 52.3667, lng: 13.5033 },
+    { code: 'LIML', name: 'Linate', city: 'Milan, Italy', lat: 45.4453, lng: 9.2768 },
+    { code: 'LEMD', name: 'Barajas', city: 'Madrid, Spain', lat: 40.4936, lng: -3.5668 },
+    { code: 'LSZH', name: 'Zurich', city: 'Zurich, Switzerland', lat: 47.4647, lng: 8.5492 },
+    { code: 'EHAM', name: 'Schiphol', city: 'Amsterdam, Netherlands', lat: 52.3086, lng: 4.7639 },
+    { code: 'OMDB', name: 'Dubai Intl', city: 'Dubai, UAE', lat: 25.2528, lng: 55.3644 },
+    { code: 'OMDW', name: 'Al Maktoum Intl', city: 'Dubai World Central, UAE', lat: 24.8963, lng: 55.1614 },
+    { code: 'OMAA', name: 'Zayed Intl', city: 'Abu Dhabi, UAE', lat: 24.4330, lng: 54.6511 },
+    { code: 'OTHH', name: 'Hamad Intl', city: 'Doha, Qatar', lat: 25.2731, lng: 51.6081 },
+    { code: 'OERK', name: 'King Khalid Intl', city: 'Riyadh, Saudi Arabia', lat: 24.9578, lng: 46.6989 },
+    { code: 'OEJN', name: 'King Abdulaziz Intl', city: 'Jeddah, Saudi Arabia', lat: 21.6796, lng: 39.1565 },
+    { code: 'OKBK', name: 'Kuwait Intl', city: 'Kuwait City, Kuwait', lat: 29.2267, lng: 47.9689 },
+    { code: 'KTEB', name: 'Teterboro', city: 'New York, USA', lat: 40.8501, lng: -74.0608 },
+    { code: 'KJFK', name: 'JFK Intl', city: 'New York, USA', lat: 40.6413, lng: -73.7781 },
+    { code: 'KLAX', name: 'LAX', city: 'Los Angeles, USA', lat: 33.9425, lng: -118.4081 },
+    { code: 'KVNY', name: 'Van Nuys', city: 'Los Angeles, USA', lat: 34.2098, lng: -118.4898 },
+    { code: 'KORD', name: "O'Hare Intl", city: 'Chicago, USA', lat: 41.9742, lng: -87.9073 },
+    { code: 'KMIA', name: 'Miami Intl', city: 'Miami, USA', lat: 25.7959, lng: -80.2870 },
+    { code: 'KSFO', name: 'San Francisco Intl', city: 'San Francisco, USA', lat: 37.6213, lng: -122.3790 },
+    { code: 'VHHH', name: 'Hong Kong Intl', city: 'Hong Kong', lat: 22.3080, lng: 113.9185 },
+    { code: 'WSSS', name: 'Changi', city: 'Singapore', lat: 1.3644, lng: 103.9915 },
+    { code: 'RJTT', name: 'Haneda', city: 'Tokyo, Japan', lat: 35.5494, lng: 139.7798 },
+    { code: 'RKSS', name: 'Gimpo Intl', city: 'Seoul, South Korea', lat: 37.5583, lng: 126.7906 },
+    { code: 'ZBAA', name: 'Capital Intl', city: 'Beijing, China', lat: 40.0799, lng: 116.6031 },
+    { code: 'VTBS', name: 'Suvarnabhumi', city: 'Bangkok, Thailand', lat: 13.6900, lng: 100.7501 },
+    { code: 'WMKK', name: 'KLIA', city: 'Kuala Lumpur, Malaysia', lat: 2.7456, lng: 101.7072 },
+    { code: 'YSSY', name: 'Kingsford Smith', city: 'Sydney, Australia', lat: -33.9461, lng: 151.1772 },
+    { code: 'YMML', name: 'Melbourne Intl', city: 'Melbourne, Australia', lat: -37.6733, lng: 144.8433 },
+    { code: 'FAOR', name: 'O.R. Tambo Intl', city: 'Johannesburg, South Africa', lat: -26.1392, lng: 28.2460 },
+    { code: 'HECA', name: 'Cairo Intl', city: 'Cairo, Egypt', lat: 30.1219, lng: 31.4056 },
 ]
 
 const aircraft = [
@@ -129,7 +120,7 @@ function MapUpdater({ from, to }) {
     const map = useMap()
     useEffect(() => {
         if (from && to) {
-            map.fitBounds(L.latLngBounds([[from.lat, from.lng], [to.lat, to.lng]]), { padding: [60, 60] })
+            map.fitBounds(L.latLngBounds([[from.lat, from.lng], [to.lat, to.lng]]), { padding: [40, 40] })
         } else if (from) {
             map.setView([from.lat, from.lng], 5)
         }
@@ -146,7 +137,6 @@ export default function Mission() {
     const [currency, setCurrency] = useState(currencies[0])
     const [activeTab, setActiveTab] = useState('route')
 
-    // Advanced calculator state
     const [calcHours, setCalcHours] = useState(200)
     const [charterRate, setCharterRate] = useState(12000)
     const [fuelPrice, setFuelPrice] = useState(6.5)
@@ -172,7 +162,6 @@ export default function Mission() {
     const breakevenHours = Math.round(annualOwnershipCost / selectedAircraft.hourly)
     const recommendation = hours >= breakevenHours ? 'ownership' : 'charter'
 
-    // Advanced calc results
     const annualCharterTotal = calcHours * charterRate
     const annualOwnershipTotal = ownershipCost * calcHours * fuelPrice + crewCost + maintenance + hangar + insurance
     const advBreakeven = Math.round(annualOwnershipTotal / charterRate)
@@ -201,21 +190,28 @@ export default function Mission() {
         outline: 'none',
     }
 
+    const tabs = [
+        { key: 'route', label: 'ROUTE PLANNER' },
+        { key: 'calculator', label: 'COST CALCULATOR' },
+        { key: 'fleet', label: 'FLEET GUIDE' },
+    ]
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-start justify-between">
+        <div className="space-y-4 md:space-y-6 max-w-screen-2xl mx-auto">
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div>
                     <p className="section-label">MISSION PLANNING CENTER</p>
-                    <h1 className="font-display text-4xl text-white">PLAN MISSION</h1>
-                    <p className="font-body text-gray-400 mt-2">Plan every detail before the client asks.</p>
+                    <h1 className="font-display text-3xl md:text-4xl text-white">PLAN MISSION</h1>
+                    <p className="font-body text-gray-400 text-sm mt-1">Plan every detail before the client asks.</p>
                 </div>
-                {/* Currency Selector */}
-                <div className="glass p-3 flex items-center gap-3">
-                    <p className="font-mono text-xs text-gray-500">CURRENCY</p>
+                <div className="glass p-3 flex items-center gap-3 self-start">
+                    <p className="font-mono text-xs text-gray-500 whitespace-nowrap">CURRENCY</p>
                     <select
                         value={currency.code}
                         onChange={e => setCurrency(currencies.find(c => c.code === e.target.value))}
-                        style={{ ...selectStyle, width: 'auto' }}
+                        style={{ ...selectStyle, width: 'auto', minWidth: '140px' }}
                     >
                         {currencies.map(c => (
                             <option key={c.code} value={c.code}>{c.code} — {c.name}</option>
@@ -225,25 +221,27 @@ export default function Mission() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2">
-                {['route', 'calculator', 'fleet'].map(tab => (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {tabs.map(tab => (
                     <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`font-display text-sm tracking-widest px-6 py-2.5 rounded-lg transition-all ${activeTab === tab ? 'bg-gold text-jet' : 'glass text-gray-400 hover:text-gold'
-                            }`}
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`font-display text-xs sm:text-sm tracking-widest px-4 sm:px-6 py-2.5 rounded-lg transition-all whitespace-nowrap flex-shrink-0 ${activeTab === tab.key ? 'bg-gold text-jet' : 'glass text-gray-400 hover:text-gold'}`}
                     >
-                        {tab === 'route' ? 'ROUTE PLANNER' : tab === 'calculator' ? 'COST CALCULATOR' : 'FLEET GUIDE'}
+                        {tab.label}
                     </button>
                 ))}
             </div>
 
-            {/* ROUTE PLANNER TAB */}
+            {/* ROUTE PLANNER */}
             {activeTab === 'route' && (
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Left — Controls */}
-                    <div className="space-y-4">
-                        <div className="glass p-5">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+
+                    {/* Controls Column */}
+                    <div className="space-y-4 lg:col-span-1">
+
+                        {/* Route Selector */}
+                        <div className="glass p-4 md:p-5">
                             <p className="section-label mb-4">ROUTE</p>
                             <div className="space-y-3">
                                 <div>
@@ -278,29 +276,30 @@ export default function Mission() {
                             )}
                         </div>
 
-                        <div className="glass p-5">
+                        {/* Aircraft Selector */}
+                        <div className="glass p-4 md:p-5">
                             <p className="section-label mb-4">AIRCRAFT</p>
-                            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                            <div className="space-y-2 max-h-64 md:max-h-80 overflow-y-auto pr-1">
                                 {aircraft.map((ac, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setSelectedAircraft(ac)}
-                                        className={`w-full text-left p-3 rounded-lg border transition-all ${selectedAircraft.model === ac.model ? 'border-gold bg-gold/5' : 'border-[#1c1c1c] hover:border-gulf'
-                                            }`}
+                                        className={`w-full text-left p-3 rounded-lg border transition-all ${selectedAircraft.model === ac.model ? 'border-gold bg-gold/5' : 'border-[#1c1c1c] hover:border-gulf'}`}
                                     >
-                                        <div className="flex items-center justify-between">
-                                            <div>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="min-w-0">
                                                 <p className="font-display text-sm text-white">{ac.model}</p>
-                                                <p className="font-mono text-xs text-gray-500">{ac.manufacturer} · {ac.range_nm.toLocaleString()}nm · {ac.category}</p>
+                                                <p className="font-mono text-xs text-gray-500 truncate">{ac.manufacturer} · {ac.range_nm.toLocaleString()}nm</p>
                                             </div>
-                                            <p className="font-mono text-xs text-gold">{fmt(ac.hourly)}/hr</p>
+                                            <p className="font-mono text-xs text-gold whitespace-nowrap flex-shrink-0">{fmt(ac.hourly)}/hr</p>
                                         </div>
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="glass p-5">
+                        {/* Parameters */}
+                        <div className="glass p-4 md:p-5">
                             <p className="section-label mb-4">PARAMETERS</p>
                             <div className="space-y-4">
                                 <div>
@@ -321,32 +320,47 @@ export default function Mission() {
                         </div>
                     </div>
 
-                    {/* Center + Right */}
+                    {/* Map + Results Column */}
                     <div className="lg:col-span-2 space-y-4">
-                        <div className={`p-4 rounded-xl border flex items-center gap-4 ${nonstop ? 'border-green-400/30 bg-green-400/5' : 'border-red-400/30 bg-red-400/5'}`}>
-                            <span className={`font-display text-2xl ${nonstop ? 'text-green-400' : 'text-red-400'}`}>
+
+                        {/* Nonstop Banner */}
+                        <div className={`p-3 md:p-4 rounded-xl border flex flex-wrap items-center gap-3 ${nonstop ? 'border-green-400/30 bg-green-400/5' : 'border-red-400/30 bg-red-400/5'}`}>
+                            <span className={`font-display text-xl md:text-2xl ${nonstop ? 'text-green-400' : 'text-red-400'}`}>
                                 {nonstop ? 'NONSTOP' : 'FUEL STOP REQUIRED'}
                             </span>
-                            <p className="font-body text-sm text-gray-300">
+                            <p className="font-body text-xs md:text-sm text-gray-300">
                                 {nonstop
-                                    ? `${selectedAircraft.model} range: ${selectedAircraft.range_nm.toLocaleString()}nm. Route: ${distance.toLocaleString()}nm. Nonstop confirmed.`
-                                    : `${selectedAircraft.model} range (${selectedAircraft.range_nm.toLocaleString()}nm) is less than ${distance.toLocaleString()}nm. Fuel stop required.`
+                                    ? `${selectedAircraft.model} range: ${selectedAircraft.range_nm.toLocaleString()}nm. Route: ${distance.toLocaleString()}nm. Confirmed.`
+                                    : `${selectedAircraft.model} range (${selectedAircraft.range_nm.toLocaleString()}nm) is less than ${distance.toLocaleString()}nm.`
                                 }
                             </p>
                         </div>
 
-                        <div className="glass overflow-hidden" style={{ height: '340px' }}>
-                            <MapContainer center={[20, 50]} zoom={3} style={{ height: '100%', width: '100%' }} zoomControl={true}>
-                                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
-                                <MapUpdater from={from} to={to} />
-                                {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
-                                {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
-                                {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
-                            </MapContainer>
+                        {/* Map */}
+                        <div className="glass overflow-hidden rounded-xl" style={{ height: '260px', minHeight: '220px' }}>
+                            <div className="w-full h-full md:hidden" style={{ height: '260px' }}>
+                                <MapContainer center={[20, 50]} zoom={2} style={{ height: '100%', width: '100%' }} zoomControl={false}>
+                                    <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
+                                    <MapUpdater from={from} to={to} />
+                                    {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '11px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
+                                    {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '11px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
+                                    {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
+                                </MapContainer>
+                            </div>
+                            <div className="hidden md:block h-full" style={{ height: '360px' }}>
+                                <MapContainer center={[20, 50]} zoom={3} style={{ height: '100%', width: '100%' }} zoomControl={true}>
+                                    <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
+                                    <MapUpdater from={from} to={to} />
+                                    {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
+                                    {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
+                                    {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
+                                </MapContainer>
+                            </div>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div className="glass p-5">
+                        {/* Trip Cost + Charter vs Ownership */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="glass p-4 md:p-5">
                                 <p className="section-label mb-4">TRIP COST — {currency.code}</p>
                                 <div className="space-y-2">
                                     {[
@@ -362,13 +376,13 @@ export default function Mission() {
                                         </div>
                                     ))}
                                     <div className="flex items-center justify-between pt-2">
-                                        <p className="font-display text-sm text-gold">TOTAL TRIP COST</p>
+                                        <p className="font-display text-sm text-gold">TOTAL TRIP</p>
                                         <p className="font-display text-lg text-gold">{fmt(totalTripCost)}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="glass p-5">
+                            <div className="glass p-4 md:p-5">
                                 <p className="section-label mb-4">CHARTER VS OWNERSHIP</p>
                                 <div className="space-y-3">
                                     <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
@@ -396,27 +410,28 @@ export default function Mission() {
                             </div>
                         </div>
 
-                        <div className="glass-gold p-5">
+                        {/* Mission Summary */}
+                        <div className="glass-gold p-4 md:p-5">
                             <div className="flex items-center justify-between mb-4">
                                 <p className="section-label">MISSION SUMMARY</p>
-                                <button className="btn-secondary text-xs py-1.5 px-4">EXPORT PDF</button>
+                                <button className="btn-secondary text-xs py-1.5 px-3 md:px-4">EXPORT PDF</button>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Route</p><p className="font-display text-lg text-white">{from.code} → {to.code}</p></div>
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Aircraft</p><p className="font-display text-lg text-white">{selectedAircraft.model}</p></div>
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Trip Cost</p><p className="font-display text-lg text-gold">{fmt(totalTripCost)}</p></div>
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Recommendation</p><p className="font-display text-lg text-gold">{recommendation.toUpperCase()}</p></div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                                <div><p className="font-mono text-xs text-gray-500 mb-1">Route</p><p className="font-display text-base md:text-lg text-white">{from.code} → {to.code}</p></div>
+                                <div><p className="font-mono text-xs text-gray-500 mb-1">Aircraft</p><p className="font-display text-base md:text-lg text-white">{selectedAircraft.model}</p></div>
+                                <div><p className="font-mono text-xs text-gray-500 mb-1">Trip Cost</p><p className="font-display text-base md:text-lg text-gold">{fmt(totalTripCost)}</p></div>
+                                <div><p className="font-mono text-xs text-gray-500 mb-1">Recommendation</p><p className="font-display text-base md:text-lg text-gold">{recommendation.toUpperCase()}</p></div>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* ADVANCED CALCULATOR TAB */}
+            {/* ADVANCED CALCULATOR */}
             {activeTab === 'calculator' && (
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <div className="glass p-6">
-                        <p className="section-label mb-6">ANNUAL PARAMETERS — {currency.code}</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <div className="glass p-4 md:p-6">
+                        <p className="section-label mb-5">ANNUAL PARAMETERS — {currency.code}</p>
                         <div className="space-y-5">
                             {[
                                 { label: 'Annual Flight Hours', value: calcHours, setter: setCalcHours, min: 50, max: 800, step: 10, unit: 'hrs', raw: true },
@@ -432,18 +447,10 @@ export default function Mission() {
                                     <div className="flex items-center justify-between mb-2">
                                         <p className="font-mono text-xs text-gray-400">{field.label}</p>
                                         <p className="font-mono text-xs text-gold">
-                                            {field.raw ? field.value : fmt(field.value)} {field.raw ? field.unit : ''}
+                                            {field.raw ? `${field.value} ${field.unit}` : fmt(field.value)}
                                         </p>
                                     </div>
-                                    <input
-                                        type="range"
-                                        min={field.min}
-                                        max={field.max}
-                                        step={field.step}
-                                        value={field.value}
-                                        onChange={e => field.setter(parseFloat(e.target.value))}
-                                        className="w-full accent-gold"
-                                    />
+                                    <input type="range" min={field.min} max={field.max} step={field.step} value={field.value} onChange={e => field.setter(parseFloat(e.target.value))} className="w-full accent-gold" />
                                     <div className="flex justify-between mt-0.5">
                                         <span className="font-mono text-xs text-gray-600">{field.raw ? field.min : fmt(field.min)}</span>
                                         <span className="font-mono text-xs text-gray-600">{field.raw ? field.max : fmt(field.max)}</span>
@@ -454,35 +461,35 @@ export default function Mission() {
                     </div>
 
                     <div className="space-y-4">
-                        <div className="glass-gold p-6">
-                            <p className="section-label mb-6">CALCULATION RESULTS</p>
+                        <div className="glass-gold p-4 md:p-6">
+                            <p className="section-label mb-5">CALCULATION RESULTS</p>
                             <div className="space-y-4">
                                 <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
                                     <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter Cost ({calcHours} hrs)</p>
-                                    <p className="font-display text-3xl text-white">{fmt(annualCharterTotal)}</p>
+                                    <p className="font-display text-2xl md:text-3xl text-white">{fmt(annualCharterTotal)}</p>
                                     <p className="font-mono text-xs text-gray-600 mt-1">{fmt(charterRate)}/hr × {calcHours} hrs</p>
                                 </div>
                                 <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
                                     <p className="font-mono text-xs text-gray-500 mb-1">Annual Ownership Cost</p>
-                                    <p className="font-display text-3xl text-white">{fmt(annualOwnershipTotal)}</p>
+                                    <p className="font-display text-2xl md:text-3xl text-white">{fmt(annualOwnershipTotal)}</p>
                                     <p className="font-mono text-xs text-gray-600 mt-1">Fuel + Crew + Maintenance + Hangar + Insurance</p>
                                 </div>
                                 <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
                                     <p className="font-mono text-xs text-gray-500 mb-1">Breakeven Point</p>
-                                    <p className="font-display text-3xl text-white">{advBreakeven} hrs/year</p>
+                                    <p className="font-display text-2xl md:text-3xl text-white">{advBreakeven} hrs/year</p>
                                     <p className="font-mono text-xs text-gray-600 mt-1">Below this — charter wins. Above — ownership wins.</p>
                                 </div>
-                                <div className={`rounded-xl p-5 border ${advRecommendation === 'OWNERSHIP' ? 'border-gold bg-gold/10' : 'border-gulf bg-gulf/10'}`}>
+                                <div className={`rounded-xl p-4 md:p-5 border ${advRecommendation === 'OWNERSHIP' ? 'border-gold bg-gold/10' : 'border-gulf bg-gulf/10'}`}>
                                     <p className="font-mono text-xs text-gray-400 mb-2">RECOMMENDATION</p>
-                                    <p className="font-display text-5xl text-gold mb-2">{advRecommendation}</p>
+                                    <p className="font-display text-4xl md:text-5xl text-gold mb-2">{advRecommendation}</p>
                                     <p className="font-body text-sm text-gray-300">
-                                        At {calcHours} hrs/year, {advRecommendation.toLowerCase()} saves {fmt(saving)} annually compared to the alternative.
+                                        At {calcHours} hrs/year, {advRecommendation.toLowerCase()} saves {fmt(saving)} annually.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="glass p-5">
+                        <div className="glass p-4 md:p-5">
                             <p className="section-label mb-3">COST BREAKDOWN</p>
                             <div className="space-y-2">
                                 {[
@@ -511,17 +518,17 @@ export default function Mission() {
                 </div>
             )}
 
-            {/* FLEET GUIDE TAB */}
+            {/* FLEET GUIDE */}
             {activeTab === 'fleet' && (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                     {aircraft.map((ac, i) => (
-                        <div key={i} className="glass p-5 hover:border-gold transition-all">
+                        <div key={i} className="glass p-4 md:p-5 hover:border-gold transition-all">
                             <div className="flex items-start justify-between mb-3">
                                 <div>
                                     <p className="font-display text-xl text-white">{ac.model}</p>
                                     <p className="font-mono text-xs text-gold">{ac.manufacturer}</p>
                                 </div>
-                                <span className="font-mono text-xs text-gray-500 bg-[#1c1c1c] px-2 py-1 rounded">{ac.category}</span>
+                                <span className="font-mono text-xs text-gray-500 bg-[#1c1c1c] px-2 py-1 rounded flex-shrink-0 ml-2">{ac.category}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-2 mb-3">
                                 {[

@@ -10,6 +10,7 @@ import Jets from './pages/app/jets.jsx'
 import Flights from './pages/app/flights.jsx'
 import Billing from './pages/app/billing.jsx'
 import Mission from './pages/app/mission.jsx'
+import Settings from './pages/app/settings.jsx'
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="flights" element={<Flights />} />
             <Route path="billing" element={<Billing />} />
             <Route path="mission" element={<Mission />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>
