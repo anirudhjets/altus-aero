@@ -17,11 +17,8 @@ export default function AppLayout() {
         navigate('/')
     }
 
-    const userInitials = user?.email
-        ? user.email.substring(0, 2).toUpperCase()
-        : 'AA'
-
-    const userEmail = user?.email || ''
+    const username = user?.user_metadata?.username || user?.email?.split('@')[0] || 'Broker'
+    const userInitials = username.substring(0, 2).toUpperCase()
 
     useEffect(() => {
         setMobileMenuOpen(false)
@@ -84,7 +81,7 @@ export default function AppLayout() {
                         <AnimatePresence>
                             {!collapsed && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="overflow-hidden">
-                                    <p className="text-xs text-white truncate max-w-[140px]">{userEmail}</p>
+                                    <p className="text-sm font-semibold text-white truncate max-w-[140px]">{username}</p>
                                     <p className="text-xs text-gold font-mono">PRO TIER</p>
                                     <div className="mt-1.5 h-1 bg-[#1c1c1c] rounded-full w-32">
                                         <div className="h-1 bg-gold rounded-full" style={{ width: '72%' }} />
@@ -137,12 +134,7 @@ export default function AppLayout() {
                 {/* Top Header */}
                 <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-[#1c1c1c] flex-shrink-0" style={{ background: 'rgba(10,10,10,0.95)' }}>
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="md:hidden text-gray-400 hover:text-gold transition-colors p-1"
-                        >
-                            ☰
-                        </button>
+                        <button onClick={() => setMobileMenuOpen(true)} className="md:hidden text-gray-400 hover:text-gold transition-colors p-1">☰</button>
                         <div className="md:hidden flex items-center gap-2">
                             <span className="font-display text-gold text-lg tracking-widest">ALTUS</span>
                             <span className="text-xs font-mono bg-gold text-jet px-1 py-0.5 rounded font-bold">AERO</span>
@@ -213,8 +205,8 @@ export default function AppLayout() {
                                     <div className="w-10 h-10 rounded-full bg-gulf flex items-center justify-center flex-shrink-0">
                                         <span className="text-sm font-bold text-white">{userInitials}</span>
                                     </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-sm text-white truncate max-w-[180px]">{userEmail}</p>
+                                    <div>
+                                        <p className="text-sm font-semibold text-white">{username}</p>
                                         <p className="text-xs text-gold font-mono">PRO TIER</p>
                                     </div>
                                 </div>
@@ -222,11 +214,7 @@ export default function AppLayout() {
 
                             <nav className="flex-1 p-3 space-y-1">
                                 {navItems.map(item => (
-                                    <NavLink
-                                        key={item.path}
-                                        to={item.path}
-                                        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                                    >
+                                    <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                                         <span className="text-lg">{item.icon}</span>
                                         <span>{item.label}</span>
                                     </NavLink>
@@ -238,10 +226,7 @@ export default function AppLayout() {
                                     <span>←</span>
                                     <span>Back to Site</span>
                                 </Link>
-                                <button
-                                    onClick={handleSignOut}
-                                    className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                                >
+                                <button onClick={handleSignOut} className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20">
                                     <span>⏻</span>
                                     <span>Sign Out</span>
                                 </button>

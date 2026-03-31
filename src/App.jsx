@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Homepage from './pages/index.jsx'
 import Login from './pages/login.jsx'
+import Setup from './pages/setup.jsx'
 import AppLayout from './components/AppLayout.jsx'
 import Dashboard from './pages/app/dashboard.jsx'
 import Jets from './pages/app/jets.jsx'
@@ -17,6 +18,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/setup" element={<Setup />} />
           <Route path="/app" element={
             <ProtectedRoute>
               <AppLayout />
