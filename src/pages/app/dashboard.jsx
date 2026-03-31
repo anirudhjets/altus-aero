@@ -28,11 +28,11 @@ const apiData = [
 ]
 
 const flights = [
-    { id: 'AIC001', route: 'VABB → EGLL', aircraft: 'G650ER', dep: '08:30 IST', eta: '13:45 GMT', alt: 45000, spd: 516, status: 'En Route', progress: 62 },
-    { id: 'AIC002', route: 'VABB → OMDB', aircraft: 'Global 7500', dep: '10:15 IST', eta: '12:30 GST', alt: 43000, spd: 490, status: 'En Route', progress: 78 },
-    { id: 'AIC003', route: 'VABB → YSSY', aircraft: 'G700', dep: '23:00 IST', eta: '15:20 AEDT', alt: 0, spd: 0, status: 'Scheduled', progress: 0 },
-    { id: 'AIC004', route: 'VIDP → VABB', aircraft: 'Phenom 300E', dep: '06:00 IST', eta: '07:45 IST', alt: 35000, spd: 453, status: 'En Route', progress: 91 },
-    { id: 'AIC005', route: 'VABB → LFPB', aircraft: 'Falcon 7X', dep: '14:00 IST', eta: '18:30 CET', alt: 41000, spd: 482, status: 'En Route', progress: 44 },
+    { id: 'AIC001', route: 'VABB → EGLL', aircraft: 'G650ER', dep: '08:30 IST', eta: '13:45 GMT', status: 'En Route', progress: 62 },
+    { id: 'AIC002', route: 'VABB → OMDB', aircraft: 'Global 7500', dep: '10:15 IST', eta: '12:30 GST', status: 'En Route', progress: 78 },
+    { id: 'AIC003', route: 'VABB → YSSY', aircraft: 'G700', dep: '23:00 IST', eta: '15:20 AEDT', status: 'Scheduled', progress: 0 },
+    { id: 'AIC004', route: 'VIDP → VABB', aircraft: 'Phenom 300E', dep: '06:00 IST', eta: '07:45 IST', status: 'En Route', progress: 91 },
+    { id: 'AIC005', route: 'VABB → LFPB', aircraft: 'Falcon 7X', dep: '14:00 IST', eta: '18:30 CET', status: 'En Route', progress: 44 },
 ]
 
 const statusColor = {
@@ -65,37 +65,43 @@ export default function Dashboard() {
     }, [])
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
+            {/* Header */}
             <div>
-                <p className="section-label">YOUR MARKET INTELLIGENCE</p>
-                <h1 className="font-display text-4xl text-white">{date}</h1>
-                <p className="font-mono text-gold text-sm mt-1">{time} IST</p>
+                <p className="section-label text-xs sm:text-sm">YOUR MARKET INTELLIGENCE</p>
+                <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">{date}</h1>
+                <p className="font-mono text-gold text-xs sm:text-sm mt-1">{time} IST</p>
             </div>
 
-            <div className="glass-gold p-5 flex items-start gap-4">
-                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded flex-shrink-0 mt-0.5">TODAY'S INSIGHT</span>
-                <p className="font-body text-white text-sm leading-relaxed">{insights[insightIndex]}</p>
+            {/* Today's Insight */}
+            <div className="glass-gold p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded flex-shrink-0">TODAY'S INSIGHT</span>
+                <p className="font-body text-white text-xs sm:text-sm leading-relaxed">{insights[insightIndex]}</p>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
                 {[
                     { label: 'API Calls Today', value: '847', sub: 'of 1,000 limit' },
                     { label: 'Active Flights', value: '4', sub: 'VABB region' },
                     { label: 'Reports Generated', value: '12', sub: 'this month' },
                     { label: 'Plan Tier', value: 'PRO', sub: 'upgrade available' },
                 ].map((s, i) => (
-                    <div key={i} className="stat-card">
+                    <div key={i} className="stat-card p-3 sm:p-4">
                         <p className="font-mono text-xs text-gray-500 mb-1">{s.label}</p>
-                        <p className="font-display text-3xl text-gold">{s.value}</p>
+                        <p className="font-display text-2xl sm:text-3xl text-gold">{s.value}</p>
                         <p className="font-mono text-xs text-gray-600 mt-1">{s.sub}</p>
                     </div>
                 ))}
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-6">
-                <div className="glass p-5">
-                    <p className="section-label mb-4">JET EXPLORER</p>
-                    <div className="space-y-3">
+            {/* 3 Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+
+                {/* Col 1 — Jet Explorer */}
+                <div className="glass p-4 sm:p-5">
+                    <p className="section-label mb-3 sm:mb-4">JET EXPLORER</p>
+                    <div className="space-y-2">
                         {[
                             { model: 'G650ER', range: '7,500nm', speed: '516 kts', color: '#0d1b3e' },
                             { model: 'G700', range: '7,750nm', speed: '526 kts', color: '#1e3a8a' },
@@ -103,10 +109,10 @@ export default function Dashboard() {
                             { model: 'Falcon 7X', range: '5,950nm', speed: '482 kts', color: '#2d4a7a' },
                             { model: 'Phenom 300E', range: '2,010nm', speed: '453 kts', color: '#1a3a5c' },
                         ].map((jet, i) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-[#1c1c1c] hover:border-gold transition-colors cursor-pointer">
-                                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: jet.color, boxShadow: `0 0 8px ${jet.color}` }} />
+                            <div key={i} className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gold transition-colors cursor-pointer">
+                                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: jet.color, boxShadow: `0 0 8px ${jet.color}` }} />
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-display text-sm text-white">{jet.model}</p>
+                                    <p className="font-display text-xs sm:text-sm text-white">{jet.model}</p>
                                     <p className="font-mono text-xs text-gray-500">{jet.range} · {jet.speed}</p>
                                 </div>
                                 <span className="text-gold text-xs">→</span>
@@ -115,16 +121,17 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="glass p-5">
-                    <p className="section-label mb-4">LIVE VABB FLIGHTS</p>
-                    <div className="space-y-3">
+                {/* Col 2 — Live Flights */}
+                <div className="glass p-4 sm:p-5">
+                    <p className="section-label mb-3 sm:mb-4">LIVE VABB FLIGHTS</p>
+                    <div className="space-y-2 sm:space-y-3">
                         {flights.map((f, i) => (
-                            <div key={i} className="p-3 rounded-lg border border-[#1c1c1c] hover:border-gulf transition-colors">
-                                <div className="flex items-center justify-between mb-2">
-                                    <p className="font-mono text-xs text-white font-bold">{f.route}</p>
-                                    <span className={`font-mono text-xs px-2 py-0.5 rounded ${statusColor[f.status]}`}>{f.status}</span>
+                            <div key={i} className="p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gulf transition-colors">
+                                <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                                    <p className="font-mono text-xs text-white font-bold truncate mr-2">{f.route}</p>
+                                    <span className={`font-mono text-xs px-1.5 py-0.5 rounded flex-shrink-0 ${statusColor[f.status]}`}>{f.status}</span>
                                 </div>
-                                <p className="font-mono text-xs text-gray-500 mb-2">{f.aircraft} · {f.dep} → {f.eta}</p>
+                                <p className="font-mono text-xs text-gray-500 mb-1.5 sm:mb-2">{f.aircraft} · {f.dep} → {f.eta}</p>
                                 {f.progress > 0 && (
                                     <div className="h-1 bg-[#1c1c1c] rounded-full">
                                         <div className="h-1 bg-gold rounded-full transition-all" style={{ width: `${f.progress}%` }} />
@@ -135,10 +142,11 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="glass p-5 space-y-6">
+                {/* Col 3 — Charts */}
+                <div className="glass p-4 sm:p-5 space-y-4 sm:space-y-6">
                     <div>
-                        <p className="section-label mb-3">CHARTER VS OWNERSHIP (USD)</p>
-                        <ResponsiveContainer width="100%" height={150}>
+                        <p className="section-label mb-2 sm:mb-3">CHARTER VS OWNERSHIP (USD)</p>
+                        <ResponsiveContainer width="100%" height={130}>
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="charter" x1="0" y1="0" x2="0" y2="1">
@@ -150,21 +158,21 @@ export default function Dashboard() {
                                         <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="month" tick={{ fill: '#4b5563', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+                                <XAxis dataKey="month" tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
                                 <YAxis hide />
-                                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 11 }} />
+                                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 10 }} />
                                 <Area type="monotone" dataKey="charter" stroke="#D4AF37" fill="url(#charter)" strokeWidth={2} name="Charter" />
                                 <Area type="monotone" dataKey="ownership" stroke="#1e3a8a" fill="url(#ownership)" strokeWidth={2} name="Ownership" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                     <div>
-                        <p className="section-label mb-3">API USAGE THIS WEEK</p>
-                        <ResponsiveContainer width="100%" height={100}>
+                        <p className="section-label mb-2 sm:mb-3">API USAGE THIS WEEK</p>
+                        <ResponsiveContainer width="100%" height={90}>
                             <BarChart data={apiData}>
-                                <XAxis dataKey="day" tick={{ fill: '#4b5563', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+                                <XAxis dataKey="day" tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
                                 <YAxis hide />
-                                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 11 }} />
+                                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 10 }} />
                                 <Bar dataKey="calls" fill="#D4AF37" opacity={0.7} radius={[3, 3, 0, 0]} name="API Calls" />
                             </BarChart>
                         </ResponsiveContainer>
@@ -172,16 +180,17 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Quick Actions */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 {[
                     { label: 'Generate Report', icon: '📄' },
                     { label: 'Track Flight', icon: '◉' },
                     { label: 'Cost Analysis', icon: '💰' },
                     { label: 'Compare Aircraft', icon: '✈' },
                 ].map((a, i) => (
-                    <button key={i} className="glass p-4 text-center hover:border-gold transition-colors group">
-                        <span className="text-2xl block mb-2">{a.icon}</span>
-                        <p className="font-display text-sm text-gray-400 group-hover:text-gold tracking-wider">{a.label}</p>
+                    <button key={i} className="glass p-3 sm:p-4 text-center hover:border-gold transition-colors group">
+                        <span className="text-xl sm:text-2xl block mb-1 sm:mb-2">{a.icon}</span>
+                        <p className="font-display text-xs sm:text-sm text-gray-400 group-hover:text-gold tracking-wider">{a.label}</p>
                     </button>
                 ))}
             </div>

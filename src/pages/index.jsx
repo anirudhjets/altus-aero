@@ -87,32 +87,13 @@ export default function Homepage() {
                     end: '+=2500',
                     pin: true,
                     scrub: 1.5,
-                    onUpdate: (self) => {
-                        progress.current = self.progress
-                    }
+                    onUpdate: (self) => { progress.current = self.progress }
                 }
             })
-
-            // Jet flies in for first 70% — text stays visible
             tl.to({}, { duration: 0.7 })
-
-            // Text splits apart as jet slices through at 70-100%
-            tl.to(topTextRef.current, {
-                y: -200,
-                opacity: 0,
-                duration: 0.3,
-                ease: 'power3.in'
-            }, 0.7)
-
-            tl.to(bottomTextRef.current, {
-                y: 200,
-                opacity: 0,
-                duration: 0.3,
-                ease: 'power3.in'
-            }, 0.7)
-
+            tl.to(topTextRef.current, { y: -200, opacity: 0, duration: 0.3, ease: 'power3.in' }, 0.7)
+            tl.to(bottomTextRef.current, { y: 200, opacity: 0, duration: 0.3, ease: 'power3.in' }, 0.7)
         }, heroRef)
-
         return () => ctx.revert()
     }, [])
 
@@ -122,96 +103,90 @@ export default function Homepage() {
 
             {/* Nav */}
             <nav
-                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 border-b border-[#1c1c1c]"
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-[#1c1c1c]"
                 style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(12px)' }}
             >
-                <div className="flex items-center gap-3">
-                    <span className="font-display text-2xl tracking-widest text-gold-gradient">ALTUS</span>
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="font-display text-lg sm:text-2xl tracking-widest text-gold-gradient">ALTUS</span>
                     <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
                 </div>
-                <div className="hidden md:flex items-center gap-8">
+                <div className="hidden md:flex items-center gap-4 lg:gap-8">
                     <a href="#philosophy" className="text-sm text-gray-400 hover:text-gold transition-colors font-body">Philosophy</a>
                     <a href="#features" className="text-sm text-gray-400 hover:text-gold transition-colors font-body">Features</a>
                     <a href="#pricing" className="text-sm text-gray-400 hover:text-gold transition-colors font-body">Pricing</a>
-                    <Link to="/app/dashboard" className="btn-primary text-sm py-2 px-5">OPEN APP →</Link>
+                    <Link to="/app/dashboard" className="btn-primary text-sm py-2 px-4 lg:px-5">OPEN APP →</Link>
                 </div>
+                <Link to="/app/dashboard" className="md:hidden btn-primary text-xs py-1.5 px-3">APP →</Link>
             </nav>
 
-            {/* Hero — pinned */}
+            {/* Hero */}
             <section ref={heroRef} className="relative h-screen overflow-hidden grid-bg">
                 <div className="absolute inset-0 z-0">
                     <ThreeJetHero progress={progress} />
                 </div>
-
-                <div className="relative z-10 flex flex-col items-center justify-center h-full pt-20 pointer-events-none select-none">
-                    <p className="section-label mb-6 tracking-widest">EST. MUMBAI 2026 — VARSANO METHOD</p>
-
+                <div className="relative z-10 flex flex-col items-center justify-center h-full pt-16 sm:pt-20 pointer-events-none select-none px-4">
+                    <p className="section-label mb-3 sm:mb-6 tracking-widest text-center text-xs sm:text-sm">EST. MUMBAI 2026 — VARSANO METHOD</p>
                     <div ref={topTextRef}>
-                        <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none text-gold-gradient text-center">
+                        <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] 2xl:text-[12rem] tracking-widest leading-none text-gold-gradient text-center">
                             KNOW MORE.
                         </h1>
                     </div>
-
                     <div ref={bottomTextRef}>
-                        <h1 className="font-display text-7xl md:text-9xl tracking-widest leading-none text-white text-center">
+                        <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] 2xl:text-[12rem] tracking-widest leading-none text-white text-center">
                             CLOSE MORE.
                         </h1>
                     </div>
-
-                    <p className="font-body text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mt-8 mb-3 leading-relaxed text-center">
-                        The broker who educates wins. Altus Aero gives you the data, the 3D models,
-                        and the market intelligence to become the most trusted advisor in the room.
+                    <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto mt-4 sm:mt-8 mb-2 sm:mb-3 leading-relaxed text-center">
+                        The broker who educates wins. Altus Aero gives you the data, the 3D models, and the market intelligence to become the most trusted advisor in the room.
                     </p>
-                    <p className="font-mono text-sm text-gold mb-10">
+                    <p className="font-mono text-xs sm:text-sm text-gold mb-6 sm:mb-10 text-center">
                         Inspired by Steve Varsano's philosophy: teach first, sell second.
                     </p>
-                    <div className="pointer-events-auto flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/app/jets" className="btn-primary text-base">EXPLORE THE FLEET →</Link>
-                        <Link to="/app/flights" className="btn-secondary text-base">SEE LIVE MARKET DATA</Link>
+                    <div className="pointer-events-auto flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+                        <Link to="/app/jets" className="btn-primary text-sm sm:text-base w-full sm:w-auto text-center">EXPLORE THE FLEET →</Link>
+                        <Link to="/app/flights" className="btn-secondary text-sm sm:text-base w-full sm:w-auto text-center">SEE LIVE MARKET DATA</Link>
                     </div>
                 </div>
-
-                {/* Ticker */}
                 <div className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-jet/90 overflow-hidden py-2 z-10">
                     <div className="flex animate-ticker whitespace-nowrap">
                         {[...tickerItems, ...tickerItems].map((item, i) => (
-                            <span key={i} className="font-mono text-xs text-gold mx-8">◆ {item}</span>
+                            <span key={i} className="font-mono text-xs text-gold mx-6 sm:mx-8">◆ {item}</span>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* Philosophy */}
-            <section id="philosophy" className="py-32 px-6 max-w-6xl mx-auto">
-                <p className="section-label text-center mb-16">THE PHILOSOPHY</p>
-                <div className="glass-gold p-12 md:p-16 mb-20 text-center">
-                    <p className="font-display text-3xl md:text-5xl text-white leading-tight mb-6">
+            <section id="philosophy" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 max-w-6xl mx-auto">
+                <p className="section-label text-center mb-8 sm:mb-16">THE PHILOSOPHY</p>
+                <div className="glass-gold p-6 sm:p-10 md:p-16 mb-10 sm:mb-20 text-center">
+                    <p className="font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white leading-tight mb-4 sm:mb-6">
                         "The client who understands the market buys with confidence. Your job is not to sell a jet — it's to make them an expert."
                     </p>
-                    <p className="font-mono text-sm text-gold">— Inspired by Steve Varsano, The Jet Business, London</p>
+                    <p className="font-mono text-xs sm:text-sm text-gold">— Inspired by Steve Varsano, The Jet Business, London</p>
                 </div>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {principles.map((p, i) => (
-                        <div key={i} className="glass p-8">
-                            <p className="font-display text-3xl text-gold-gradient mb-4">{p.label}</p>
-                            <p className="font-body text-gray-300 leading-relaxed">{p.desc}</p>
+                        <div key={i} className="glass p-6 sm:p-8">
+                            <p className="font-display text-2xl sm:text-3xl text-gold-gradient mb-3 sm:mb-4">{p.label}</p>
+                            <p className="font-body text-sm sm:text-base text-gray-300 leading-relaxed">{p.desc}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* Features */}
-            <section id="features" className="py-32 px-6 bg-[#080808] grid-bg">
+            <section id="features" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-[#080808] grid-bg">
                 <div className="max-w-6xl mx-auto">
-                    <p className="section-label text-center mb-4">WHAT YOU'LL LEARN</p>
-                    <h2 className="font-display text-5xl md:text-6xl text-center text-white mb-16">
+                    <p className="section-label text-center mb-3 sm:mb-4">WHAT YOU'LL LEARN</p>
+                    <h2 className="font-display text-3xl sm:text-5xl md:text-6xl text-center text-white mb-8 sm:mb-16">
                         KNOWLEDGE IS YOUR <span className="text-gold-gradient">EDGE</span>
                     </h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {features.map((f, i) => (
-                            <div key={i} className="glass p-6 group">
-                                <p className="font-mono text-xs text-gulf mb-3">{f.tag}</p>
-                                <p className="font-body text-white leading-relaxed group-hover:text-gold transition-colors">{f.title}</p>
+                            <div key={i} className="glass p-5 sm:p-6 group">
+                                <p className="font-mono text-xs text-gulf mb-2 sm:mb-3">{f.tag}</p>
+                                <p className="font-body text-sm sm:text-base text-white leading-relaxed group-hover:text-gold transition-colors">{f.title}</p>
                             </div>
                         ))}
                     </div>
@@ -219,108 +194,106 @@ export default function Homepage() {
             </section>
 
             {/* About */}
-            <section className="py-32 px-6 max-w-4xl mx-auto text-center">
-                <p className="section-label mb-6">ABOUT THE BUILDER</p>
-                <h2 className="font-display text-5xl md:text-6xl text-white mb-8">
+            <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 max-w-4xl mx-auto text-center">
+                <p className="section-label mb-4 sm:mb-6">ABOUT THE BUILDER</p>
+                <h2 className="font-display text-3xl sm:text-5xl md:text-6xl text-white mb-6 sm:mb-8">
                     BUILT BY A BROKER <span className="text-gold-gradient">IN TRAINING</span>
                 </h2>
-                <div className="glass-gold p-10">
-                    <div className="w-16 h-16 rounded-full bg-gulf flex items-center justify-center mx-auto mb-6">
-                        <span className="font-display text-2xl text-white">AS</span>
+                <div className="glass-gold p-6 sm:p-10">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gulf flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                        <span className="font-display text-xl sm:text-2xl text-white">AS</span>
                     </div>
-                    <p className="font-body text-gray-300 text-lg leading-relaxed mb-4">
-                        Anirudh Shinde, Mumbai — studying the Varsano model: deep knowledge,
-                        complete transparency, long-term client relationships over quick commissions.
+                    <p className="font-body text-sm sm:text-base lg:text-lg text-gray-300 leading-relaxed mb-3 sm:mb-4">
+                        Anirudh Shinde, Mumbai — studying the Varsano model: deep knowledge, complete transparency, long-term client relationships over quick commissions.
                     </p>
-                    <p className="font-body text-gray-400 leading-relaxed">
+                    <p className="font-body text-sm sm:text-base text-gray-400 leading-relaxed">
                         Altus Aero is the tool I wish existed when I started learning this industry.
-                        Every feature was built to answer a question I had, a gap I felt, a meeting I wanted to walk into better prepared.
                     </p>
-                    <p className="font-mono text-sm text-gold mt-6">Mumbai, India · 2026</p>
+                    <p className="font-mono text-xs sm:text-sm text-gold mt-4 sm:mt-6">Mumbai, India · 2026</p>
                 </div>
             </section>
 
             {/* Market Intelligence Preview */}
-            <section className="py-32 px-6 bg-[#080808] grid-bg">
+            <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-[#080808] grid-bg">
                 <div className="max-w-6xl mx-auto">
-                    <p className="section-label text-center mb-4">MARKET INTELLIGENCE PREVIEW</p>
-                    <h2 className="font-display text-5xl text-center text-white mb-16">
+                    <p className="section-label text-center mb-3 sm:mb-4">MARKET INTELLIGENCE PREVIEW</p>
+                    <h2 className="font-display text-3xl sm:text-5xl text-center text-white mb-8 sm:mb-16">
                         TODAY'S <span className="text-gold-gradient">DATA</span>
                     </h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                         {[
                             { label: 'VABB Business Jets Today', value: '4 movements' },
                             { label: 'Ultra Long Range Departures', value: '2 flights' },
                             { label: 'G650 Charter Mumbai→London', value: '~$185,000' },
                             { label: 'G650ER Pre-owned (2018)', value: '$42–46M' },
                         ].map((item, i) => (
-                            <div key={i} className="stat-card text-center">
-                                <p className="font-mono text-xs text-gray-500 mb-2">{item.label}</p>
-                                <p className="font-display text-2xl text-gold">{item.value}</p>
+                            <div key={i} className="stat-card text-center p-3 sm:p-4">
+                                <p className="font-mono text-xs text-gray-500 mb-1 sm:mb-2 leading-tight">{item.label}</p>
+                                <p className="font-display text-lg sm:text-2xl text-gold">{item.value}</p>
                             </div>
                         ))}
                     </div>
                     <div className="text-center">
-                        <Link to="/app/dashboard" className="btn-secondary">Log in to see full data →</Link>
+                        <Link to="/app/dashboard" className="btn-secondary text-sm sm:text-base">Log in to see full data →</Link>
                     </div>
                 </div>
             </section>
 
             {/* Stats */}
-            <section className="py-24 px-6 border-y border-[#1c1c1c]">
-                <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+            <section className="py-12 sm:py-24 px-4 sm:px-6 border-y border-[#1c1c1c]">
+                <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
                     {stats.map((s, i) => (
                         <div key={i} className="text-center">
-                            <p className="font-display text-5xl md:text-6xl text-gold-gradient">{s.value}</p>
-                            <p className="font-mono text-xs text-gray-400 mt-2 uppercase tracking-widest">{s.label}</p>
+                            <p className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-gold-gradient">{s.value}</p>
+                            <p className="font-mono text-xs text-gray-400 mt-1 sm:mt-2 uppercase tracking-widest">{s.label}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* Pricing */}
-            <section id="pricing" className="py-32 px-6 grid-bg">
+            <section id="pricing" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 grid-bg">
                 <div className="max-w-6xl mx-auto">
-                    <p className="section-label text-center mb-4">INVEST IN YOUR KNOWLEDGE</p>
-                    <h2 className="font-display text-5xl md:text-6xl text-center text-white mb-4">
+                    <p className="section-label text-center mb-3 sm:mb-4">INVEST IN YOUR KNOWLEDGE</p>
+                    <h2 className="font-display text-3xl sm:text-5xl md:text-6xl text-center text-white mb-3 sm:mb-4">
                         CHOOSE YOUR <span className="text-gold-gradient">TIER</span>
                     </h2>
-                    <p className="font-body text-gray-400 text-center mb-8">7-day free trial on all plans. No credit card required.</p>
-                    <div className="flex items-center justify-center gap-4 mb-12">
-                        <span className={`font-mono text-sm ${!annual ? 'text-gold' : 'text-gray-500'}`}>Monthly</span>
+                    <p className="font-body text-sm sm:text-base text-gray-400 text-center mb-6 sm:mb-8">7-day free trial on all plans. No credit card required.</p>
+                    <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+                        <span className={`font-mono text-xs sm:text-sm ${!annual ? 'text-gold' : 'text-gray-500'}`}>Monthly</span>
                         <button
                             onClick={() => setAnnual(!annual)}
-                            className={`w-12 h-6 rounded-full transition-colors relative ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
+                            className={`w-10 sm:w-12 h-5 sm:h-6 rounded-full transition-colors relative ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
                         >
-                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-jet transition-transform ${annual ? 'translate-x-6' : ''}`} />
+                            <span className={`absolute top-0.5 left-0.5 w-4 sm:w-5 h-4 sm:h-5 rounded-full bg-jet transition-transform ${annual ? 'translate-x-5 sm:translate-x-6' : ''}`} />
                         </button>
-                        <span className={`font-mono text-sm ${annual ? 'text-gold' : 'text-gray-500'}`}>
+                        <span className={`font-mono text-xs sm:text-sm ${annual ? 'text-gold' : 'text-gray-500'}`}>
                             Annual <span className="text-green-400">-20%</span>
                         </span>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {plans.map((plan, i) => (
-                            <div key={i} className={`p-8 rounded-xl border transition-all ${plan.highlight ? 'border-gold bg-gold/5 shadow-gold' : 'border-[#1c1c1c] glass'}`}>
+                            <div key={i} className={`p-6 sm:p-8 rounded-xl border transition-all ${plan.highlight ? 'border-gold bg-gold/5 shadow-gold' : 'border-[#1c1c1c] glass'}`}>
                                 {plan.highlight && (
-                                    <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-4">MOST POPULAR</p>
+                                    <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3 sm:mb-4">MOST POPULAR</p>
                                 )}
-                                <p className="font-display text-3xl text-white mb-1">{plan.name}</p>
-                                <p className="font-mono text-xs text-gold mb-6">{plan.tag}</p>
-                                <p className="font-display text-5xl text-white mb-1">
+                                <p className="font-display text-2xl sm:text-3xl text-white mb-1">{plan.name}</p>
+                                <p className="font-mono text-xs text-gold mb-4 sm:mb-6">{plan.tag}</p>
+                                <p className="font-display text-4xl sm:text-5xl text-white mb-1">
                                     ${annual ? Math.round(plan.price * 0.8) : plan.price}
-                                    <span className="text-xl text-gray-400">/mo</span>
+                                    <span className="text-lg sm:text-xl text-gray-400">/mo</span>
                                 </p>
-                                {annual && <p className="font-mono text-xs text-green-400 mb-6">Billed annually</p>}
-                                <ul className="space-y-3 mb-8 mt-6">
+                                {annual && <p className="font-mono text-xs text-green-400 mb-4 sm:mb-6">Billed annually</p>}
+                                <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 mt-4 sm:mt-6">
                                     {plan.features.map((f, j) => (
-                                        <li key={j} className="flex items-center gap-2 font-body text-sm text-gray-300">
+                                        <li key={j} className="flex items-center gap-2 font-body text-xs sm:text-sm text-gray-300">
                                             <span className="text-gold">✓</span> {f}
                                         </li>
                                     ))}
                                 </ul>
                                 <Link
                                     to="/app/dashboard"
-                                    className={`block text-center py-3 rounded-lg font-display tracking-widest text-sm transition-all ${plan.highlight ? 'bg-gold text-jet hover:shadow-glow' : 'border border-[#1c1c1c] text-white hover:border-gold'}`}
+                                    className={`block text-center py-2.5 sm:py-3 rounded-lg font-display tracking-widest text-sm transition-all ${plan.highlight ? 'bg-gold text-jet hover:shadow-glow' : 'border border-[#1c1c1c] text-white hover:border-gold'}`}
                                 >
                                     GET STARTED
                                 </Link>
@@ -331,17 +304,17 @@ export default function Homepage() {
             </section>
 
             {/* Testimonials */}
-            <section className="py-32 px-6 bg-[#080808]">
+            <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-[#080808]">
                 <div className="max-w-6xl mx-auto">
-                    <p className="section-label text-center mb-4">WHAT BROKERS SAY</p>
-                    <h2 className="font-display text-5xl text-center text-white mb-16">
+                    <p className="section-label text-center mb-3 sm:mb-4">WHAT BROKERS SAY</p>
+                    <h2 className="font-display text-3xl sm:text-5xl text-center text-white mb-8 sm:mb-16">
                         KNOWLEDGE THAT <span className="text-gold-gradient">CLOSES</span>
                     </h2>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {testimonials.map((t, i) => (
-                            <div key={i} className="glass p-8">
-                                <p className="font-body text-gray-300 leading-relaxed mb-6 italic">"{t.quote}"</p>
-                                <p className="font-display text-lg text-gold">{t.name}</p>
+                            <div key={i} className="glass p-6 sm:p-8">
+                                <p className="font-body text-sm sm:text-base text-gray-300 leading-relaxed mb-4 sm:mb-6 italic">"{t.quote}"</p>
+                                <p className="font-display text-base sm:text-lg text-gold">{t.name}</p>
                                 <p className="font-mono text-xs text-gray-500">{t.role}</p>
                             </div>
                         ))}
@@ -350,12 +323,12 @@ export default function Homepage() {
             </section>
 
             {/* Footer */}
-            <footer className="py-12 px-6 border-t border-[#1c1c1c] text-center">
-                <p className="font-display text-2xl text-gold-gradient mb-2">ALTUS AERO</p>
+            <footer className="py-8 sm:py-12 px-4 sm:px-6 border-t border-[#1c1c1c] text-center">
+                <p className="font-display text-xl sm:text-2xl text-gold-gradient mb-2">ALTUS AERO</p>
                 <p className="font-mono text-xs text-gray-500">
                     Anirudh A Shinde | Aspiring Jet Broker | Mumbai, India | Inspired by The Varsano Method
                 </p>
-                <p className="font-mono text-xs text-gray-700 mt-4">© 2026 Altus Aero. All rights reserved.</p>
+                <p className="font-mono text-xs text-gray-700 mt-3 sm:mt-4">© 2026 Altus Aero. All rights reserved.</p>
             </footer>
         </div>
     )

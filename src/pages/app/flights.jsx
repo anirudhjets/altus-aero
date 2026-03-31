@@ -18,7 +18,7 @@ const routeIntelligence = {
         ownership_range: '$95,000/month estimated',
         flight_time: '9h 20m typical',
         on_time: '91%',
-        broker_tip: 'For VABB → EGLL, always lead with G650ER — it is the only sub-$75M jet that does this nonstop with full passengers and bags. Clients who push back on price need to understand there is no cheaper nonstop option at this range.',
+        broker_tip: 'For VABB → EGLL, always lead with G650ER — it is the only sub-$75M jet that does this nonstop with full passengers and bags.',
     },
     'VABB → OMDB': {
         nonstop: true,
@@ -27,7 +27,7 @@ const routeIntelligence = {
         ownership_range: '$18,000/month estimated',
         flight_time: '2h 45m typical',
         on_time: '94%',
-        broker_tip: 'Short regional route — any midsize or larger jet qualifies. Charter is almost always more economical than ownership at this distance unless client flies 5+ times monthly.',
+        broker_tip: 'Short regional route — any midsize or larger jet qualifies. Charter is almost always more economical than ownership at this distance.',
     },
     'VABB → YSSY': {
         nonstop: false,
@@ -36,7 +36,7 @@ const routeIntelligence = {
         ownership_range: '$160,000/month estimated',
         flight_time: '14h 30m with fuel stop',
         on_time: '87%',
-        broker_tip: 'No production jet does VABB to YSSY fully nonstop. Global 7500 comes closest with a technical stop in Singapore or Perth. Always quote with fuel stop included — clients appreciate the transparency.',
+        broker_tip: 'No production jet does VABB to YSSY fully nonstop. Global 7500 comes closest with a technical stop. Always quote with fuel stop included.',
     },
     'VIDP → VABB': {
         nonstop: true,
@@ -45,7 +45,7 @@ const routeIntelligence = {
         ownership_range: '$12,000/month estimated',
         flight_time: '1h 45m typical',
         on_time: '88%',
-        broker_tip: 'Delhi to Mumbai is India\'s busiest business aviation corridor. Phenom 300E is the most cost effective option. Use this route to open first-time private flyer conversations — the time savings vs commercial is dramatic.',
+        broker_tip: 'Delhi to Mumbai is India\'s busiest business aviation corridor. Phenom 300E is the most cost effective option.',
     },
     'VABB → LFPB': {
         nonstop: true,
@@ -54,7 +54,25 @@ const routeIntelligence = {
         ownership_range: '$95,000/month estimated',
         flight_time: '9h 10m typical',
         on_time: '89%',
-        broker_tip: 'Le Bourget is the premier Paris business aviation airport. Falcon 7X is strong here — French clients and European operators prefer Dassault. Lead with the Falcon on this route for European clientele.',
+        broker_tip: 'Le Bourget is the premier Paris business aviation airport. Falcon 7X is strong here — French clients prefer Dassault.',
+    },
+    'VABB → OMAA': {
+        nonstop: true,
+        qualifying_jets: ['G650ER', 'G700', 'Challenger 350', 'Phenom 300E'],
+        charter_range: '$30,000 – $42,000',
+        ownership_range: '$20,000/month estimated',
+        flight_time: '3h 10m typical',
+        on_time: '93%',
+        broker_tip: 'Abu Dhabi route is growing fast. UAE clients often prefer newer aircraft — lead with G700 or G800 on this route.',
+    },
+    'VOBL → VABB': {
+        nonstop: true,
+        qualifying_jets: ['Phenom 300E', 'Citation CJ4', 'Challenger 350'],
+        charter_range: '$12,000 – $18,000',
+        ownership_range: '$8,000/month estimated',
+        flight_time: '1h 15m typical',
+        on_time: '90%',
+        broker_tip: 'Bangalore to Mumbai is a key tech corridor. Executives flying this route frequently are ideal ownership candidates.',
     },
 }
 
@@ -81,36 +99,36 @@ export default function Flights() {
     const intel = routeIntelligence[selected.route]
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             <div>
-                <p className="section-label">LIVE FLIGHT INTELLIGENCE</p>
-                <h1 className="font-display text-4xl text-white">FLIGHT TRACKER</h1>
-                <p className="font-body text-gray-400 mt-2">
+                <p className="section-label text-xs sm:text-sm">LIVE FLIGHT INTELLIGENCE</p>
+                <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">FLIGHT TRACKER</h1>
+                <p className="font-body text-xs sm:text-sm text-gray-400 mt-2">
                     Know the market before your clients do. Live VABB region movements.
                 </p>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-4">
-                <div className="glass px-1 py-1 flex gap-1 rounded-xl">
+            <div className="flex flex-col sm:flex-row gap-3">
+                <div className="glass px-1 py-1 flex gap-1 rounded-xl overflow-x-auto">
                     {airports.map(a => (
                         <button
                             key={a}
                             onClick={() => setAirport(a)}
-                            className={`font-mono text-xs px-4 py-2 rounded-lg transition-all ${airport === a ? 'bg-gold text-jet font-bold' : 'text-gray-400 hover:text-gold'
+                            className={`font-mono text-xs px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap ${airport === a ? 'bg-gold text-jet font-bold' : 'text-gray-400 hover:text-gold'
                                 }`}
                         >
                             {a}
                         </button>
                     ))}
                 </div>
-                <div className="glass px-1 py-1 flex gap-1 rounded-xl flex-wrap">
+                <div className="glass px-1 py-1 flex gap-1 rounded-xl overflow-x-auto">
                     {aircraftTypes.map(a => (
                         <button
                             key={a}
                             onClick={() => setAircraft(a)}
-                            className={`font-mono text-xs px-4 py-2 rounded-lg transition-all ${aircraft === a ? 'bg-gulf text-white font-bold' : 'text-gray-400 hover:text-gold'
+                            className={`font-mono text-xs px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap ${aircraft === a ? 'bg-gulf text-white font-bold' : 'text-gray-400 hover:text-gold'
                                 }`}
                         >
                             {a}
@@ -119,14 +137,14 @@ export default function Flights() {
                 </div>
             </div>
 
-            {/* Flight Table */}
+            {/* Flight Table — horizontal scroll on small screens */}
             <div className="glass overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full min-w-[700px]">
                         <thead>
                             <tr className="border-b border-[#1c1c1c]">
                                 {['Flight ID', 'Route', 'Aircraft', 'Departure', 'ETA', 'Altitude', 'Speed', 'Status', 'Progress'].map(h => (
-                                    <th key={h} className="text-left px-4 py-3 font-mono text-xs text-gray-500 uppercase tracking-wider">{h}</th>
+                                    <th key={h} className="text-left px-3 sm:px-4 py-3 font-mono text-xs text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -138,19 +156,19 @@ export default function Flights() {
                                     className={`border-b border-[#1c1c1c] cursor-pointer transition-colors ${selected.id === f.id ? 'bg-gold/5' : 'hover:bg-white/[0.02]'
                                         }`}
                                 >
-                                    <td className="px-4 py-3 font-mono text-xs text-gold">{f.id}</td>
-                                    <td className="px-4 py-3 font-mono text-xs text-white font-bold">{f.route}</td>
-                                    <td className="px-4 py-3 font-mono text-xs text-gray-300">{f.aircraft}</td>
-                                    <td className="px-4 py-3 font-mono text-xs text-gray-400">{f.dep}</td>
-                                    <td className="px-4 py-3 font-mono text-xs text-gray-400">{f.eta}</td>
-                                    <td className="px-4 py-3 font-mono text-xs text-gray-400">{f.altitude > 0 ? f.altitude.toLocaleString() + ' ft' : '—'}</td>
-                                    <td className="px-4 py-3 font-mono text-xs text-gray-400">{f.speed > 0 ? f.speed + ' kts' : '—'}</td>
-                                    <td className="px-4 py-3">
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-gold whitespace-nowrap">{f.id}</td>
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-white font-bold whitespace-nowrap">{f.route}</td>
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-gray-300 whitespace-nowrap">{f.aircraft}</td>
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-gray-400 whitespace-nowrap">{f.dep}</td>
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-gray-400 whitespace-nowrap">{f.eta}</td>
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-gray-400 whitespace-nowrap">{f.altitude > 0 ? f.altitude.toLocaleString() + ' ft' : '—'}</td>
+                                    <td className="px-3 sm:px-4 py-3 font-mono text-xs text-gray-400 whitespace-nowrap">{f.speed > 0 ? f.speed + ' kts' : '—'}</td>
+                                    <td className="px-3 sm:px-4 py-3 whitespace-nowrap">
                                         <span className={`font-mono text-xs px-2 py-0.5 rounded border ${statusColor[f.status]}`}>{f.status}</span>
                                     </td>
-                                    <td className="px-4 py-3 min-w-[100px]">
+                                    <td className="px-3 sm:px-4 py-3">
                                         {f.progress > 0 ? (
-                                            <div className="h-1.5 bg-[#1c1c1c] rounded-full w-24">
+                                            <div className="h-1.5 bg-[#1c1c1c] rounded-full w-16 sm:w-24">
                                                 <div className="h-1.5 bg-gold rounded-full" style={{ width: `${f.progress}%` }} />
                                             </div>
                                         ) : (
@@ -166,46 +184,46 @@ export default function Flights() {
 
             {/* Route Intelligence Panel */}
             {intel && (
-                <div className="glass p-6 space-y-5">
+                <div className="glass p-4 sm:p-6 space-y-4 sm:space-y-5">
                     <div>
                         <p className="section-label mb-1">ROUTE INTELLIGENCE</p>
-                        <h2 className="font-display text-2xl text-white">{selected.route}</h2>
+                        <h2 className="font-display text-xl sm:text-2xl text-white">{selected.route}</h2>
                         <p className="font-mono text-xs text-gray-500 mt-1">{selected.distance_nm.toLocaleString()}nm · {selected.aircraft}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="stat-card">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                        <div className="stat-card p-3 sm:p-4">
                             <p className="font-mono text-xs text-gray-500 mb-1">Nonstop Capable</p>
-                            <p className={`font-display text-xl ${intel.nonstop ? 'text-green-400' : 'text-red-400'}`}>
+                            <p className={`font-display text-lg sm:text-xl ${intel.nonstop ? 'text-green-400' : 'text-red-400'}`}>
                                 {intel.nonstop ? 'YES' : 'NO'}
                             </p>
                         </div>
-                        <div className="stat-card">
+                        <div className="stat-card p-3 sm:p-4">
                             <p className="font-mono text-xs text-gray-500 mb-1">Charter Range</p>
-                            <p className="font-display text-lg text-gold">{intel.charter_range}</p>
+                            <p className="font-display text-sm sm:text-lg text-gold">{intel.charter_range}</p>
                         </div>
-                        <div className="stat-card">
+                        <div className="stat-card p-3 sm:p-4">
                             <p className="font-mono text-xs text-gray-500 mb-1">Flight Time</p>
-                            <p className="font-display text-lg text-white">{intel.flight_time}</p>
+                            <p className="font-display text-sm sm:text-lg text-white">{intel.flight_time}</p>
                         </div>
-                        <div className="stat-card">
+                        <div className="stat-card p-3 sm:p-4">
                             <p className="font-mono text-xs text-gray-500 mb-1">On-Time Rate</p>
-                            <p className="font-display text-lg text-white">{intel.on_time}</p>
+                            <p className="font-display text-sm sm:text-lg text-white">{intel.on_time}</p>
                         </div>
                     </div>
 
                     <div>
-                        <p className="font-mono text-xs text-gray-500 mb-2">QUALIFYING JETS FOR THIS ROUTE</p>
+                        <p className="font-mono text-xs text-gray-500 mb-2">QUALIFYING JETS</p>
                         <div className="flex flex-wrap gap-2">
                             {intel.qualifying_jets.map((j, i) => (
-                                <span key={i} className="font-mono text-xs px-3 py-1 rounded border border-gulf text-gulf bg-gulf/10">{j}</span>
+                                <span key={i} className="font-mono text-xs px-2 sm:px-3 py-1 rounded border border-gulf text-gulf bg-gulf/10">{j}</span>
                             ))}
                         </div>
                     </div>
 
-                    <div className="glass-gold p-4">
+                    <div className="glass-gold p-3 sm:p-4">
                         <p className="font-mono text-xs text-gold mb-2">BROKER TIP</p>
-                        <p className="font-body text-white leading-relaxed text-sm">{intel.broker_tip}</p>
+                        <p className="font-body text-white leading-relaxed text-xs sm:text-sm">{intel.broker_tip}</p>
                     </div>
                 </div>
             )}
