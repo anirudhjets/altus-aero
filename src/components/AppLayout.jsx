@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Outlet, NavLink, Link, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '../context/AuthContext'
 
 export default function AppLayout() {
     const [collapsed, setCollapsed] = useState(false)
@@ -8,6 +9,19 @@ export default function AppLayout() {
     const [time, setTime] = useState('')
     const [apiCalls] = useState(847)
     const location = useLocation()
+    const navigate = useNavigate()
+    const { user, signOut } = useAuth()
+
+    const handleSignOut = async () => {
+        await signOut()
+        navigate('/')
+    }
+
+    const userInitials = user?.email
+        ? user.email.substring(0, 2).toUpperCase()
+        : 'AA'
+
+    const userEmail = user?.email || ''
 
     useEffect(() => {
         setMobileMenuOpen(false)
@@ -65,12 +79,12 @@ export default function AppLayout() {
                 <div className="p-4 border-b border-[#1c1c1c]">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gulf flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-bold text-white">AS</span>
+                            <span className="text-xs font-bold text-white">{userInitials}</span>
                         </div>
                         <AnimatePresence>
                             {!collapsed && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="overflow-hidden">
-                                    <p className="text-sm font-semibold text-white truncate">Anirudh Shinde</p>
+                                    <p className="text-xs text-white truncate max-w-[140px]">{userEmail}</p>
                                     <p className="text-xs text-gold font-mono">PRO TIER</p>
                                     <div className="mt-1.5 h-1 bg-[#1c1c1c] rounded-full w-32">
                                         <div className="h-1 bg-gold rounded-full" style={{ width: '72%' }} />
@@ -97,7 +111,7 @@ export default function AppLayout() {
                     ))}
                 </nav>
 
-                <div className="p-3 border-t border-[#1c1c1c]">
+                <div className="p-3 border-t border-[#1c1c1c] space-y-1">
                     <Link to="/" className="nav-link">
                         <span className="flex-shrink-0">←</span>
                         <AnimatePresence>
@@ -106,28 +120,33 @@ export default function AppLayout() {
                             )}
                         </AnimatePresence>
                     </Link>
+                    <button onClick={handleSignOut} className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20">
+                        <span className="flex-shrink-0">⏻</span>
+                        <AnimatePresence>
+                            {!collapsed && (
+                                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>Sign Out</motion.span>
+                            )}
+                        </AnimatePresence>
+                    </button>
                 </div>
             </motion.aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
                 {/* Top Header */}
                 <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-[#1c1c1c] flex-shrink-0" style={{ background: 'rgba(10,10,10,0.95)' }}>
                     <div className="flex items-center gap-3">
-                        {/* Mobile menu button */}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
                             className="md:hidden text-gray-400 hover:text-gold transition-colors p-1"
                         >
                             ☰
                         </button>
-                        {/* Mobile Logo */}
                         <div className="md:hidden flex items-center gap-2">
                             <span className="font-display text-gold text-lg tracking-widest">ALTUS</span>
                             <span className="text-xs font-mono bg-gold text-jet px-1 py-0.5 rounded font-bold">AERO</span>
                         </div>
-                        {/* Desktop live indicator */}
                         <div className="hidden md:flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                             <span className="text-xs font-mono text-gray-400">LIVE</span>
@@ -191,11 +210,11 @@ export default function AppLayout() {
 
                             <div className="p-4 border-b border-[#1c1c1c]">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gulf flex items-center justify-center">
-                                        <span className="text-sm font-bold text-white">AS</span>
+                                    <div className="w-10 h-10 rounded-full bg-gulf flex items-center justify-center flex-shrink-0">
+                                        <span className="text-sm font-bold text-white">{userInitials}</span>
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-white">Anirudh Shinde</p>
+                                    <div className="overflow-hidden">
+                                        <p className="text-sm text-white truncate max-w-[180px]">{userEmail}</p>
                                         <p className="text-xs text-gold font-mono">PRO TIER</p>
                                     </div>
                                 </div>
@@ -214,11 +233,18 @@ export default function AppLayout() {
                                 ))}
                             </nav>
 
-                            <div className="p-3 border-t border-[#1c1c1c]">
+                            <div className="p-3 border-t border-[#1c1c1c] space-y-1">
                                 <Link to="/" className="nav-link">
                                     <span>←</span>
                                     <span>Back to Site</span>
                                 </Link>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                >
+                                    <span>⏻</span>
+                                    <span>Sign Out</span>
+                                </button>
                             </div>
                         </motion.div>
                     </>
