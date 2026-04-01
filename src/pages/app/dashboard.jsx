@@ -1,30 +1,24 @@
 import { useState, useEffect } from 'react'
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { useNavigate } from 'react-router-dom'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { useAuth } from '../../context/AuthContext'
 
 const insights = [
-    'G650 vs G700: The G700 has 20% more cabin volume. For clients flying 6+ hours, upgrade conversations are easier when you show them this side by side.',
-    'Mumbai to London nonstop requires minimum 4,400nm range. Only 6 production aircraft qualify. Know which ones before your next client call.',
-    'Pre-owned business jet values dropped ~8% in Q1 2026. Buyers market — great time to advise acquisition clients.',
-    'Charter vs ownership breakeven is typically 200–250 flight hours per year. Below that, charter almost always wins financially.',
+    'G650 vs G700: The G700 has 20% more cabin volume. For clients flying 6+ hours, the upgrade conversation becomes obvious when you show them the numbers side by side.',
+    'Mumbai to London nonstop demands a minimum 4,400nm range. Only 6 production aircraft qualify. Know the shortlist before your next client call.',
+    'Pre-owned business jet values dropped roughly 8% in Q1 2026. It is a buyer\'s market — the right time to advise acquisition clients to move.',
+    'Charter vs ownership breakeven sits at 200 to 250 flight hours per year. Below that threshold, charter almost always wins on cost.',
+    'The Phenom 300E is the world\'s best-selling light jet for six consecutive years. For shorter routes under 2,000nm, it is the first aircraft to recommend.',
+    'Ultra-long-range jets (G700, Global 7500) typically command a 40 to 60% premium over large jets on transatlantic routes. Know when the premium is justified.',
 ]
 
 const chartData = [
+    { month: 'Oct', charter: 175000, ownership: 95000 },
+    { month: 'Nov', charter: 192000, ownership: 95000 },
+    { month: 'Dec', charter: 210000, ownership: 95000 },
     { month: 'Jan', charter: 185000, ownership: 95000 },
-    { month: 'Feb', charter: 192000, ownership: 95000 },
-    { month: 'Mar', charter: 178000, ownership: 95000 },
-    { month: 'Apr', charter: 205000, ownership: 95000 },
-    { month: 'May', charter: 198000, ownership: 95000 },
-    { month: 'Jun', charter: 220000, ownership: 95000 },
-]
-
-const apiData = [
-    { day: 'Mon', calls: 120 },
-    { day: 'Tue', calls: 98 },
-    { day: 'Wed', calls: 145 },
-    { day: 'Thu', calls: 87 },
-    { day: 'Fri', calls: 162 },
-    { day: 'Sat', calls: 54 },
-    { day: 'Sun', calls: 41 },
+    { month: 'Feb', charter: 198000, ownership: 95000 },
+    { month: 'Mar', charter: 220000, ownership: 95000 },
 ]
 
 const flights = [
@@ -36,21 +30,37 @@ const flights = [
 ]
 
 const statusColor = {
-    'En Route': 'text-green-400 bg-green-400/10',
-    'Scheduled': 'text-gold bg-gold/10',
-    'Landed': 'text-gray-400 bg-gray-400/10',
+    'En Route': 'text-green-400 bg-green-400/10 border-green-400/20',
+    'Scheduled': 'text-gold bg-gold/10 border-gold/20',
+    'Landed': 'text-gray-400 bg-gray-400/10 border-gray-400/20',
 }
+
+const fleetShortlist = [
+    { model: 'G650ER', range: '7,500nm', speed: '516 kts', category: 'Ultra Long Range', color: '#1e3a8a' },
+    { model: 'G700', range: '7,750nm', speed: '526 kts', category: 'Ultra Long Range', color: '#1e3a8a' },
+    { model: 'Global 7500', range: '7,700nm', speed: '516 kts', category: 'Ultra Long Range', color: '#0f3460' },
+    { model: 'Falcon 7X', range: '5,950nm', speed: '482 kts', category: 'Large Jet', color: '#2d4a7a' },
+    { model: 'Phenom 300E', range: '2,010nm', speed: '453 kts', category: 'Light Jet', color: '#1a3a5c' },
+]
 
 export default function Dashboard() {
     const [date, setDate] = useState('')
     const [time, setTime] = useState('')
     const [insightIndex, setInsightIndex] = useState(0)
+    const [insightVisible, setInsightVisible] = useState(true)
+    const navigate = useNavigate()
+    const { plan } = useAuth()
+    const isPro = plan === 'pro'
 
     useEffect(() => {
         const tick = () => {
             const now = new Date()
-            setDate(now.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata' }))
-            setTime(new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(now))
+            setDate(now.toLocaleDateString('en-IN', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata'
+            }))
+            setTime(new Intl.DateTimeFormat('en-IN', {
+                timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }).format(now))
         }
         tick()
         const interval = setInterval(tick, 1000)
@@ -59,63 +69,106 @@ export default function Dashboard() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setInsightIndex(i => (i + 1) % insights.length)
-        }, 8000)
+            setInsightVisible(false)
+            setTimeout(() => {
+                setInsightIndex(i => (i + 1) % insights.length)
+                setInsightVisible(true)
+            }, 400)
+        }, 9000)
         return () => clearInterval(interval)
     }, [])
 
     return (
         <div className="space-y-4 sm:space-y-6">
+
             {/* Header */}
             <div>
-                <p className="section-label text-xs sm:text-sm">YOUR MARKET INTELLIGENCE</p>
+                <p className="section-label text-xs sm:text-sm">MARKET INTELLIGENCE</p>
                 <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">{date}</h1>
                 <p className="font-mono text-gold text-xs sm:text-sm mt-1">{time} IST</p>
             </div>
 
             {/* Today's Insight */}
             <div className="glass-gold p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded flex-shrink-0">TODAY'S INSIGHT</span>
-                <p className="font-body text-white text-xs sm:text-sm leading-relaxed">{insights[insightIndex]}</p>
+                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded flex-shrink-0 tracking-wider">INSIGHT</span>
+                <p
+                    className="font-body text-white text-xs sm:text-sm leading-relaxed transition-opacity duration-400"
+                    style={{ opacity: insightVisible ? 1 : 0 }}
+                >
+                    {insights[insightIndex]}
+                </p>
             </div>
 
             {/* Stats Row */}
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
                 {[
-                    { label: 'API Calls Today', value: '847', sub: 'of 1,000 limit' },
-                    { label: 'Active Flights', value: '4', sub: 'VABB region' },
-                    { label: 'Reports Generated', value: '12', sub: 'this month' },
-                    { label: 'Plan Tier', value: 'PRO', sub: 'upgrade available' },
+                    {
+                        label: 'Active Flights',
+                        value: '4',
+                        sub: 'VABB region now',
+                        action: () => navigate('/app/flights')
+                    },
+                    {
+                        label: 'Fleet Tracked',
+                        value: '14',
+                        sub: 'aircraft in guide',
+                        action: () => navigate('/app/jets')
+                    },
+                    {
+                        label: 'Mission Plans',
+                        value: isPro ? 'Unlimited' : '1 of 1',
+                        sub: isPro ? 'all routes unlocked' : 'upgrade for unlimited',
+                        action: () => navigate('/app/mission')
+                    },
+                    {
+                        label: 'Your Plan',
+                        value: isPro ? 'PRO' : 'FREE',
+                        sub: isPro ? 'all features active' : 'tap to go Pro',
+                        action: () => navigate('/app/billing')
+                    },
                 ].map((s, i) => (
-                    <div key={i} className="stat-card p-3 sm:p-4">
+                    <button
+                        key={i}
+                        onClick={s.action}
+                        className="stat-card p-3 sm:p-4 text-left hover:border-gold transition-colors group"
+                    >
                         <p className="font-mono text-xs text-gray-500 mb-1">{s.label}</p>
                         <p className="font-display text-2xl sm:text-3xl text-gold">{s.value}</p>
-                        <p className="font-mono text-xs text-gray-600 mt-1">{s.sub}</p>
-                    </div>
+                        <p className="font-mono text-xs text-gray-600 mt-1 group-hover:text-gray-400 transition-colors">{s.sub}</p>
+                    </button>
                 ))}
             </div>
 
             {/* 3 Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
-                {/* Col 1 — Jet Explorer */}
+                {/* Col 1 — Fleet Shortlist */}
                 <div className="glass p-4 sm:p-5">
-                    <p className="section-label mb-3 sm:mb-4">JET EXPLORER</p>
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <p className="section-label">FLEET SHORTLIST</p>
+                        <button
+                            onClick={() => navigate('/app/jets')}
+                            className="font-mono text-xs text-gold hover:text-white transition-colors"
+                        >
+                            View all →
+                        </button>
+                    </div>
                     <div className="space-y-2">
-                        {[
-                            { model: 'G650ER', range: '7,500nm', speed: '516 kts', color: '#0d1b3e' },
-                            { model: 'G700', range: '7,750nm', speed: '526 kts', color: '#1e3a8a' },
-                            { model: 'Global 7500', range: '7,700nm', speed: '516 kts', color: '#0f3460' },
-                            { model: 'Falcon 7X', range: '5,950nm', speed: '482 kts', color: '#2d4a7a' },
-                            { model: 'Phenom 300E', range: '2,010nm', speed: '453 kts', color: '#1a3a5c' },
-                        ].map((jet, i) => (
-                            <div key={i} className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gold transition-colors cursor-pointer">
-                                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: jet.color, boxShadow: `0 0 8px ${jet.color}` }} />
+                        {fleetShortlist.map((jet, i) => (
+                            <div
+                                key={i}
+                                onClick={() => navigate('/app/jets')}
+                                className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gold transition-colors cursor-pointer group"
+                            >
+                                <div
+                                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                    style={{ background: jet.color, boxShadow: `0 0 8px ${jet.color}` }}
+                                />
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-display text-xs sm:text-sm text-white">{jet.model}</p>
+                                    <p className="font-display text-xs sm:text-sm text-white group-hover:text-gold transition-colors">{jet.model}</p>
                                     <p className="font-mono text-xs text-gray-500">{jet.range} · {jet.speed}</p>
                                 </div>
-                                <span className="text-gold text-xs">→</span>
+                                <span className="text-gray-600 group-hover:text-gold text-xs transition-colors">→</span>
                             </div>
                         ))}
                     </div>
@@ -123,17 +176,27 @@ export default function Dashboard() {
 
                 {/* Col 2 — Live Flights */}
                 <div className="glass p-4 sm:p-5">
-                    <p className="section-label mb-3 sm:mb-4">LIVE VABB FLIGHTS</p>
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <p className="section-label">LIVE VABB TRAFFIC</p>
+                        <button
+                            onClick={() => navigate('/app/flights')}
+                            className="font-mono text-xs text-gold hover:text-white transition-colors"
+                        >
+                            {isPro ? 'Full tracker →' : 'Pro only →'}
+                        </button>
+                    </div>
                     <div className="space-y-2 sm:space-y-3">
                         {flights.map((f, i) => (
                             <div key={i} className="p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gulf transition-colors">
                                 <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                                     <p className="font-mono text-xs text-white font-bold truncate mr-2">{f.route}</p>
-                                    <span className={`font-mono text-xs px-1.5 py-0.5 rounded flex-shrink-0 ${statusColor[f.status]}`}>{f.status}</span>
+                                    <span className={`font-mono text-xs px-1.5 py-0.5 rounded border flex-shrink-0 ${statusColor[f.status]}`}>
+                                        {f.status}
+                                    </span>
                                 </div>
                                 <p className="font-mono text-xs text-gray-500 mb-1.5 sm:mb-2">{f.aircraft} · {f.dep} → {f.eta}</p>
                                 {f.progress > 0 && (
-                                    <div className="h-1 bg-[#1c1c1c] rounded-full">
+                                    <div className="h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
                                         <div className="h-1 bg-gold rounded-full transition-all" style={{ width: `${f.progress}%` }} />
                                     </div>
                                 )}
@@ -142,11 +205,12 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Col 3 — Charts */}
+                {/* Col 3 — Charter vs Ownership Chart */}
                 <div className="glass p-4 sm:p-5 space-y-4 sm:space-y-6">
                     <div>
-                        <p className="section-label mb-2 sm:mb-3">CHARTER VS OWNERSHIP (USD)</p>
-                        <ResponsiveContainer width="100%" height={130}>
+                        <p className="section-label mb-1">CHARTER VS OWNERSHIP</p>
+                        <p className="font-mono text-xs text-gray-500 mb-3">6-month cost comparison — USD</p>
+                        <ResponsiveContainer width="100%" height={160}>
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="charter" x1="0" y1="0" x2="0" y2="1">
@@ -158,24 +222,44 @@ export default function Dashboard() {
                                         <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="month" tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'JetBrains Mono' }}
+                                    axisLine={false}
+                                    tickLine={false}
+                                />
                                 <YAxis hide />
-                                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 10 }} />
+                                <Tooltip
+                                    contentStyle={{
+                                        background: '#0a0a0a',
+                                        border: '1px solid #1c1c1c',
+                                        borderRadius: 8,
+                                        fontFamily: 'JetBrains Mono',
+                                        fontSize: 10
+                                    }}
+                                    formatter={(v) => [`$${v.toLocaleString()}`, '']}
+                                />
                                 <Area type="monotone" dataKey="charter" stroke="#D4AF37" fill="url(#charter)" strokeWidth={2} name="Charter" />
                                 <Area type="monotone" dataKey="ownership" stroke="#1e3a8a" fill="url(#ownership)" strokeWidth={2} name="Ownership" />
                             </AreaChart>
                         </ResponsiveContainer>
+                        <div className="flex items-center gap-4 mt-2">
+                            <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-gold" />
+                                <span className="font-mono text-xs text-gray-500">Charter</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-gulf" />
+                                <span className="font-mono text-xs text-gray-500">Ownership</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p className="section-label mb-2 sm:mb-3">API USAGE THIS WEEK</p>
-                        <ResponsiveContainer width="100%" height={90}>
-                            <BarChart data={apiData}>
-                                <XAxis dataKey="day" tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
-                                <YAxis hide />
-                                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8, fontFamily: 'JetBrains Mono', fontSize: 10 }} />
-                                <Bar dataKey="calls" fill="#D4AF37" opacity={0.7} radius={[3, 3, 0, 0]} name="API Calls" />
-                            </BarChart>
-                        </ResponsiveContainer>
+
+                    {/* Breakeven callout */}
+                    <div className="p-3 rounded-lg border border-[#1c1c1c] bg-[#0d0d0d]">
+                        <p className="font-mono text-xs text-gray-500 mb-1">BREAKEVEN POINT</p>
+                        <p className="font-display text-xl text-gold">200 – 250 hrs</p>
+                        <p className="font-mono text-xs text-gray-600 mt-1">flight hours per year</p>
                     </div>
                 </div>
             </div>
@@ -183,14 +267,23 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 {[
-                    { label: 'Generate Report', icon: '📄' },
-                    { label: 'Track Flight', icon: '◉' },
-                    { label: 'Cost Analysis', icon: '💰' },
-                    { label: 'Compare Aircraft', icon: '✈' },
+                    { label: 'Plan a Route', icon: '◈', path: '/app/mission', pro: false },
+                    { label: 'Track a Flight', icon: '◉', path: '/app/flights', pro: true },
+                    { label: 'Compare Aircraft', icon: '✈', path: '/app/jets', pro: false },
+                    { label: 'Go Pro', icon: '◇', path: '/app/billing', pro: false, highlight: !isPro },
                 ].map((a, i) => (
-                    <button key={i} className="glass p-3 sm:p-4 text-center hover:border-gold transition-colors group">
-                        <span className="text-xl sm:text-2xl block mb-1 sm:mb-2">{a.icon}</span>
-                        <p className="font-display text-xs sm:text-sm text-gray-400 group-hover:text-gold tracking-wider">{a.label}</p>
+                    <button
+                        key={i}
+                        onClick={() => navigate(a.path)}
+                        className={`glass p-3 sm:p-4 text-center hover:border-gold transition-colors group ${a.highlight ? 'border-gold/40' : ''}`}
+                    >
+                        <span className={`text-xl sm:text-2xl block mb-1 sm:mb-2 ${a.highlight ? 'text-gold' : ''}`}>{a.icon}</span>
+                        <p className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight ? 'text-gold' : 'text-gray-400 group-hover:text-gold'} transition-colors`}>
+                            {a.label}
+                        </p>
+                        {a.pro && !isPro && (
+                            <p className="font-mono text-xs text-gray-600 mt-1">Pro only</p>
+                        )}
                     </button>
                 ))}
             </div>

@@ -7,10 +7,9 @@ export default function AppLayout() {
     const [collapsed, setCollapsed] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [time, setTime] = useState('')
-    const [apiCalls] = useState(847)
     const location = useLocation()
     const navigate = useNavigate()
-    const { user, signOut } = useAuth()
+    const { user, plan, signOut } = useAuth()
 
     const handleSignOut = async () => {
         await signOut()
@@ -19,6 +18,7 @@ export default function AppLayout() {
 
     const username = user?.user_metadata?.username || user?.email?.split('@')[0] || 'Broker'
     const userInitials = username.substring(0, 2).toUpperCase()
+    const isPro = plan === 'pro'
 
     useEffect(() => {
         setMobileMenuOpen(false)
@@ -42,15 +42,15 @@ export default function AppLayout() {
     }, [])
 
     const navItems = [
-        { path: '/app/dashboard', label: 'Dashboard', icon: '⬡' },
-        { path: '/app/jets', label: 'Jets', icon: '✈' },
-        { path: '/app/flights', label: 'Flights', icon: '◉' },
-        { path: '/app/mission', label: 'Mission', icon: '🗺' },
-        { path: '/app/billing', label: 'Billing', icon: '◈' },
-        { path: '/app/settings', label: 'Settings', icon: '⚙' },
+        { path: '/app/dashboard', label: 'Intel', icon: '⬡' },
+        { path: '/app/jets', label: 'Fleet', icon: '✈' },
+        { path: '/app/flights', label: 'Track', icon: '◉' },
+        { path: '/app/mission', label: 'Plan', icon: '◈' },
+        { path: '/app/billing', label: 'Account', icon: '◇' },
+        { path: '/app/settings', label: 'Profile', icon: '○' },
     ]
 
-    const mobileNavItems = navItems.filter(i => i.path !== '/app/settings')
+    const mobileNavItems = navItems.slice(0, 5)
 
     return (
         <div className="flex h-screen bg-jet overflow-hidden">
@@ -62,6 +62,7 @@ export default function AppLayout() {
                 className="hidden md:flex flex-col border-r border-[#1c1c1c] overflow-hidden flex-shrink-0"
                 style={{ background: 'rgba(10,10,10,0.98)' }}
             >
+                {/* Logo */}
                 <div className="flex items-center justify-between p-4 border-b border-[#1c1c1c]">
                     <AnimatePresence>
                         {!collapsed && (
@@ -76,6 +77,7 @@ export default function AppLayout() {
                     </button>
                 </div>
 
+                {/* User block */}
                 <div className="p-4 border-b border-[#1c1c1c]">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gulf flex items-center justify-center flex-shrink-0">
@@ -85,18 +87,17 @@ export default function AppLayout() {
                             {!collapsed && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="overflow-hidden">
                                     <p className="text-sm font-semibold text-white truncate max-w-[140px]">{username}</p>
-                                    <p className="text-xs text-gold font-mono">PRO TIER</p>
-                                    <div className="mt-1.5 h-1 bg-[#1c1c1c] rounded-full w-32">
-                                        <div className="h-1 bg-gold rounded-full" style={{ width: '72%' }} />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-0.5">847 / 1,000 calls</p>
+                                    <p className="text-xs font-mono" style={{ color: isPro ? '#D4AF37' : '#6b7280' }}>
+                                        {isPro ? 'PRO' : 'FREE PLAN'}
+                                    </p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
                 </div>
 
-                <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+                {/* Nav */}
+                <nav className="flex-1 p-3 space-y-1">
                     {navItems.map(item => (
                         <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -111,6 +112,7 @@ export default function AppLayout() {
                     ))}
                 </nav>
 
+                {/* Bottom */}
                 <div className="p-3 border-t border-[#1c1c1c] space-y-1">
                     <Link to="/" className="nav-link">
                         <span className="flex-shrink-0">←</span>
@@ -149,8 +151,17 @@ export default function AppLayout() {
                     </div>
                     <div className="flex items-center gap-3 md:gap-6">
                         <span className="font-mono text-xs md:text-sm text-gold">{time} IST</span>
-                        <span className="hidden md:block text-xs font-mono text-gray-400">{1000 - apiCalls} calls left</span>
-                        <button className="btn-primary text-xs py-1.5 px-3 md:px-4">UPGRADE</button>
+                        {!isPro && (
+                            <button
+                                onClick={() => navigate('/app/billing')}
+                                className="btn-primary text-xs py-1.5 px-3 md:px-4"
+                            >
+                                UPGRADE
+                            </button>
+                        )}
+                        {isPro && (
+                            <span className="font-mono text-xs text-gold border border-gold/30 px-2.5 py-1 rounded">PRO</span>
+                        )}
                     </div>
                 </header>
 
@@ -210,12 +221,14 @@ export default function AppLayout() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-semibold text-white">{username}</p>
-                                        <p className="text-xs text-gold font-mono">PRO TIER</p>
+                                        <p className="text-xs font-mono" style={{ color: isPro ? '#D4AF37' : '#6b7280' }}>
+                                            {isPro ? 'PRO' : 'FREE PLAN'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+                            <nav className="flex-1 p-3 space-y-1">
                                 {navItems.map(item => (
                                     <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                                         <span className="text-lg">{item.icon}</span>
