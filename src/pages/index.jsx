@@ -7,8 +7,8 @@ import ThreeJetHero from '../components/ThreeJetHero.jsx'
 gsap.registerPlugin(ScrollTrigger)
 
 const tickerItems = [
-    'VABB → EGLL | G650ER | $185,000 charter',
-    'G650ER pre-owned 2018 | $42–46M market range',
+    'VABB → EGLL | G650ER | ₹1.54Cr charter',
+    'G650ER pre-owned 2018 | ₹351–384Cr market range',
     'VABB activity today | 4 business jets | 2 ultra-long range',
     'Mumbai → New York | G700 | 8,200nm | nonstop capable',
     'Pre-owned market Q1 2026 | -8% YoY | buyers market',
@@ -38,22 +38,23 @@ const stats = [
     { value: '47', label: 'Airports with Live Cost Data' },
 ]
 
-const plans = [
-    {
-        name: 'Starter', price: 49, tag: 'Learn the market',
-        features: ['Flight data access', 'Cost calculators', 'Fleet specifications', 'Email support'],
-        highlight: false
-    },
-    {
-        name: 'Pro', price: 99, tag: 'Master the fleet',
-        features: ['Everything in Starter', '3D aircraft models', 'Live flight tracking', 'Branded client proposals', 'Priority support'],
-        highlight: true
-    },
-    {
-        name: 'Enterprise', price: 199, tag: 'Own the intelligence',
-        features: ['Everything in Pro', 'JETNET market data', 'White-label reports', 'Team access', 'Dedicated account manager'],
-        highlight: false
-    }
+const FREE_FEATURES = [
+    'Fleet guide — all 14 aircraft with full specs',
+    'Academy and learning section',
+    'Basic charter vs ownership calculator',
+    'One sample mission plan',
+    'Market education content',
+]
+
+const PRO_FEATURES = [
+    'Everything in Free',
+    'Full mission planner with route map',
+    'Live flight tracker',
+    'Broker intelligence dashboard',
+    'Unlimited cost calculations',
+    'Branded client proposals',
+    'Market data and insights',
+    'Priority support',
 ]
 
 const testimonials = [
@@ -97,6 +98,10 @@ export default function Homepage() {
         return () => ctx.revert()
     }, [])
 
+    const monthlyPrice = 2499
+    const annualMonthlyPrice = 1999
+    const annualTotal = annualMonthlyPrice * 12
+
     return (
         <div className="bg-jet text-white overflow-x-hidden">
             <div className="noise-overlay" />
@@ -114,9 +119,9 @@ export default function Homepage() {
                     <a href="#philosophy" className="text-sm text-gray-400 hover:text-gold transition-colors font-body">Philosophy</a>
                     <a href="#features" className="text-sm text-gray-400 hover:text-gold transition-colors font-body">Features</a>
                     <a href="#pricing" className="text-sm text-gray-400 hover:text-gold transition-colors font-body">Pricing</a>
-                    <Link to="/app/dashboard" className="btn-primary text-sm py-2 px-4 lg:px-5">OPEN APP →</Link>
+                    <Link to="/login" className="btn-primary text-sm py-2 px-4 lg:px-5">OPEN APP →</Link>
                 </div>
-                <Link to="/app/dashboard" className="md:hidden btn-primary text-xs py-1.5 px-3">APP →</Link>
+                <Link to="/login" className="md:hidden btn-primary text-xs py-1.5 px-3">OPEN APP →</Link>
             </nav>
 
             {/* Hero */}
@@ -143,8 +148,8 @@ export default function Homepage() {
                         Inspired by Steve Varsano's philosophy: teach first, sell second.
                     </p>
                     <div className="pointer-events-auto flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-                        <Link to="/app/jets" className="btn-primary text-sm sm:text-base w-full sm:w-auto text-center">EXPLORE THE FLEET →</Link>
-                        <Link to="/app/flights" className="btn-secondary text-sm sm:text-base w-full sm:w-auto text-center">SEE LIVE MARKET DATA</Link>
+                        <Link to="/login" className="btn-primary text-sm sm:text-base w-full sm:w-auto text-center">START LEARNING FREE →</Link>
+                        <a href="#features" className="btn-secondary text-sm sm:text-base w-full sm:w-auto text-center">SEE WHAT YOU GET</a>
                     </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-jet/90 overflow-hidden py-2 z-10">
@@ -178,7 +183,7 @@ export default function Homepage() {
             {/* Features */}
             <section id="features" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 bg-[#080808] grid-bg">
                 <div className="max-w-6xl mx-auto">
-                    <p className="section-label text-center mb-3 sm:mb-4">WHAT YOU'LL LEARN</p>
+                    <p className="section-label text-center mb-3 sm:mb-4">WHAT YOU WILL LEARN</p>
                     <h2 className="font-display text-3xl sm:text-5xl md:text-6xl text-center text-white mb-8 sm:mb-16">
                         KNOWLEDGE IS YOUR <span className="text-gold-gradient">EDGE</span>
                     </h2>
@@ -222,10 +227,10 @@ export default function Homepage() {
                     </h2>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                         {[
-                            { label: 'VABB Business Jets Today', value: '4 movements' },
+                            { label: 'Business Jets at Mumbai Today', value: '4 movements' },
                             { label: 'Ultra Long Range Departures', value: '2 flights' },
-                            { label: 'G650 Charter Mumbai→London', value: '~$185,000' },
-                            { label: 'G650ER Pre-owned (2018)', value: '$42–46M' },
+                            { label: 'Mumbai to London Charter', value: '~₹1.54Cr' },
+                            { label: 'G650ER Pre-owned (2018)', value: '₹351–384Cr' },
                         ].map((item, i) => (
                             <div key={i} className="stat-card text-center p-3 sm:p-4">
                                 <p className="font-mono text-xs text-gray-500 mb-1 sm:mb-2 leading-tight">{item.label}</p>
@@ -234,7 +239,7 @@ export default function Homepage() {
                         ))}
                     </div>
                     <div className="text-center">
-                        <Link to="/app/dashboard" className="btn-secondary text-sm sm:text-base">Log in to see full data →</Link>
+                        <Link to="/login" className="btn-secondary text-sm sm:text-base">Sign in to see full data →</Link>
                     </div>
                 </div>
             </section>
@@ -253,53 +258,95 @@ export default function Homepage() {
 
             {/* Pricing */}
             <section id="pricing" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 grid-bg">
-                <div className="max-w-6xl mx-auto">
-                    <p className="section-label text-center mb-3 sm:mb-4">INVEST IN YOUR KNOWLEDGE</p>
+                <div className="max-w-4xl mx-auto">
+                    <p className="section-label text-center mb-3 sm:mb-4">SIMPLE, HONEST PRICING</p>
                     <h2 className="font-display text-3xl sm:text-5xl md:text-6xl text-center text-white mb-3 sm:mb-4">
-                        CHOOSE YOUR <span className="text-gold-gradient">TIER</span>
+                        START FREE. <span className="text-gold-gradient">GO PRO</span> WHEN READY.
                     </h2>
-                    <p className="font-body text-sm sm:text-base text-gray-400 text-center mb-6 sm:mb-8">7-day free trial on all plans. No credit card required.</p>
-                    <div className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
-                        <span className={`font-mono text-xs sm:text-sm ${!annual ? 'text-gold' : 'text-gray-500'}`}>Monthly</span>
+                    <p className="font-body text-sm sm:text-base text-gray-400 text-center mb-8 sm:mb-12">
+                        Learn everything for free. Upgrade when you are ready to use the professional tools.
+                    </p>
+
+                    <div className="flex items-center justify-center gap-4 mb-8 sm:mb-12">
+                        <span className={`font-mono text-sm ${!annual ? 'text-gold' : 'text-gray-500'}`}>Monthly</span>
                         <button
                             onClick={() => setAnnual(!annual)}
-                            className={`w-10 sm:w-12 h-5 sm:h-6 rounded-full transition-colors relative ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
                         >
-                            <span className={`absolute top-0.5 left-0.5 w-4 sm:w-5 h-4 sm:h-5 rounded-full bg-jet transition-transform ${annual ? 'translate-x-5 sm:translate-x-6' : ''}`} />
+                            <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-jet transition-transform ${annual ? 'translate-x-6' : ''}`} />
                         </button>
-                        <span className={`font-mono text-xs sm:text-sm ${annual ? 'text-gold' : 'text-gray-500'}`}>
-                            Annual <span className="text-green-400">-20%</span>
+                        <span className={`font-mono text-sm ${annual ? 'text-gold' : 'text-gray-500'}`}>
+                            Annual <span className="text-green-400">save 20%</span>
                         </span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                        {plans.map((plan, i) => (
-                            <div key={i} className={`p-6 sm:p-8 rounded-xl border transition-all ${plan.highlight ? 'border-gold bg-gold/5 shadow-gold' : 'border-[#1c1c1c] glass'}`}>
-                                {plan.highlight && (
-                                    <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3 sm:mb-4">MOST POPULAR</p>
-                                )}
-                                <p className="font-display text-2xl sm:text-3xl text-white mb-1">{plan.name}</p>
-                                <p className="font-mono text-xs text-gold mb-4 sm:mb-6">{plan.tag}</p>
-                                <p className="font-display text-4xl sm:text-5xl text-white mb-1">
-                                    ${annual ? Math.round(plan.price * 0.8) : plan.price}
-                                    <span className="text-lg sm:text-xl text-gray-400">/mo</span>
-                                </p>
-                                {annual && <p className="font-mono text-xs text-green-400 mb-4 sm:mb-6">Billed annually</p>}
-                                <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 mt-4 sm:mt-6">
-                                    {plan.features.map((f, j) => (
-                                        <li key={j} className="flex items-center gap-2 font-body text-xs sm:text-sm text-gray-300">
-                                            <span className="text-gold">✓</span> {f}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link
-                                    to="/app/dashboard"
-                                    className={`block text-center py-2.5 sm:py-3 rounded-lg font-display tracking-widest text-sm transition-all ${plan.highlight ? 'bg-gold text-jet hover:shadow-glow' : 'border border-[#1c1c1c] text-white hover:border-gold'}`}
-                                >
-                                    GET STARTED
-                                </Link>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                        {/* Free */}
+                        <div className="glass p-6 sm:p-8 rounded-2xl border border-[#1c1c1c]">
+                            <p className="font-display text-3xl text-white mb-1">Free</p>
+                            <p className="font-mono text-xs text-gold mb-6">Learn the market — no credit card needed</p>
+                            <p className="font-display text-5xl text-white mb-8">
+                                ₹0
+                                <span className="text-lg text-gray-400 font-body"> forever</span>
+                            </p>
+                            <ul className="space-y-3 mb-8">
+                                {FREE_FEATURES.map((f, i) => (
+                                    <li key={i} className="flex items-start gap-3 font-body text-sm text-gray-300">
+                                        <span className="text-gold mt-0.5 flex-shrink-0">✓</span>
+                                        {f}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                to="/login"
+                                className="block text-center py-3 rounded-xl font-display tracking-widest text-sm border border-[#333] text-white hover:border-gold hover:text-gold transition-all"
+                            >
+                                START LEARNING FREE
+                            </Link>
+                        </div>
+
+                        {/* Pro */}
+                        <div className="p-6 sm:p-8 rounded-2xl border border-gold bg-gold/5 relative overflow-hidden">
+                            <div className="absolute top-4 right-4">
+                                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded">RECOMMENDED</span>
                             </div>
-                        ))}
+                            <p className="font-display text-3xl text-white mb-1">Pro</p>
+                            <p className="font-mono text-xs text-gold mb-6">Everything you need to close deals</p>
+                            <div className="mb-2">
+                                <p className="font-display text-5xl text-white">
+                                    ₹{annual ? annualMonthlyPrice.toLocaleString() : monthlyPrice.toLocaleString()}
+                                    <span className="text-lg text-gray-400 font-body">/mo</span>
+                                </p>
+                                {annual && (
+                                    <p className="font-mono text-xs text-green-400 mt-1">
+                                        ₹{annualTotal.toLocaleString()} billed once a year
+                                    </p>
+                                )}
+                            </div>
+                            <p className="font-mono text-xs text-gray-500 mb-6">
+                                {annual ? 'Save ₹6,000 compared to monthly' : 'Switch to annual and save ₹6,000 per year'}
+                            </p>
+                            <ul className="space-y-3 mb-8">
+                                {PRO_FEATURES.map((f, i) => (
+                                    <li key={i} className="flex items-start gap-3 font-body text-sm text-gray-300">
+                                        <span className="text-gold mt-0.5 flex-shrink-0">✓</span>
+                                        {f}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                to="/login"
+                                className="block text-center py-3 rounded-xl font-display tracking-widest text-sm bg-gold text-jet hover:shadow-glow transition-all"
+                            >
+                                {annual ? `GET PRO — ₹${annualTotal.toLocaleString()}/yr` : `GET PRO — ₹${monthlyPrice.toLocaleString()}/mo`}
+                            </Link>
+                        </div>
                     </div>
+
+                    <p className="font-mono text-xs text-gray-600 text-center mt-8">
+                        No contracts. Cancel any time. Payments processed securely via Razorpay.
+                    </p>
                 </div>
             </section>
 
@@ -319,6 +366,22 @@ export default function Homepage() {
                             </div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section className="py-16 sm:py-24 px-4 sm:px-6 grid-bg">
+                <div className="max-w-3xl mx-auto text-center">
+                    <p className="section-label mb-4">START TODAY</p>
+                    <h2 className="font-display text-4xl sm:text-6xl text-white mb-6">
+                        THE BROKER WHO <span className="text-gold-gradient">EDUCATES</span> WINS.
+                    </h2>
+                    <p className="font-body text-gray-400 mb-8 max-w-xl mx-auto">
+                        Join brokers across India using Altus Aero to walk into every client meeting as the most knowledgeable person in the room.
+                    </p>
+                    <Link to="/login" className="btn-primary text-base px-8 py-3">
+                        START FOR FREE — NO CARD NEEDED
+                    </Link>
                 </div>
             </section>
 

@@ -146,7 +146,7 @@ export default function AppLayout() {
                     </div>
                     <div className="flex items-center gap-3 md:gap-6">
                         <span className="font-mono text-xs md:text-sm text-gold">{time} IST</span>
-                        <span className="hidden md:block text-xs font-mono text-gray-400">{1000 - apiCalls} calls left</span>
+                        
                         <button className="btn-primary text-xs py-1.5 px-3 md:px-4">UPGRADE</button>
                     </div>
                 </header>
