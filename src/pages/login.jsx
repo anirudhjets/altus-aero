@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
@@ -11,6 +11,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const { signIn, signUp } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const intendedPlan = searchParams.get('plan')
 
   const handleSubmit = async () => {
     setError('')
@@ -28,7 +30,11 @@ export default function Login() {
       if (error) {
         setError(error.message)
       } else {
-        navigate('/app/dashboard')
+        if (intendedPlan === 'pro') {
+          navigate('/app/billing?upgrade=true')
+        } else {
+          navigate('/app/dashboard')
+        }
       }
     } else {
       const { error } = await signUp(email, password)
@@ -54,149 +60,55 @@ export default function Login() {
       fontFamily: 'DM Sans, sans-serif'
     }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
-
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px' }}>
             <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#ffffff', letterSpacing: '0.15em' }}>ALTUS</span>
-            <span style={{
-              background: '#D4AF37',
-              color: '#0a0a0a',
-              fontFamily: 'Bebas Neue, sans-serif',
-              fontSize: '12px',
-              padding: '2px 8px',
-              letterSpacing: '0.1em'
-            }}>AERO</span>
+            <span style={{ background: '#D4AF37', color: '#0a0a0a', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', padding: '2px 8px', letterSpacing: '0.1em' }}>AERO</span>
           </div>
           <p style={{ color: '#6b7280', fontSize: '13px', letterSpacing: '0.05em' }}>
             {mode === 'signin' ? 'Sign in to your account' : 'Create your account'}
           </p>
         </div>
 
-        <div style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '12px',
-          padding: '32px'
-        }}>
+        {intendedPlan === 'pro' && (
+          <div style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.25)', borderRadius: '10px', padding: '14px 16px', marginBottom: '20px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <span style={{ color: '#D4AF37', fontSize: '16px', flexShrink: 0 }}>◆</span>
+            <div>
+              <p style={{ color: '#D4AF37', fontSize: '13px', fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.08em', marginBottom: '4px' }}>YOU SELECTED PRO</p>
+              <p style={{ color: '#9ca3af', fontSize: '12px', lineHeight: '1.5' }}>Sign in or create a free account first. You will be taken straight to the payment page after.</p>
+            </div>
+          </div>
+        )}
 
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '32px' }}>
           <div style={{ display: 'flex', marginBottom: '28px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '4px' }}>
             {['signin', 'signup'].map(m => (
-              <button
-                key={m}
-                onClick={() => { setMode(m); setError(''); setMessage('') }}
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  background: mode === m ? '#1e3a8a' : 'transparent',
-                  color: mode === m ? '#ffffff' : '#6b7280',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  fontFamily: 'DM Sans, sans-serif',
-                  transition: 'all 0.2s'
-                }}
-              >
+              <button key={m} onClick={() => { setMode(m); setError(''); setMessage('') }} style={{ flex: 1, padding: '8px', background: mode === m ? '#1e3a8a' : 'transparent', color: mode === m ? '#ffffff' : '#6b7280', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s' }}>
                 {m === 'signin' ? 'Sign In' : 'Sign Up'}
               </button>
             ))}
           </div>
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', color: '#9ca3af', fontSize: '12px', letterSpacing: '0.08em', marginBottom: '8px' }}>
-              EMAIL
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              style={{
-                width: '100%',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '8px',
-                padding: '12px 14px',
-                color: '#ffffff',
-                fontSize: '14px',
-                fontFamily: 'DM Sans, sans-serif',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-            />
+            <label style={{ display: 'block', color: '#9ca3af', fontSize: '12px', letterSpacing: '0.08em', marginBottom: '8px' }}>EMAIL</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 14px', color: '#ffffff', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box' }} />
           </div>
 
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', color: '#9ca3af', fontSize: '12px', letterSpacing: '0.08em', marginBottom: '8px' }}>
-              PASSWORD
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Minimum 6 characters"
-              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-              style={{
-                width: '100%',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '8px',
-                padding: '12px 14px',
-                color: '#ffffff',
-                fontSize: '14px',
-                fontFamily: 'DM Sans, sans-serif',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-            />
+            <label style={{ display: 'block', color: '#9ca3af', fontSize: '12px', letterSpacing: '0.08em', marginBottom: '8px' }}>PASSWORD</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Minimum 6 characters" onKeyDown={e => e.key === 'Enter' && handleSubmit()} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '12px 14px', color: '#ffffff', fontSize: '14px', fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box' }} />
           </div>
 
           {error && (
-            <div style={{
-              background: 'rgba(239,68,68,0.1)',
-              border: '1px solid rgba(239,68,68,0.3)',
-              borderRadius: '8px',
-              padding: '12px',
-              marginBottom: '16px',
-              color: '#f87171',
-              fontSize: '13px'
-            }}>
-              {error}
-            </div>
+            <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px', marginBottom: '16px', color: '#f87171', fontSize: '13px' }}>{error}</div>
           )}
 
           {message && (
-            <div style={{
-              background: 'rgba(212,175,55,0.1)',
-              border: '1px solid rgba(212,175,55,0.3)',
-              borderRadius: '8px',
-              padding: '12px',
-              marginBottom: '16px',
-              color: '#D4AF37',
-              fontSize: '13px'
-            }}>
-              {message}
-            </div>
+            <div style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '8px', padding: '12px', marginBottom: '16px', color: '#D4AF37', fontSize: '13px' }}>{message}</div>
           )}
 
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            style={{
-              width: '100%',
-              background: loading ? '#1e3a8a80' : '#D4AF37',
-              color: loading ? '#ffffff' : '#0a0a0a',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '14px',
-              fontSize: '14px',
-              fontFamily: 'Bebas Neue, sans-serif',
-              letterSpacing: '0.12em',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            {loading ? 'PLEASE WAIT...' : mode === 'signin' ? 'SIGN IN' : 'CREATE ACCOUNT'}
+          <button onClick={handleSubmit} disabled={loading} style={{ width: '100%', background: loading ? '#1e3a8a80' : '#D4AF37', color: loading ? '#ffffff' : '#0a0a0a', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '14px', fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.12em', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all 0.2s' }}>
+            {loading ? 'PLEASE WAIT...' : mode === 'signin' ? intendedPlan === 'pro' ? 'SIGN IN AND GO TO CHECKOUT' : 'SIGN IN' : 'CREATE ACCOUNT'}
           </button>
         </div>
 

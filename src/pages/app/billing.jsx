@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 const FREE_FEATURES = [
-    'Fleet guide — all 14 aircraft specs',
+    'Fleet guide — all 14 aircraft with full specs',
     'Academy and learning section',
     'Basic charter vs ownership calculator',
     'One sample mission plan',
@@ -32,12 +33,20 @@ export default function Billing() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+    const [searchParams] = useSearchParams()
 
     const monthlyPrice = 2499
     const annualMonthlyPrice = 1999
     const annualTotalPrice = annualMonthlyPrice * 12
 
     const currentPlan = user?.user_metadata?.plan || 'free'
+
+    // Auto-open Razorpay if user came from homepage Pro button
+    useEffect(() => {
+        if (searchParams.get('upgrade') === 'true' && currentPlan === 'free') {
+            setTimeout(() => handleUpgrade(), 800)
+        }
+    }, [])
 
     const loadRazorpay = () => {
         return new Promise((resolve) => {
@@ -85,17 +94,10 @@ export default function Billing() {
                 name: 'Altus Aero',
                 description: annual ? 'Pro Plan — Annual' : 'Pro Plan — Monthly',
                 order_id: data.order.id,
-                prefill: {
-                    email: user?.email || '',
-                },
-                theme: {
-                    color: '#D4AF37',
-                    backdrop_color: '#0a0a0a',
-                },
+                prefill: { email: user?.email || '' },
+                theme: { color: '#D4AF37' },
                 modal: {
-                    ondismiss: () => {
-                        setLoading(false)
-                    }
+                    ondismiss: () => setLoading(false)
                 },
                 handler: async (response) => {
                     try {
@@ -110,14 +112,13 @@ export default function Billing() {
                             })
                         })
                         const verifyData = await verifyRes.json()
-
                         if (verifyData.success) {
-                            setSuccess('Payment successful. Your Pro plan is now active.')
+                            setSuccess('Payment successful. Your Pro plan is now active. Refresh to see your updated plan.')
                         } else {
-                            setError('Payment verification failed. Contact support.')
+                            setError('Payment could not be verified. Please contact support.')
                         }
                     } catch {
-                        setError('Verification error. Contact support with your payment ID.')
+                        setError('Something went wrong during verification. Contact support with your payment ID.')
                     }
                     setLoading(false)
                 }
@@ -139,15 +140,26 @@ export default function Billing() {
             <div>
                 <p className="section-label">ACCOUNT AND BILLING</p>
                 <h1 className="font-display text-3xl md:text-4xl text-white">YOUR PLAN</h1>
-                <p className="font-body text-gray-400 text-sm md:text-base mt-2">
-                    Learn for free. Go pro when you are ready to close.
+                <p className="font-body text-gray-400 text-sm mt-1">
+                    Learn for free. Go Pro when you are ready to close.
                 </p>
             </div>
+
+            {/* Auto-upgrade notice */}
+            {searchParams.get('upgrade') === 'true' && currentPlan === 'free' && (
+                <div className="p-4 rounded-xl border border-gold/30 bg-gold/5 flex items-start gap-3">
+                    <span className="text-gold flex-shrink-0">◆</span>
+                    <div>
+                        <p className="font-display text-sm text-gold mb-1">OPENING CHECKOUT</p>
+                        <p className="font-body text-xs text-gray-400">The Razorpay payment window is loading. If it does not appear, click the Upgrade button below.</p>
+                    </div>
+                </div>
+            )}
 
             {/* Current Plan + Usage */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="glass-gold p-5 md:p-6">
-                    <p className="section-label mb-2">CURRENT PLAN</p>
+                    <p className="section-label mb-2">YOUR CURRENT PLAN</p>
                     <p className="font-display text-3xl md:text-4xl text-gold mb-1">
                         {currentPlan === 'free' ? 'FREE' : 'PRO'}
                     </p>
@@ -155,10 +167,10 @@ export default function Billing() {
                         {currentPlan === 'free' ? 'Learning the market' : 'Master the fleet'}
                     </p>
                     {currentPlan === 'free' ? (
-                        <p className="font-mono text-xs text-gray-500">Upgrade to Pro to unlock all tools.</p>
+                        <p className="font-body text-xs text-gray-500">Upgrade to Pro to unlock all the professional tools.</p>
                     ) : (
                         <>
-                            <p className="font-display text-2xl md:text-3xl text-white mb-1">
+                            <p className="font-display text-2xl text-white mb-1">
                                 {annual ? '₹1,999' : '₹2,499'}
                                 <span className="text-sm text-gray-400">/mo</span>
                             </p>
@@ -168,26 +180,27 @@ export default function Billing() {
                 </div>
 
                 <div className="glass p-5 md:p-6 md:col-span-2">
-                    <p className="section-label mb-4">USAGE THIS MONTH</p>
+                    <p className="section-label mb-4">WHAT YOU HAVE USED THIS MONTH</p>
                     <div className="space-y-4">
                         {[
-                            { label: 'Mission Plans', used: 12, total: currentPlan === 'free' ? 1 : 999, color: '#D4AF37' },
-                            { label: 'Flight Searches', used: 34, total: currentPlan === 'free' ? 0 : 100, color: '#1e3a8a' },
-                            { label: 'Reports Generated', used: currentPlan === 'free' ? 0 : 8, total: currentPlan === 'free' ? 0 : 25, color: '#0f3460' },
+                            { label: 'Mission Plans Created', used: currentPlan === 'free' ? 1 : 12, total: currentPlan === 'free' ? 1 : 999, color: '#D4AF37', proOnly: false },
+                            { label: 'Flights Tracked', used: 0, total: 0, color: '#1e3a8a', proOnly: currentPlan === 'free' },
+                            { label: 'Reports Generated', used: currentPlan === 'free' ? 0 : 8, total: currentPlan === 'free' ? 0 : 25, color: '#0f3460', proOnly: currentPlan === 'free' },
                         ].map((m, i) => (
                             <div key={i}>
                                 <div className="flex items-center justify-between mb-1">
                                     <p className="font-mono text-xs text-gray-400">{m.label}</p>
                                     <p className="font-mono text-xs text-gray-500">
-                                        {m.total === 0 ? 'Pro only' : `${m.used} / ${m.total === 999 ? 'unlimited' : m.total}`}
+                                        {m.proOnly ? 'Pro only — upgrade to unlock' : m.total === 999 ? `${m.used} used` : `${m.used} / ${m.total}`}
                                     </p>
                                 </div>
                                 <div className="h-2 bg-[#1c1c1c] rounded-full">
                                     <div
                                         className="h-2 rounded-full transition-all"
                                         style={{
-                                            width: m.total === 0 ? '0%' : m.total === 999 ? '5%' : `${(m.used / m.total) * 100}%`,
-                                            background: m.color
+                                            width: m.proOnly ? '0%' : m.total === 999 ? '5%' : `${Math.min((m.used / m.total) * 100, 100)}%`,
+                                            background: m.color,
+                                            opacity: m.proOnly ? 0.3 : 1
                                         }}
                                     />
                                 </div>
@@ -197,7 +210,7 @@ export default function Billing() {
                 </div>
             </div>
 
-            {/* Success / Error messages */}
+            {/* Messages */}
             {success && (
                 <div className="p-4 rounded-xl border border-green-400/30 bg-green-400/5">
                     <p className="font-mono text-sm text-green-400">{success}</p>
@@ -222,68 +235,62 @@ export default function Billing() {
                             <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-jet transition-transform ${annual ? 'translate-x-5' : ''}`} />
                         </button>
                         <span className={`font-mono text-xs ${annual ? 'text-gold' : 'text-gray-500'}`}>
-                            Annual <span className="text-green-400">-20%</span>
+                            Annual <span className="text-green-400">save 20%</span>
                         </span>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                    {/* Free Plan */}
+                    {/* Free */}
                     <div className={`p-5 md:p-6 rounded-xl border transition-all ${currentPlan === 'free' ? 'border-gold bg-gold/5' : 'border-[#1c1c1c] glass'}`}>
                         {currentPlan === 'free' && (
-                            <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3">CURRENT PLAN</p>
+                            <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3">YOUR CURRENT PLAN</p>
                         )}
                         <p className="font-display text-2xl text-white mb-1">Free</p>
-                        <p className="font-mono text-xs text-gold mb-4">Learn the market</p>
-                        <p className="font-display text-4xl text-white mb-1">
-                            ₹0
-                            <span className="text-sm text-gray-400"> forever</span>
+                        <p className="font-mono text-xs text-gold mb-4">Learn the market — always free</p>
+                        <p className="font-display text-4xl text-white mb-6">
+                            ₹0<span className="text-sm text-gray-400 font-body"> forever</span>
                         </p>
-                        <ul className="space-y-2 mt-5 mb-6">
+                        <ul className="space-y-2 mb-6">
                             {FREE_FEATURES.map((f, i) => (
                                 <li key={i} className="flex items-start gap-2 font-body text-xs text-gray-300">
-                                    <span className="text-gold mt-0.5">✓</span> {f}
+                                    <span className="text-gold mt-0.5 flex-shrink-0">✓</span> {f}
                                 </li>
                             ))}
                         </ul>
-                        <button
-                            disabled
-                            className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest border border-[#1c1c1c] text-gray-600 cursor-default"
-                        >
-                            {currentPlan === 'free' ? 'CURRENT PLAN' : 'FREE PLAN'}
+                        <button disabled className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest border border-[#1c1c1c] text-gray-600 cursor-default">
+                            {currentPlan === 'free' ? 'YOUR CURRENT PLAN' : 'FREE PLAN'}
                         </button>
                     </div>
 
-                    {/* Pro Plan */}
+                    {/* Pro */}
                     <div className={`p-5 md:p-6 rounded-xl border transition-all ${currentPlan === 'pro' ? 'border-gold bg-gold/5' : 'border-gulf bg-gulf/5'}`}>
                         <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3">
-                            {currentPlan === 'pro' ? 'CURRENT PLAN' : 'RECOMMENDED'}
+                            {currentPlan === 'pro' ? 'YOUR CURRENT PLAN' : 'RECOMMENDED'}
                         </p>
                         <p className="font-display text-2xl text-white mb-1">Pro</p>
-                        <p className="font-mono text-xs text-gold mb-4">Master the fleet</p>
+                        <p className="font-mono text-xs text-gold mb-4">Everything you need to close deals</p>
                         <p className="font-display text-4xl text-white mb-1">
                             ₹{annual ? annualMonthlyPrice.toLocaleString() : monthlyPrice.toLocaleString()}
-                            <span className="text-sm text-gray-400">/mo</span>
+                            <span className="text-sm text-gray-400 font-body">/mo</span>
                         </p>
                         {annual && (
-                            <p className="font-mono text-xs text-green-400 mb-1">
-                                ₹{annualTotalPrice.toLocaleString()} billed annually
-                            </p>
+                            <p className="font-mono text-xs text-green-400 mb-1">₹{annualTotalPrice.toLocaleString()} billed once a year</p>
                         )}
-                        <ul className="space-y-2 mt-5 mb-6">
+                        <p className="font-mono text-xs text-gray-500 mb-4">
+                            {annual ? 'You save ₹6,000 vs monthly' : 'Switch to annual and save ₹6,000/year'}
+                        </p>
+                        <ul className="space-y-2 mb-6">
                             {PRO_FEATURES.map((f, i) => (
                                 <li key={i} className="flex items-start gap-2 font-body text-xs text-gray-300">
-                                    <span className="text-gold mt-0.5">✓</span> {f}
+                                    <span className="text-gold mt-0.5 flex-shrink-0">✓</span> {f}
                                 </li>
                             ))}
                         </ul>
                         {currentPlan === 'pro' ? (
-                            <button
-                                disabled
-                                className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest bg-gold/20 text-gold border border-gold cursor-default"
-                            >
-                                CURRENT PLAN
+                            <button disabled className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest bg-gold/20 text-gold border border-gold cursor-default">
+                                YOUR CURRENT PLAN
                             </button>
                         ) : (
                             <button
@@ -304,14 +311,12 @@ export default function Billing() {
                 </div>
             </div>
 
-            {/* Invoice History — only show for pro */}
+            {/* Invoice History */}
             {currentPlan === 'pro' && (
                 <div className="glass overflow-hidden">
                     <div className="p-4 md:p-5 border-b border-[#1c1c1c]">
-                        <p className="section-label">INVOICE HISTORY</p>
+                        <p className="section-label">PAYMENT HISTORY</p>
                     </div>
-
-                    {/* Desktop table */}
                     <div className="hidden md:block overflow-x-auto">
                         <table className="w-full">
                             <thead>
@@ -338,8 +343,6 @@ export default function Billing() {
                             </tbody>
                         </table>
                     </div>
-
-                    {/* Mobile cards */}
                     <div className="md:hidden divide-y divide-[#1c1c1c]">
                         {invoices.map((inv, i) => (
                             <div key={i} className="p-4 flex items-center justify-between">
@@ -362,7 +365,7 @@ export default function Billing() {
                 <div>
                     <p className="font-display text-lg md:text-xl text-white mb-1">REFER A BROKER. EARN 20% RECURRING.</p>
                     <p className="font-body text-gray-300 text-sm">
-                        They learn more, you earn more. Share your referral link and earn on every payment they make.
+                        They learn more, you earn more. Share your link and earn on every payment they make.
                     </p>
                 </div>
                 <button
