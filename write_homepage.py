@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import os
+
+content = r"""import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import ThreeJetHero from '../components/ThreeJetHero'
@@ -900,3 +902,13 @@ export default function Homepage() {
     </div>
   )
 }
+"""
+
+target = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'src', 'pages', 'index.jsx'
+)
+os.makedirs(os.path.dirname(target), exist_ok=True)
+with open(target, 'w', encoding='utf-8') as f:
+    f.write(content)
+print(f"Written to: {target}")
