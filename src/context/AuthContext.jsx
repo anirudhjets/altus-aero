@@ -10,33 +10,38 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [plan, setPlan] = useState('free')
+  const [hasOnboarded, setHasOnboarded] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchPlan = async (userId) => {
+  const fetchProfile = async (userId) => {
     if (!userId) {
       setPlan('free')
+      setHasOnboarded(false)
       return
     }
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('plan')
+        .select('plan, has_onboarded')
         .eq('id', userId)
         .single()
       if (error || !data) {
         setPlan('free')
+        setHasOnboarded(false)
       } else {
         setPlan(data.plan || 'free')
+        setHasOnboarded(data.has_onboarded ?? false)
       }
     } catch {
       setPlan('free')
+      setHasOnboarded(false)
     }
   }
 
   const refreshPlan = async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user?.id) {
-      await fetchPlan(session.user.id)
+      await fetchProfile(session.user.id)
     }
   }
 
@@ -44,24 +49,28 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const u = session?.user ?? null
       setUser(u)
-      fetchPlan(u?.id).finally(() => setLoading(false))
+      fetchProfile(u?.id).finally(() => setLoading(false))
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const u = session?.user ?? null
       setUser(u)
-      fetchPlan(u?.id)
+      fetchProfile(u?.id)
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = (email, password) => supabase.auth.signUp({ email, password })
-  const signIn = (email, password) => supabase.auth.signInWithPassword({ email, password })
+  const signUp = (email, password, options) =>
+    supabase.auth.signUp({ email, password, options })
+  const signIn = (email, password) =>
+    supabase.auth.signInWithPassword({ email, password })
   const signOut = () => supabase.auth.signOut()
 
   return (
-    <AuthContext.Provider value={{ user, plan, loading, refreshPlan, signUp, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user, plan, hasOnboarded, loading, refreshPlan, signUp, signIn, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   )

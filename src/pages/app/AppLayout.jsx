@@ -16,10 +16,7 @@ export default function AppLayout() {
         navigate('/')
     }
 
-    const username =
-        user?.user_metadata?.username ||
-        user?.email?.split('@')[0] ||
-        'Broker'
+    const username = user?.user_metadata?.username || user?.email?.split('@')[0] || 'Broker'
     const userInitials = username.substring(0, 2).toUpperCase()
     const isPro = plan === 'pro'
 
@@ -35,7 +32,7 @@ export default function AppLayout() {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: false,
+                hour12: false
             }).format(now)
             setTime(ist)
         }
@@ -45,12 +42,12 @@ export default function AppLayout() {
     }, [])
 
     const navItems = [
-        { path: '/app/dashboard', label: 'Dashboard', icon: '⬡' },
-        { path: '/app/intel', label: 'Intel', icon: '◈' },
-        { path: '/app/fleet', label: 'Fleet', icon: '✈' },
-        { path: '/app/track', label: 'Track', icon: '◉' },
-        { path: '/app/plan', label: 'Plan', icon: '◇' },
-        { path: '/app/billing', label: 'Billing', icon: '○' },
+        { path: '/app/dashboard', label: 'Intel', icon: '⬡' },
+        { path: '/app/jets', label: 'Fleet', icon: '✈' },
+        { path: '/app/flights', label: 'Track', icon: '◉' },
+        { path: '/app/mission', label: 'Plan', icon: '◈' },
+        { path: '/app/billing', label: 'Account', icon: '◇' },
+        { path: '/app/settings', label: 'Profile', icon: '○' },
     ]
 
     const mobileNavItems = navItems.slice(0, 5)
@@ -69,21 +66,13 @@ export default function AppLayout() {
                 <div className="flex items-center justify-between p-4 border-b border-[#1c1c1c]">
                     <AnimatePresence>
                         {!collapsed && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="flex items-center gap-2"
-                            >
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
                                 <span className="font-display text-gold text-xl tracking-widest">ALTUS</span>
                                 <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <button
-                        onClick={() => setCollapsed(!collapsed)}
-                        className="text-gray-400 hover:text-gold transition-colors p-1"
-                    >
+                    <button onClick={() => setCollapsed(!collapsed)} className="text-gray-400 hover:text-gold transition-colors p-1">
                         {collapsed ? '→' : '←'}
                     </button>
                 </div>
@@ -96,19 +85,9 @@ export default function AppLayout() {
                         </div>
                         <AnimatePresence>
                             {!collapsed && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    className="overflow-hidden"
-                                >
-                                    <p className="text-sm font-semibold text-white truncate max-w-[140px]">
-                                        {username}
-                                    </p>
-                                    <p
-                                        className="text-xs font-mono"
-                                        style={{ color: isPro ? '#D4AF37' : '#6b7280' }}
-                                    >
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="overflow-hidden">
+                                    <p className="text-sm font-semibold text-white truncate max-w-[140px]">{username}</p>
+                                    <p className="text-xs font-mono" style={{ color: isPro ? '#D4AF37' : '#6b7280' }}>
                                         {isPro ? 'PRO' : 'FREE PLAN'}
                                     </p>
                                 </motion.div>
@@ -120,19 +99,11 @@ export default function AppLayout() {
                 {/* Nav */}
                 <nav className="flex-1 p-3 space-y-1">
                     {navItems.map(item => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                        >
+                        <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                             <span className="text-lg flex-shrink-0">{item.icon}</span>
                             <AnimatePresence>
                                 {!collapsed && (
-                                    <motion.span
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                    >
+                                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                         {item.label}
                                     </motion.span>
                                 )}
@@ -147,30 +118,15 @@ export default function AppLayout() {
                         <span className="flex-shrink-0">←</span>
                         <AnimatePresence>
                             {!collapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                >
-                                    Back to Site
-                                </motion.span>
+                                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>Back to Site</motion.span>
                             )}
                         </AnimatePresence>
                     </Link>
-                    <button
-                        onClick={handleSignOut}
-                        className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                    >
+                    <button onClick={handleSignOut} className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20">
                         <span className="flex-shrink-0">⏻</span>
                         <AnimatePresence>
                             {!collapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                >
-                                    Sign Out
-                                </motion.span>
+                                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>Sign Out</motion.span>
                             )}
                         </AnimatePresence>
                     </button>
@@ -181,17 +137,9 @@ export default function AppLayout() {
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
                 {/* Top Header */}
-                <header
-                    className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-[#1c1c1c] flex-shrink-0"
-                    style={{ background: 'rgba(10,10,10,0.95)' }}
-                >
+                <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-[#1c1c1c] flex-shrink-0" style={{ background: 'rgba(10,10,10,0.95)' }}>
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="md:hidden text-gray-400 hover:text-gold transition-colors p-1"
-                        >
-                            ☰
-                        </button>
+                        <button onClick={() => setMobileMenuOpen(true)} className="md:hidden text-gray-400 hover:text-gold transition-colors p-1">☰</button>
                         <div className="md:hidden flex items-center gap-2">
                             <span className="font-display text-gold text-lg tracking-widest">ALTUS</span>
                             <span className="text-xs font-mono bg-gold text-jet px-1 py-0.5 rounded font-bold">AERO</span>
@@ -212,9 +160,7 @@ export default function AppLayout() {
                             </button>
                         )}
                         {isPro && (
-                            <span className="font-mono text-xs text-gold border border-gold/30 px-2.5 py-1 rounded">
-                                PRO
-                            </span>
+                            <span className="font-mono text-xs text-gold border border-gold/30 px-2.5 py-1 rounded">PRO</span>
                         )}
                     </div>
                 </header>
@@ -225,17 +171,13 @@ export default function AppLayout() {
                 </main>
 
                 {/* Mobile Bottom Navigation */}
-                <nav
-                    className="md:hidden fixed bottom-0 left-0 right-0 border-t border-[#1c1c1c] z-50 flex"
-                    style={{ background: 'rgba(10,10,10,0.98)' }}
-                >
+                <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-[#1c1c1c] z-50 flex" style={{ background: 'rgba(10,10,10,0.98)' }}>
                     {mobileNavItems.map(item => (
                         <NavLink
                             key={item.path}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors ${isActive ? 'text-gold' : 'text-gray-500'
-                                }`
+                                `flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors ${isActive ? 'text-gold' : 'text-gray-500'}`
                             }
                         >
                             <span className="text-base">{item.icon}</span>
@@ -269,12 +211,7 @@ export default function AppLayout() {
                                     <span className="font-display text-gold text-xl tracking-widest">ALTUS</span>
                                     <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
                                 </div>
-                                <button
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="text-gray-400 hover:text-gold text-xl"
-                                >
-                                    ✕
-                                </button>
+                                <button onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-gold text-xl">✕</button>
                             </div>
 
                             <div className="p-4 border-b border-[#1c1c1c]">
@@ -284,10 +221,7 @@ export default function AppLayout() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-semibold text-white">{username}</p>
-                                        <p
-                                            className="text-xs font-mono"
-                                            style={{ color: isPro ? '#D4AF37' : '#6b7280' }}
-                                        >
+                                        <p className="text-xs font-mono" style={{ color: isPro ? '#D4AF37' : '#6b7280' }}>
                                             {isPro ? 'PRO' : 'FREE PLAN'}
                                         </p>
                                     </div>
@@ -296,11 +230,7 @@ export default function AppLayout() {
 
                             <nav className="flex-1 p-3 space-y-1">
                                 {navItems.map(item => (
-                                    <NavLink
-                                        key={item.path}
-                                        to={item.path}
-                                        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                                    >
+                                    <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                                         <span className="text-lg">{item.icon}</span>
                                         <span>{item.label}</span>
                                     </NavLink>
@@ -312,10 +242,7 @@ export default function AppLayout() {
                                     <span>←</span>
                                     <span>Back to Site</span>
                                 </Link>
-                                <button
-                                    onClick={handleSignOut}
-                                    className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                                >
+                                <button onClick={handleSignOut} className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20">
                                     <span>⏻</span>
                                     <span>Sign Out</span>
                                 </button>

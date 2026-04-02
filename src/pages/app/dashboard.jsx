@@ -55,12 +55,24 @@ export default function Dashboard() {
     useEffect(() => {
         const tick = () => {
             const now = new Date()
-            setDate(now.toLocaleDateString('en-IN', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata'
-            }))
-            setTime(new Intl.DateTimeFormat('en-IN', {
-                timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-            }).format(now))
+            setDate(
+                now.toLocaleDateString('en-IN', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: 'Asia/Kolkata',
+                })
+            )
+            setTime(
+                new Intl.DateTimeFormat('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                }).format(now)
+            )
         }
         tick()
         const interval = setInterval(tick, 1000)
@@ -90,7 +102,9 @@ export default function Dashboard() {
 
             {/* Today's Insight */}
             <div className="glass-gold p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded flex-shrink-0 tracking-wider">INSIGHT</span>
+                <span className="font-mono text-xs text-jet bg-gold px-2 py-1 rounded flex-shrink-0 tracking-wider">
+                    INSIGHT
+                </span>
                 <p
                     className="font-body text-white text-xs sm:text-sm leading-relaxed transition-opacity duration-400"
                     style={{ opacity: insightVisible ? 1 : 0 }}
@@ -106,25 +120,25 @@ export default function Dashboard() {
                         label: 'Active Flights',
                         value: '4',
                         sub: 'VABB region now',
-                        action: () => navigate('/app/flights')
+                        action: () => navigate('/app/track'),
                     },
                     {
                         label: 'Fleet Tracked',
                         value: '14',
                         sub: 'aircraft in guide',
-                        action: () => navigate('/app/jets')
+                        action: () => navigate('/app/fleet'),
                     },
                     {
                         label: 'Mission Plans',
                         value: isPro ? 'Unlimited' : '1 of 1',
                         sub: isPro ? 'all routes unlocked' : 'upgrade for unlimited',
-                        action: () => navigate('/app/mission')
+                        action: () => navigate('/app/plan'),
                     },
                     {
                         label: 'Your Plan',
                         value: isPro ? 'PRO' : 'FREE',
                         sub: isPro ? 'all features active' : 'tap to go Pro',
-                        action: () => navigate('/app/billing')
+                        action: () => navigate('/app/billing'),
                     },
                 ].map((s, i) => (
                     <button
@@ -134,7 +148,9 @@ export default function Dashboard() {
                     >
                         <p className="font-mono text-xs text-gray-500 mb-1">{s.label}</p>
                         <p className="font-display text-2xl sm:text-3xl text-gold">{s.value}</p>
-                        <p className="font-mono text-xs text-gray-600 mt-1 group-hover:text-gray-400 transition-colors">{s.sub}</p>
+                        <p className="font-mono text-xs text-gray-600 mt-1 group-hover:text-gray-400 transition-colors">
+                            {s.sub}
+                        </p>
                     </button>
                 ))}
             </div>
@@ -147,7 +163,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <p className="section-label">FLEET SHORTLIST</p>
                         <button
-                            onClick={() => navigate('/app/jets')}
+                            onClick={() => navigate('/app/fleet')}
                             className="font-mono text-xs text-gold hover:text-white transition-colors"
                         >
                             View all →
@@ -157,7 +173,7 @@ export default function Dashboard() {
                         {fleetShortlist.map((jet, i) => (
                             <div
                                 key={i}
-                                onClick={() => navigate('/app/jets')}
+                                onClick={() => navigate('/app/fleet')}
                                 className="flex items-center gap-3 p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gold transition-colors cursor-pointer group"
                             >
                                 <div
@@ -165,8 +181,12 @@ export default function Dashboard() {
                                     style={{ background: jet.color, boxShadow: `0 0 8px ${jet.color}` }}
                                 />
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-display text-xs sm:text-sm text-white group-hover:text-gold transition-colors">{jet.model}</p>
-                                    <p className="font-mono text-xs text-gray-500">{jet.range} · {jet.speed}</p>
+                                    <p className="font-display text-xs sm:text-sm text-white group-hover:text-gold transition-colors">
+                                        {jet.model}
+                                    </p>
+                                    <p className="font-mono text-xs text-gray-500">
+                                        {jet.range} · {jet.speed}
+                                    </p>
                                 </div>
                                 <span className="text-gray-600 group-hover:text-gold text-xs transition-colors">→</span>
                             </div>
@@ -179,7 +199,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <p className="section-label">LIVE VABB TRAFFIC</p>
                         <button
-                            onClick={() => navigate('/app/flights')}
+                            onClick={() => navigate('/app/track')}
                             className="font-mono text-xs text-gold hover:text-white transition-colors"
                         >
                             {isPro ? 'Full tracker →' : 'Pro only →'}
@@ -187,17 +207,27 @@ export default function Dashboard() {
                     </div>
                     <div className="space-y-2 sm:space-y-3">
                         {flights.map((f, i) => (
-                            <div key={i} className="p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gulf transition-colors">
+                            <div
+                                key={i}
+                                className="p-2.5 sm:p-3 rounded-lg border border-[#1c1c1c] hover:border-gulf transition-colors"
+                            >
                                 <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                                     <p className="font-mono text-xs text-white font-bold truncate mr-2">{f.route}</p>
-                                    <span className={`font-mono text-xs px-1.5 py-0.5 rounded border flex-shrink-0 ${statusColor[f.status]}`}>
+                                    <span
+                                        className={`font-mono text-xs px-1.5 py-0.5 rounded border flex-shrink-0 ${statusColor[f.status]}`}
+                                    >
                                         {f.status}
                                     </span>
                                 </div>
-                                <p className="font-mono text-xs text-gray-500 mb-1.5 sm:mb-2">{f.aircraft} · {f.dep} → {f.eta}</p>
+                                <p className="font-mono text-xs text-gray-500 mb-1.5 sm:mb-2">
+                                    {f.aircraft} · {f.dep} → {f.eta}
+                                </p>
                                 {f.progress > 0 && (
                                     <div className="h-1 bg-[#1c1c1c] rounded-full overflow-hidden">
-                                        <div className="h-1 bg-gold rounded-full transition-all" style={{ width: `${f.progress}%` }} />
+                                        <div
+                                            className="h-1 bg-gold rounded-full transition-all"
+                                            style={{ width: `${f.progress}%` }}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -235,12 +265,26 @@ export default function Dashboard() {
                                         border: '1px solid #1c1c1c',
                                         borderRadius: 8,
                                         fontFamily: 'JetBrains Mono',
-                                        fontSize: 10
+                                        fontSize: 10,
                                     }}
-                                    formatter={(v) => [`$${v.toLocaleString()}`, '']}
+                                    formatter={v => [`$${v.toLocaleString()}`, '']}
                                 />
-                                <Area type="monotone" dataKey="charter" stroke="#D4AF37" fill="url(#charter)" strokeWidth={2} name="Charter" />
-                                <Area type="monotone" dataKey="ownership" stroke="#1e3a8a" fill="url(#ownership)" strokeWidth={2} name="Ownership" />
+                                <Area
+                                    type="monotone"
+                                    dataKey="charter"
+                                    stroke="#D4AF37"
+                                    fill="url(#charter)"
+                                    strokeWidth={2}
+                                    name="Charter"
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="ownership"
+                                    stroke="#1e3a8a"
+                                    fill="url(#ownership)"
+                                    strokeWidth={2}
+                                    name="Ownership"
+                                />
                             </AreaChart>
                         </ResponsiveContainer>
                         <div className="flex items-center gap-4 mt-2">
@@ -255,7 +299,6 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Breakeven callout */}
                     <div className="p-3 rounded-lg border border-[#1c1c1c] bg-[#0d0d0d]">
                         <p className="font-mono text-xs text-gray-500 mb-1">BREAKEVEN POINT</p>
                         <p className="font-display text-xl text-gold">200 – 250 hrs</p>
@@ -267,18 +310,28 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 {[
-                    { label: 'Plan a Route', icon: '◈', path: '/app/mission', pro: false },
-                    { label: 'Track a Flight', icon: '◉', path: '/app/flights', pro: true },
-                    { label: 'Compare Aircraft', icon: '✈', path: '/app/jets', pro: false },
+                    { label: 'Plan a Route', icon: '◈', path: '/app/plan', pro: false },
+                    { label: 'Track a Flight', icon: '◉', path: '/app/track', pro: true },
+                    { label: 'Compare Aircraft', icon: '✈', path: '/app/fleet', pro: false },
                     { label: 'Go Pro', icon: '◇', path: '/app/billing', pro: false, highlight: !isPro },
                 ].map((a, i) => (
                     <button
                         key={i}
                         onClick={() => navigate(a.path)}
-                        className={`glass p-3 sm:p-4 text-center hover:border-gold transition-colors group ${a.highlight ? 'border-gold/40' : ''}`}
+                        className={`glass p-3 sm:p-4 text-center hover:border-gold transition-colors group ${a.highlight ? 'border-gold/40' : ''
+                            }`}
                     >
-                        <span className={`text-xl sm:text-2xl block mb-1 sm:mb-2 ${a.highlight ? 'text-gold' : ''}`}>{a.icon}</span>
-                        <p className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight ? 'text-gold' : 'text-gray-400 group-hover:text-gold'} transition-colors`}>
+                        <span
+                            className={`text-xl sm:text-2xl block mb-1 sm:mb-2 ${a.highlight ? 'text-gold' : ''}`}
+                        >
+                            {a.icon}
+                        </span>
+                        <p
+                            className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight
+                                    ? 'text-gold'
+                                    : 'text-gray-400 group-hover:text-gold'
+                                } transition-colors`}
+                        >
                             {a.label}
                         </p>
                         {a.pro && !isPro && (
