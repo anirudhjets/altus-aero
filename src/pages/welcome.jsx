@@ -25,7 +25,7 @@ const steps = [
 
 export default function Welcome() {
     const navigate = useNavigate()
-    const { user, hasOnboarded, refreshPlan } = useAuth()
+    const { user, hasOnboarded, setHasOnboarded } = useAuth()
 
     useEffect(() => {
         if (!user) {
@@ -41,10 +41,9 @@ export default function Welcome() {
         if (user) {
             await supabase
                 .from('profiles')
-                .update({ has_onboarded: true })
-                .eq('id', user.id)
-            await refreshPlan()
+                .upsert({ id: user.id, has_onboarded: true })
         }
+        setHasOnboarded(true)
         navigate('/app/dashboard', { replace: true })
     }
 
@@ -208,6 +207,7 @@ export default function Welcome() {
                         ENTER THE PLATFORM
                     </button>
                 </motion.div>
+
             </div>
         </div>
     )
