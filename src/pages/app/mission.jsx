@@ -128,6 +128,21 @@ function MapUpdater({ from, to }) {
     return null
 }
 
+const inputStyle = {
+    background: '#0d0d0d',
+    border: '1px solid #1c1c1c',
+    borderRadius: '8px',
+    padding: '8px 12px',
+    color: 'white',
+    fontFamily: 'JetBrains Mono',
+    fontSize: '13px',
+    width: '100%',
+    outline: 'none',
+    boxSizing: 'border-box',
+}
+
+const selectStyle = { ...inputStyle }
+
 export default function Mission() {
     const [from, setFrom] = useState(airports[0])
     const [to, setTo] = useState(airports[8])
@@ -157,19 +172,19 @@ export default function Mission() {
     const crewExpenses = parseFloat(flightTime) > 8 ? 6000 : 4000
     const totalTripCost = fuelCost + landingFee + handlingFee + overflightPermits + crewExpenses
 
-    const annualCharterCost = hours * selectedAircraft.hourly
+    const annualCharterCost = (hours || 0) * selectedAircraft.hourly
     const annualOwnershipCost = Math.round(selectedAircraft.purchase * 1000000 * 0.12 + 800000)
     const breakevenHours = Math.round(annualOwnershipCost / selectedAircraft.hourly)
-    const recommendation = hours >= breakevenHours ? 'ownership' : 'charter'
+    const recommendation = (hours || 0) >= breakevenHours ? 'ownership' : 'charter'
 
-    const annualCharterTotal = calcHours * charterRate
-    const annualOwnershipTotal = ownershipCost * calcHours * fuelPrice + crewCost + maintenance + hangar + insurance
-    const advBreakeven = Math.round(annualOwnershipTotal / charterRate)
-    const advRecommendation = calcHours >= advBreakeven ? 'OWNERSHIP' : 'CHARTER'
+    const annualCharterTotal = (calcHours || 0) * (charterRate || 0)
+    const annualOwnershipTotal = (ownershipCost || 0) * (calcHours || 0) * (fuelPrice || 0) + (crewCost || 0) + (maintenance || 0) + (hangar || 0) + (insurance || 0)
+    const advBreakeven = charterRate ? Math.round(annualOwnershipTotal / charterRate) : 0
+    const advRecommendation = (calcHours || 0) >= advBreakeven ? 'OWNERSHIP' : 'CHARTER'
     const saving = Math.abs(annualCharterTotal - annualOwnershipTotal)
 
     const fmt = (val) => {
-        const converted = val * currency.rate
+        const converted = (val || 0) * currency.rate
         if (converted >= 10000000) return `${currency.symbol}${(converted / 10000000).toFixed(1)}Cr`
         if (converted >= 100000) return `${currency.symbol}${(converted / 100000).toFixed(1)}L`
         if (converted >= 1000) return `${currency.symbol}${(converted / 1000).toFixed(0)}K`
@@ -178,23 +193,25 @@ export default function Mission() {
 
     const routePoints = from && to ? getGreatCirclePoints(from.lat, from.lng, to.lat, to.lng) : []
 
-    const selectStyle = {
-        background: '#0d0d0d',
-        border: '1px solid #1c1c1c',
-        borderRadius: '8px',
-        padding: '8px 12px',
-        color: 'white',
-        fontFamily: 'JetBrains Mono',
-        fontSize: '12px',
-        width: '100%',
-        outline: 'none',
-    }
-
     const tabs = [
         { key: 'route', label: 'ROUTE PLANNER' },
         { key: 'calculator', label: 'COST CALCULATOR' },
-        { key: 'fleet', label: 'FLEET GUIDE' },
     ]
+
+    const numInput = (label, value, setter, unit = '') => (
+        <div>
+            <div className="flex items-center justify-between mb-1.5">
+                <p className="font-mono text-xs text-gray-400">{label}</p>
+                {unit && <p className="font-mono text-xs text-gray-600">{unit}</p>}
+            </div>
+            <input
+                type="number"
+                value={value}
+                onChange={e => setter(parseFloat(e.target.value) || 0)}
+                style={inputStyle}
+            />
+        </div>
+    )
 
     return (
         <div className="space-y-4 md:space-y-6 max-w-screen-2xl mx-auto">
@@ -220,8 +237,8 @@ export default function Mission() {
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {/* Tabs — 2 only, Fleet Guide removed */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
                 {tabs.map(tab => (
                     <button
                         key={tab.key}
@@ -237,7 +254,7 @@ export default function Mission() {
             {activeTab === 'route' && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
 
-                    {/* Controls Column */}
+                    {/* Controls */}
                     <div className="space-y-4 lg:col-span-1">
 
                         {/* Route Selector */}
@@ -298,29 +315,17 @@ export default function Mission() {
                             </div>
                         </div>
 
-                        {/* Parameters */}
+                        {/* Parameters — number inputs */}
                         <div className="glass p-4 md:p-5">
                             <p className="section-label mb-4">PARAMETERS</p>
                             <div className="space-y-4">
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="font-mono text-xs text-gray-500">Annual Hours</p>
-                                        <p className="font-mono text-xs text-gold">{hours} hrs</p>
-                                    </div>
-                                    <input type="range" min="50" max="600" step="10" value={hours} onChange={e => setHours(parseInt(e.target.value))} className="w-full accent-gold" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="font-mono text-xs text-gray-500">Passengers</p>
-                                        <p className="font-mono text-xs text-gold">{passengers} pax</p>
-                                    </div>
-                                    <input type="range" min="1" max={selectedAircraft.pax} step="1" value={passengers} onChange={e => setPassengers(parseInt(e.target.value))} className="w-full accent-gold" />
-                                </div>
+                                {numInput('Annual Flight Hours', hours, setHours, 'hrs/year')}
+                                {numInput('Passengers', passengers, setPassengers, `max ${selectedAircraft.pax}`)}
                             </div>
                         </div>
                     </div>
 
-                    {/* Map + Results Column */}
+                    {/* Map + Results */}
                     <div className="lg:col-span-2 space-y-4">
 
                         {/* Nonstop Banner */}
@@ -331,31 +336,19 @@ export default function Mission() {
                             <p className="font-body text-xs md:text-sm text-gray-300">
                                 {nonstop
                                     ? `${selectedAircraft.model} range: ${selectedAircraft.range_nm.toLocaleString()}nm. Route: ${distance.toLocaleString()}nm. Confirmed.`
-                                    : `${selectedAircraft.model} range (${selectedAircraft.range_nm.toLocaleString()}nm) is less than ${distance.toLocaleString()}nm.`
-                                }
+                                    : `${selectedAircraft.model} range (${selectedAircraft.range_nm.toLocaleString()}nm) is less than ${distance.toLocaleString()}nm.`}
                             </p>
                         </div>
 
                         {/* Map */}
-                        <div className="glass overflow-hidden rounded-xl" style={{ height: '260px', minHeight: '220px' }}>
-                            <div className="w-full h-full md:hidden" style={{ height: '260px' }}>
-                                <MapContainer center={[20, 50]} zoom={2} style={{ height: '100%', width: '100%' }} zoomControl={false}>
-                                    <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
-                                    <MapUpdater from={from} to={to} />
-                                    {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '11px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
-                                    {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '11px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
-                                    {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
-                                </MapContainer>
-                            </div>
-                            <div className="hidden md:block h-full" style={{ height: '360px' }}>
-                                <MapContainer center={[20, 50]} zoom={3} style={{ height: '100%', width: '100%' }} zoomControl={true}>
-                                    <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
-                                    <MapUpdater from={from} to={to} />
-                                    {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
-                                    {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
-                                    {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
-                                </MapContainer>
-                            </div>
+                        <div className="glass overflow-hidden rounded-xl" style={{ height: '300px' }}>
+                            <MapContainer center={[20, 50]} zoom={3} style={{ height: '100%', width: '100%' }} zoomControl>
+                                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
+                                <MapUpdater from={from} to={to} />
+                                {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
+                                {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
+                                {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
+                            </MapContainer>
                         </div>
 
                         {/* Trip Cost + Charter vs Ownership */}
@@ -386,7 +379,7 @@ export default function Mission() {
                                 <p className="section-label mb-4">CHARTER VS OWNERSHIP</p>
                                 <div className="space-y-3">
                                     <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter ({hours} hrs)</p>
+                                        <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter ({hours || 0} hrs)</p>
                                         <p className="font-display text-xl text-white">{fmt(annualCharterCost)}</p>
                                     </div>
                                     <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
@@ -402,8 +395,8 @@ export default function Mission() {
                                         <p className="font-display text-xl text-gold">{recommendation.toUpperCase()}</p>
                                         <p className="font-body text-xs text-gray-400 mt-1">
                                             {recommendation === 'ownership'
-                                                ? `At ${hours} hrs/yr, ownership saves ${fmt(annualCharterCost - annualOwnershipCost)} annually.`
-                                                : `At ${hours} hrs/yr, charter saves ${fmt(annualOwnershipCost - annualCharterCost)} annually.`}
+                                                ? `At ${hours || 0} hrs/yr, ownership saves ${fmt(annualCharterCost - annualOwnershipCost)} annually.`
+                                                : `At ${hours || 0} hrs/yr, charter saves ${fmt(annualOwnershipCost - annualCharterCost)} annually.`}
                                         </p>
                                     </div>
                                 </div>
@@ -412,10 +405,7 @@ export default function Mission() {
 
                         {/* Mission Summary */}
                         <div className="glass-gold p-4 md:p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <p className="section-label">MISSION SUMMARY</p>
-                                <button className="btn-secondary text-xs py-1.5 px-3 md:px-4">EXPORT PDF</button>
-                            </div>
+                            <p className="section-label mb-4">MISSION SUMMARY</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                                 <div><p className="font-mono text-xs text-gray-500 mb-1">Route</p><p className="font-display text-base md:text-lg text-white">{from.code} → {to.code}</p></div>
                                 <div><p className="font-mono text-xs text-gray-500 mb-1">Aircraft</p><p className="font-display text-base md:text-lg text-white">{selectedAircraft.model}</p></div>
@@ -427,52 +417,36 @@ export default function Mission() {
                 </div>
             )}
 
-            {/* ADVANCED CALCULATOR */}
+            {/* COST CALCULATOR */}
             {activeTab === 'calculator' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     <div className="glass p-4 md:p-6">
                         <p className="section-label mb-5">ANNUAL PARAMETERS — {currency.code}</p>
-                        <div className="space-y-5">
-                            {[
-                                { label: 'Annual Flight Hours', value: calcHours, setter: setCalcHours, min: 50, max: 800, step: 10, unit: 'hrs', raw: true },
-                                { label: 'Charter Rate ($/hr)', value: charterRate, setter: setCharterRate, min: 2000, max: 20000, step: 500, unit: '/hr', raw: false },
-                                { label: 'Fuel Price ($/gal)', value: fuelPrice, setter: setFuelPrice, min: 3, max: 15, step: 0.5, unit: '/gal', raw: true },
-                                { label: 'Ownership Cost ($/hr)', value: ownershipCost, setter: setOwnershipCost, min: 1000, max: 20000, step: 100, unit: '/hr', raw: false },
-                                { label: 'Crew Cost ($/year)', value: crewCost, setter: setCrewCost, min: 100000, max: 1000000, step: 10000, unit: '/yr', raw: false },
-                                { label: 'Maintenance ($/year)', value: maintenance, setter: setMaintenance, min: 50000, max: 1000000, step: 10000, unit: '/yr', raw: false },
-                                { label: 'Hangar ($/year)', value: hangar, setter: setHangar, min: 20000, max: 500000, step: 5000, unit: '/yr', raw: false },
-                                { label: 'Insurance ($/year)', value: insurance, setter: setInsurance, min: 20000, max: 500000, step: 5000, unit: '/yr', raw: false },
-                            ].map((field, i) => (
-                                <div key={i}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="font-mono text-xs text-gray-400">{field.label}</p>
-                                        <p className="font-mono text-xs text-gold">
-                                            {field.raw ? `${field.value} ${field.unit}` : fmt(field.value)}
-                                        </p>
-                                    </div>
-                                    <input type="range" min={field.min} max={field.max} step={field.step} value={field.value} onChange={e => field.setter(parseFloat(e.target.value))} className="w-full accent-gold" />
-                                    <div className="flex justify-between mt-0.5">
-                                        <span className="font-mono text-xs text-gray-600">{field.raw ? field.min : fmt(field.min)}</span>
-                                        <span className="font-mono text-xs text-gray-600">{field.raw ? field.max : fmt(field.max)}</span>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="space-y-4">
+                            {numInput('Annual Flight Hours', calcHours, setCalcHours, 'hrs')}
+                            {numInput('Charter Rate (USD/hr)', charterRate, setCharterRate, '/hr')}
+                            {numInput('Fuel Price (USD/gal)', fuelPrice, setFuelPrice, '/gal')}
+                            {numInput('Ownership Variable Cost (USD/hr)', ownershipCost, setOwnershipCost, '/hr')}
+                            {numInput('Annual Crew Cost (USD)', crewCost, setCrewCost)}
+                            {numInput('Annual Maintenance (USD)', maintenance, setMaintenance)}
+                            {numInput('Annual Hangar (USD)', hangar, setHangar)}
+                            {numInput('Annual Insurance (USD)', insurance, setInsurance)}
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <div className="glass-gold p-4 md:p-6">
-                            <p className="section-label mb-5">CALCULATION RESULTS</p>
+                            <p className="section-label mb-5">RESULTS</p>
                             <div className="space-y-4">
                                 <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
-                                    <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter Cost ({calcHours} hrs)</p>
+                                    <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter Cost ({calcHours || 0} hrs)</p>
                                     <p className="font-display text-2xl md:text-3xl text-white">{fmt(annualCharterTotal)}</p>
-                                    <p className="font-mono text-xs text-gray-600 mt-1">{fmt(charterRate)}/hr × {calcHours} hrs</p>
+                                    <p className="font-mono text-xs text-gray-600 mt-1">{fmt(charterRate)}/hr × {calcHours || 0} hrs</p>
                                 </div>
                                 <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
                                     <p className="font-mono text-xs text-gray-500 mb-1">Annual Ownership Cost</p>
                                     <p className="font-display text-2xl md:text-3xl text-white">{fmt(annualOwnershipTotal)}</p>
-                                    <p className="font-mono text-xs text-gray-600 mt-1">Fuel + Crew + Maintenance + Hangar + Insurance</p>
+                                    <p className="font-mono text-xs text-gray-600 mt-1">Variable + Crew + Maintenance + Hangar + Insurance</p>
                                 </div>
                                 <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
                                     <p className="font-mono text-xs text-gray-500 mb-1">Breakeven Point</p>
@@ -483,23 +457,23 @@ export default function Mission() {
                                     <p className="font-mono text-xs text-gray-400 mb-2">RECOMMENDATION</p>
                                     <p className="font-display text-4xl md:text-5xl text-gold mb-2">{advRecommendation}</p>
                                     <p className="font-body text-sm text-gray-300">
-                                        At {calcHours} hrs/year, {advRecommendation.toLowerCase()} saves {fmt(saving)} annually.
+                                        At {calcHours || 0} hrs/year, {advRecommendation.toLowerCase()} saves {fmt(saving)} annually.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="glass p-4 md:p-5">
-                            <p className="section-label mb-3">COST BREAKDOWN</p>
+                            <p className="section-label mb-3">OWNERSHIP COST BREAKDOWN</p>
                             <div className="space-y-2">
                                 {[
-                                    { label: 'Fuel', value: ownershipCost * calcHours * fuelPrice / 6.5 },
+                                    { label: 'Variable (Fuel & Op)', value: ownershipCost * calcHours * fuelPrice / 6.5 },
                                     { label: 'Crew', value: crewCost },
                                     { label: 'Maintenance', value: maintenance },
                                     { label: 'Hangar', value: hangar },
                                     { label: 'Insurance', value: insurance },
                                 ].map((item, i) => {
-                                    const pct = Math.round((item.value / annualOwnershipTotal) * 100)
+                                    const pct = annualOwnershipTotal > 0 ? Math.round((item.value / annualOwnershipTotal) * 100) : 0
                                     return (
                                         <div key={i}>
                                             <div className="flex items-center justify-between mb-1">
@@ -515,41 +489,6 @@ export default function Mission() {
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-
-            {/* FLEET GUIDE */}
-            {activeTab === 'fleet' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {aircraft.map((ac, i) => (
-                        <div key={i} className="glass p-4 md:p-5 hover:border-gold transition-all">
-                            <div className="flex items-start justify-between mb-3">
-                                <div>
-                                    <p className="font-display text-xl text-white">{ac.model}</p>
-                                    <p className="font-mono text-xs text-gold">{ac.manufacturer}</p>
-                                </div>
-                                <span className="font-mono text-xs text-gray-500 bg-[#1c1c1c] px-2 py-1 rounded flex-shrink-0 ml-2">{ac.category}</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2 mb-3">
-                                {[
-                                    { label: 'Range', value: `${ac.range_nm.toLocaleString()}nm` },
-                                    { label: 'Speed', value: `${ac.speed_kts}kts` },
-                                    { label: 'Passengers', value: `${ac.pax} max` },
-                                    { label: 'Charter/hr', value: fmt(ac.hourly) },
-                                    { label: 'Purchase', value: `${currency.symbol}${(ac.purchase * currency.rate).toFixed(0)}M` },
-                                ].map((s, j) => (
-                                    <div key={j} className="bg-[#0d0d0d] rounded-lg p-2 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500">{s.label}</p>
-                                        <p className="font-display text-sm text-white">{s.value}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="glass-gold p-3 rounded-lg">
-                                <p className="font-mono text-xs text-gold mb-1">BROKER INSIGHT</p>
-                                <p className="font-body text-xs text-gray-300 leading-relaxed">{ac.notes}</p>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             )}
         </div>
