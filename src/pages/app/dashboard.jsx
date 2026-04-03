@@ -12,15 +12,6 @@ const insights = [
     'Ultra-long-range jets (G700, Global 7500) typically command a 40 to 60% premium over large jets on transatlantic routes. Know when the premium is justified.',
 ]
 
-const chartData = [
-    { month: 'Oct', charter: 175000, ownership: 95000 },
-    { month: 'Nov', charter: 192000, ownership: 95000 },
-    { month: 'Dec', charter: 210000, ownership: 95000 },
-    { month: 'Jan', charter: 185000, ownership: 95000 },
-    { month: 'Feb', charter: 198000, ownership: 95000 },
-    { month: 'Mar', charter: 220000, ownership: 95000 },
-]
-
 const flights = [
     { id: 'AIC001', route: 'VABB → EGLL', aircraft: 'G650ER', dep: '08:30 IST', eta: '13:45 GMT', status: 'En Route', progress: 62 },
     { id: 'AIC002', route: 'VABB → OMDB', aircraft: 'Global 7500', dep: '10:15 IST', eta: '12:30 GST', status: 'En Route', progress: 78 },
@@ -43,14 +34,57 @@ const fleetShortlist = [
     { model: 'Phenom 300E', range: '2,010nm', speed: '453 kts', category: 'Light Jet', color: '#1a3a5c' },
 ]
 
+function getLast6Months() {
+    const months = []
+    const chartValues = [175000, 192000, 210000, 185000, 198000, 220000]
+    const ownership = 95000
+    for (let i = 5; i >= 0; i--) {
+        const d = new Date()
+        d.setMonth(d.getMonth() - i)
+        months.push({
+            month: d.toLocaleString('en-US', { month: 'short' }),
+            charter: chartValues[5 - i],
+            ownership,
+        })
+    }
+    return months
+}
+
+function getUsageStats() {
+    try {
+        const monthKey = new Date().toISOString().slice(0, 7)
+        const today = new Date().toISOString().slice(0, 10)
+        const raw = JSON.parse(localStorage.getItem('altus_usage') || '{}')
+
+        if (!raw[monthKey]) raw[monthKey] = { sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 }
+        if (!raw[monthKey].days.includes(today)) {
+            raw[monthKey].days.push(today)
+            raw[monthKey].sessions = (raw[monthKey].sessions || 0) + 1
+        }
+        localStorage.setItem('altus_usage', JSON.stringify(raw))
+        return raw[monthKey]
+    } catch {
+        return { sessions: 1, days: [new Date().toISOString().slice(0, 10)], routesPlanned: 0, fleetViews: 0 }
+    }
+}
+
 export default function Dashboard() {
     const [date, setDate] = useState('')
     const [time, setTime] = useState('')
     const [insightIndex, setInsightIndex] = useState(0)
     const [insightVisible, setInsightVisible] = useState(true)
+    const [proPreview, setProPreview] = useState(false)
+    const [usage, setUsage] = useState({ sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 })
     const navigate = useNavigate()
     const { plan } = useAuth()
-    const isPro = plan === 'pro'
+    const isPro = plan === 'pro' || proPreview
+
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
+    const chartData = getLast6Months()
+
+    useEffect(() => {
+        setUsage(getUsageStats())
+    }, [])
 
     useEffect(() => {
         const tick = () => {
@@ -83,7 +117,7 @@ export default function Dashboard() {
         const interval = setInterval(() => {
             setInsightVisible(false)
             setTimeout(() => {
-                setInsightIndex(i => (i + 1) % insights.length)
+                setInsightIndex((i) => (i + 1) % insights.length)
                 setInsightVisible(true)
             }, 400)
         }, 9000)
@@ -93,12 +127,56 @@ export default function Dashboard() {
     return (
         <div className="space-y-4 sm:space-y-6">
 
-            {/* Header */}
-            <div>
-                <p className="section-label text-xs sm:text-sm">MARKET INTELLIGENCE</p>
-                <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">{date}</h1>
-                <p className="font-mono text-gold text-xs sm:text-sm mt-1">{time} IST</p>
+            {/* Header row */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div>
+                    <p className="section-label text-xs sm:text-sm">MARKET INTELLIGENCE</p>
+                    <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">{date}</h1>
+                    <p className="font-mono text-gold text-xs sm:text-sm mt-1">{time} IST</p>
+                </div>
+
+                {/* Pro preview toggle — developer tool */}
+                <button
+                    onClick={() => setProPreview(!proPreview)}
+                    style={{
+                        alignSelf: 'flex-start',
+                        padding: '6px 14px',
+                        borderRadius: '8px',
+                        fontFamily: 'JetBrains Mono, monospace',
+                        fontSize: '10px',
+                        letterSpacing: '0.08em',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        border: '1px solid',
+                        borderColor: proPreview ? 'rgba(212,175,55,0.5)' : 'rgba(255,255,255,0.1)',
+                        background: proPreview ? 'rgba(212,175,55,0.08)' : 'transparent',
+                        color: proPreview ? '#D4AF37' : 'rgba(255,255,255,0.35)',
+                    }}
+                    title="Toggle Pro preview — for testing only"
+                >
+                    {proPreview ? 'VIEWING: PRO' : 'PREVIEW PRO'}
+                </button>
             </div>
+
+            {/* Pro mode banner */}
+            {proPreview && plan !== 'pro' && (
+                <div
+                    style={{
+                        padding: '10px 16px',
+                        borderRadius: '10px',
+                        background: 'rgba(212,175,55,0.06)',
+                        border: '1px solid rgba(212,175,55,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                    }}
+                >
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D4AF37', flexShrink: 0 }} />
+                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(212,175,55,0.8)', letterSpacing: '0.05em' }}>
+                        PRO PREVIEW ACTIVE — you are viewing the platform as a Pro subscriber
+                    </p>
+                </div>
+            )}
 
             {/* Today's Insight */}
             <div className="glass-gold p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
@@ -125,7 +203,7 @@ export default function Dashboard() {
                     {
                         label: 'Fleet Tracked',
                         value: '14',
-                        sub: 'aircraft in guide',
+                        sub: 'aircraft in database',
                         action: () => navigate('/app/fleet'),
                     },
                     {
@@ -235,7 +313,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Col 3 — Charter vs Ownership Chart */}
+                {/* Col 3 — Charter vs Ownership */}
                 <div className="glass p-4 sm:p-5 space-y-4 sm:space-y-6">
                     <div>
                         <p className="section-label mb-1">CHARTER VS OWNERSHIP</p>
@@ -267,7 +345,7 @@ export default function Dashboard() {
                                         fontFamily: 'JetBrains Mono',
                                         fontSize: 10,
                                     }}
-                                    formatter={v => [`$${v.toLocaleString()}`, '']}
+                                    formatter={(v) => [`$${v.toLocaleString()}`, '']}
                                 />
                                 <Area
                                     type="monotone"
@@ -307,13 +385,122 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Usage This Month — live from localStorage */}
+            <div className="glass p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <p className="section-label">USAGE THIS MONTH</p>
+                        <p className="font-mono text-xs text-gray-500 mt-0.5">{currentMonth}</p>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            background: 'rgba(74,222,128,0.08)',
+                            border: '1px solid rgba(74,222,128,0.15)',
+                        }}
+                    >
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80' }} />
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#4ade80', letterSpacing: '0.08em' }}>
+                            LIVE
+                        </span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                        {
+                            label: 'Sessions',
+                            value: String(usage.sessions || 1),
+                            sub: 'platform logins',
+                        },
+                        {
+                            label: 'Days Active',
+                            value: String(usage.days?.length || 1),
+                            sub: 'unique days',
+                        },
+                        {
+                            label: 'Routes Planned',
+                            value: isPro ? String(usage.routesPlanned || 0) : '1 of 1',
+                            sub: isPro ? 'this month' : 'free limit reached',
+                        },
+                        {
+                            label: 'Fleet Views',
+                            value: String(usage.fleetViews || 0),
+                            sub: 'aircraft profiles',
+                        },
+                    ].map((u, i) => (
+                        <div
+                            key={i}
+                            style={{
+                                padding: '14px',
+                                borderRadius: '10px',
+                                background: '#0d0d0d',
+                                border: '1px solid rgba(255,255,255,0.06)',
+                            }}
+                        >
+                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                                {u.label}
+                            </p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#D4AF37', lineHeight: 1 }}>
+                                {u.value}
+                            </p>
+                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.25)', marginTop: '4px' }}>
+                                {u.sub}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                {!isPro && (
+                    <div
+                        style={{
+                            marginTop: '14px',
+                            padding: '12px 16px',
+                            borderRadius: '10px',
+                            background: 'rgba(212,175,55,0.04)',
+                            border: '1px solid rgba(212,175,55,0.15)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '10px',
+                        }}
+                    >
+                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>
+                            Upgrade to Pro to unlock unlimited usage tracking, live data, and the AI advisor.
+                        </p>
+                        <button
+                            onClick={() => navigate('/app/billing')}
+                            style={{
+                                padding: '7px 16px',
+                                borderRadius: '7px',
+                                background: '#D4AF37',
+                                color: '#0a0a0a',
+                                fontFamily: 'Bebas Neue, sans-serif',
+                                fontSize: '12px',
+                                letterSpacing: '0.12em',
+                                border: 'none',
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                            }}
+                        >
+                            UPGRADE TO PRO
+                        </button>
+                    </div>
+                )}
+            </div>
+
             {/* Quick Actions */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 {[
                     { label: 'Plan a Route', icon: '◈', path: '/app/plan', pro: false },
                     { label: 'Track a Flight', icon: '◉', path: '/app/track', pro: true },
                     { label: 'Compare Aircraft', icon: '✈', path: '/app/fleet', pro: false },
-                    { label: 'Go Pro', icon: '◇', path: '/app/billing', pro: false, highlight: !isPro },
+                    { label: isPro ? 'All Features Active' : 'Go Pro', icon: '◇', path: '/app/billing', pro: false, highlight: !isPro },
                 ].map((a, i) => (
                     <button
                         key={i}
@@ -327,9 +514,7 @@ export default function Dashboard() {
                             {a.icon}
                         </span>
                         <p
-                            className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight
-                                    ? 'text-gold'
-                                    : 'text-gray-400 group-hover:text-gold'
+                            className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight ? 'text-gold' : 'text-gray-400 group-hover:text-gold'
                                 } transition-colors`}
                         >
                             {a.label}

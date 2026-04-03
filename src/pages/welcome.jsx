@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
 
 const steps = [
     {
@@ -25,25 +24,17 @@ const steps = [
 
 export default function Welcome() {
     const navigate = useNavigate()
-    const { user, hasOnboarded, setHasOnboarded } = useAuth()
+    const { user } = useAuth()
 
     useEffect(() => {
         if (!user) {
             navigate('/login', { replace: true })
-            return
         }
-        if (hasOnboarded === true) {
-            navigate('/app/dashboard', { replace: true })
-        }
-    }, [user, hasOnboarded, navigate])
+        // Intentionally not redirecting when hasOnboarded is true
+        // Welcome screen always plays on every login — remove this note when ready to gate
+    }, [user, navigate])
 
-    const handleEnter = async () => {
-        if (user) {
-            await supabase
-                .from('profiles')
-                .upsert({ id: user.id, has_onboarded: true })
-        }
-        setHasOnboarded(true)
+    const handleEnter = () => {
         navigate('/app/dashboard', { replace: true })
     }
 
@@ -56,27 +47,60 @@ export default function Welcome() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '24px',
+                position: 'relative',
+                overflow: 'hidden',
             }}
         >
-            <div style={{ width: '100%', maxWidth: '560px', textAlign: 'center' }}>
+            {/* Grid background */}
+            <div
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    opacity: 0.1,
+                    backgroundImage:
+                        'linear-gradient(rgba(212,175,55,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.1) 1px, transparent 1px)',
+                    backgroundSize: '60px 60px',
+                    pointerEvents: 'none',
+                }}
+            />
 
+            {/* Radial glow */}
+            <div
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background:
+                        'radial-gradient(ellipse at 50% 30%, rgba(30,58,138,0.12) 0%, transparent 65%)',
+                    pointerEvents: 'none',
+                }}
+            />
+
+            <div
+                style={{
+                    width: '100%',
+                    maxWidth: '560px',
+                    textAlign: 'center',
+                    position: 'relative',
+                    zIndex: 10,
+                }}
+            >
                 {/* Logo */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
                     style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '10px',
-                        marginBottom: '48px',
+                        marginBottom: '52px',
                     }}
                 >
                     <span
                         style={{
                             fontFamily: 'Bebas Neue, sans-serif',
-                            fontSize: '36px',
+                            fontSize: '38px',
                             color: '#D4AF37',
                             letterSpacing: '0.2em',
                         }}
@@ -89,8 +113,9 @@ export default function Welcome() {
                             fontSize: '13px',
                             background: '#D4AF37',
                             color: '#0a0a0a',
-                            padding: '3px 10px',
+                            padding: '4px 10px',
                             letterSpacing: '0.1em',
+                            borderRadius: '4px',
                         }}
                     >
                         AERO
@@ -99,16 +124,16 @@ export default function Welcome() {
 
                 {/* Headline */}
                 <motion.h1
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 28 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.65, delay: 0.3 }}
+                    transition={{ duration: 0.65, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
                     style={{
                         fontFamily: 'Bebas Neue, sans-serif',
-                        fontSize: 'clamp(34px, 8vw, 54px)',
+                        fontSize: 'clamp(34px, 8vw, 56px)',
                         color: '#ffffff',
                         letterSpacing: '0.05em',
                         lineHeight: 1.05,
-                        marginBottom: '20px',
+                        marginBottom: '18px',
                     }}
                 >
                     WELCOME TO ALTUS AERO
@@ -116,42 +141,46 @@ export default function Welcome() {
 
                 {/* Subtext */}
                 <motion.p
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.55 }}
+                    transition={{ duration: 0.6, delay: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
                     style={{
                         fontFamily: 'DM Sans, sans-serif',
                         fontSize: '15px',
-                        color: 'rgba(255,255,255,0.45)',
-                        lineHeight: 1.65,
+                        color: 'rgba(255,255,255,0.42)',
+                        lineHeight: 1.7,
                         maxWidth: '420px',
-                        margin: '0 auto 48px',
+                        margin: '0 auto 52px',
                     }}
                 >
-                    Your broker intelligence terminal is live. Market data, fleet knowledge, and deal planning tools — built for brokers who educate before they sell.
+                    Your broker intelligence terminal is live. Market data, fleet knowledge, and deal planning — built for brokers who educate before they sell.
                 </motion.p>
 
-                {/* Platform orientation */}
+                {/* Platform orientation grid */}
                 <div
                     style={{
                         display: 'grid',
                         gridTemplateColumns: '1fr 1fr',
                         gap: '10px',
-                        marginBottom: '40px',
+                        marginBottom: '44px',
                         textAlign: 'left',
                     }}
                 >
                     {steps.map((step, i) => (
                         <motion.div
                             key={step.label}
-                            initial={{ opacity: 0, y: 14 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.8 + i * 0.07 }}
+                            transition={{
+                                duration: 0.45,
+                                delay: 0.8 + i * 0.08,
+                                ease: [0.25, 0.1, 0.25, 1],
+                            }}
                             style={{
                                 background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.08)',
-                                borderRadius: '10px',
-                                padding: '16px',
+                                border: '1px solid rgba(255,255,255,0.07)',
+                                borderRadius: '12px',
+                                padding: '18px',
                             }}
                         >
                             <p
@@ -159,8 +188,8 @@ export default function Welcome() {
                                     fontFamily: 'Bebas Neue, sans-serif',
                                     fontSize: '13px',
                                     color: '#D4AF37',
-                                    letterSpacing: '0.15em',
-                                    marginBottom: '6px',
+                                    letterSpacing: '0.18em',
+                                    marginBottom: '7px',
                                 }}
                             >
                                 {step.label}
@@ -169,8 +198,8 @@ export default function Welcome() {
                                 style={{
                                     fontFamily: 'DM Sans, sans-serif',
                                     fontSize: '12px',
-                                    color: 'rgba(255,255,255,0.4)',
-                                    lineHeight: 1.55,
+                                    color: 'rgba(255,255,255,0.38)',
+                                    lineHeight: 1.6,
                                 }}
                             >
                                 {step.desc}
@@ -181,33 +210,44 @@ export default function Welcome() {
 
                 {/* CTA */}
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 1.25 }}
+                    transition={{ duration: 0.5, delay: 1.3, ease: [0.25, 0.1, 0.25, 1] }}
                 >
                     <button
                         onClick={handleEnter}
-                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.84')}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                         style={{
                             background: '#D4AF37',
                             color: '#0a0a0a',
                             border: 'none',
-                            borderRadius: '10px',
-                            padding: '16px 0',
+                            borderRadius: '12px',
+                            padding: '17px 0',
                             width: '100%',
                             maxWidth: '340px',
                             fontFamily: 'Bebas Neue, sans-serif',
-                            fontSize: '15px',
-                            letterSpacing: '0.15em',
+                            fontSize: '16px',
+                            letterSpacing: '0.18em',
                             cursor: 'pointer',
                             transition: 'opacity 0.2s',
                         }}
                     >
                         ENTER THE PLATFORM
                     </button>
-                </motion.div>
 
+                    <p
+                        style={{
+                            fontFamily: 'JetBrains Mono, monospace',
+                            fontSize: '11px',
+                            color: 'rgba(255,255,255,0.18)',
+                            marginTop: '16px',
+                            letterSpacing: '0.05em',
+                        }}
+                    >
+                        Teach first. Sell second.
+                    </p>
+                </motion.div>
             </div>
         </div>
     )

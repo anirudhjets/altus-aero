@@ -1,190 +1,510 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+const AVIATION_RESPONSES = [
+    {
+        triggers: ['hello', 'hi', 'hey', 'help', 'start', 'what can'],
+        response:
+            'Welcome. I am your Altus Aero AI advisor. Ask me anything about aircraft performance, charter pricing, route planning, sales positioning, or how to handle specific client situations. I am here to help you close deals with confidence.',
+    },
+    {
+        triggers: ['g650', 'gulfstream 650'],
+        response:
+            'The Gulfstream G650ER has a range of 7,500nm at Mach 0.85 cruise. It accommodates up to 19 passengers and features a 53.5ft cabin. For a route like Mumbai to London at 4,387nm, it qualifies nonstop with reserves. Charter rates in Asia typically run USD 12,000–18,000 per flight hour. When positioning to a client, lead with the nonstop capability — most competing options require a fuel stop that adds 90 minutes and disrupts the experience.',
+    },
+    {
+        triggers: ['g700', 'gulfstream 700'],
+        response:
+            'The G700 is the Gulfstream flagship at 7,750nm range with the widest cabin in its class — 8.2 feet. Up to five living areas make it a genuine flying office for long-haul clients. The broker angle: if your client values productivity over cost, the G700 justifies a 15–25% premium on comparable routes. If they are price-sensitive, the G650ER is the smarter pitch. Know which conversation you are in before you recommend.',
+    },
+    {
+        triggers: ['global 7500', 'bombardier', 'global 6500'],
+        response:
+            'The Bombardier Global 7500 at 7,700nm is the closest competitor to the G700. Its differentiator is the four-zone cabin with a true full-size kitchen and a dedicated bedroom — it is the most residential of any ultra-long-range jet. For clients who entertain on board or need genuine rest on 10-hour flights, the Global 7500 often wins the side-by-side comparison. Typical charter rate: USD 15,000–22,000 per flight hour in Asia-Pacific.',
+    },
+    {
+        triggers: ['mumbai', 'london', 'vabb', 'egll', 'india', 'delhi', 'vidp'],
+        response:
+            'Mumbai to London at 4,387nm — qualifying aircraft nonstop: G650ER, G700, Global 7500, Global 6500, and Falcon 8X. The G650ER is the most commonly chartered on this route; operators know it well. Positioning tip: if your client is considering a fuel stop in Baku or Muscat, run the time comparison — a tech stop adds 90 to 120 minutes total. Most ultra-long-range clients choose the premium once they see the math.',
+    },
+    {
+        triggers: ['charter', 'ownership', 'buy', 'purchase', 'own', 'breakeven', 'cost'],
+        response:
+            'Charter versus ownership breakeven sits at 200 to 250 flight hours per year for most heavy jet categories. Below that threshold, charter almost always wins on total cost. Above 400 hours, fractional or whole ownership starts to make economic sense. When advising an acquisition client, ask for their last 12 months of flight records before recommending either direction. That one question repositions you from salesperson to advisor immediately.',
+    },
+    {
+        triggers: ['phenom', 'light jet', 'embraer', 'citation'],
+        response:
+            'The Phenom 300E has been the world\'s best-selling light jet for six consecutive years. Range of 2,010nm, cruise speed of 453 knots, and best-in-class cabin for the category. For routes under 2,000nm with 4 to 6 passengers, it is the first aircraft to recommend. The broker pitch: it carries the same build quality and DNA as larger Embraer jets, just scaled for efficiency. Clients who are new to private aviation often start here before moving up.',
+    },
+    {
+        triggers: ['falcon', 'dassault', 'tri-engine', 'three engine'],
+        response:
+            'The Falcon 7X from Dassault is a tri-engine heavy jet with 5,950nm range. The third engine opens certain remote airfields that twin-engine jets cannot access under ETOPS regulations — particularly across Africa and remote island routes. For clients with diverse routing needs, the Falcon 7X\'s operational flexibility is a genuine competitive advantage over twin-engine alternatives. Charter rates typically run USD 9,000–14,000 per flight hour.',
+    },
+    {
+        triggers: ['close', 'deal', 'sales', 'pitch', 'negotiate', 'objection', 'client say'],
+        response:
+            'Steve Varsano\'s framework applies here: educate the client before you pitch anything. Walk them through three aircraft that qualify for their route — show the specs side by side. Let them ask questions. By the time you recommend one, they feel informed rather than sold to. The objection "that\'s too expensive" almost never comes when the client understands why the price is what it is. That is the whole model behind Altus Aero.',
+    },
+    {
+        triggers: ['expensive', 'too much', 'price', 'cheaper', 'discount', 'reduce'],
+        response:
+            'When a client says the number is too high, do not drop the price — reframe the value. For a midsize jet at USD 8,000 per flight hour, four business class tickets to the same destination often cost USD 4,000 to 6,000 combined — with connections, delays, and no privacy. Break it down per seat on your aircraft. Then ask them what their time is worth. That question changes the conversation entirely.',
+    },
+    {
+        triggers: ['compare', 'comparison', 'vs', 'versus', 'difference', 'which is better'],
+        response:
+            'Use the Fleet page to pull up any two or three aircraft side by side. When presenting to a client, the three-column comparison works better than a pitch deck — it shows you are giving them information, not a sales presentation. Lead with the aircraft you believe in, show why it fits their route and passenger count, then present the alternatives. Let the data do the selling.',
+    },
+    {
+        triggers: ['pre-owned', 'used jet', 'second hand', 'market down', 'values'],
+        response:
+            'Pre-owned business jet values dropped approximately 8% in Q1 2026. It is currently a buyer\'s market — inventory is elevated and prices have corrected from the post-pandemic peak. For acquisition clients sitting on the fence, the urgency argument is legitimate right now, not manufactured. Position it this way: values are near a three-year low. The aircraft they are considering today costs more in 18 months if current trends reverse. That is data, not pressure.',
+    },
+    {
+        triggers: ['heavy jet', 'categories', 'types of jet', 'what is', 'midsize', 'super midsize'],
+        response:
+            'Business jets fall into five categories by range and cabin size. Light jets (Phenom 300E, Citation CJ4): up to 2,200nm, 4–7 passengers. Midsize (Citation Latitude, Learjet 75): 2,000–3,000nm, 6–9 passengers. Super-midsize (Challenger 350, Citation Longitude): 3,000–4,000nm, 8–10 passengers. Heavy (Challenger 605, Falcon 900): 4,000–6,000nm, 10–14 passengers. Ultra-long-range (G650ER, Global 7500, G700): 6,000–8,000nm, 13–19 passengers. Start with the route and passenger count — the right category selects itself.',
+    },
+    {
+        triggers: ['broker', 'what is a broker', 'jet broker', 'how to become', 'career'],
+        response:
+            'A jet broker acts as the intermediary between clients who need aircraft and operators who fly them. On the charter side, you source the right aircraft for a client\'s specific route, negotiate with the operator, and manage the booking. On the sales side, you facilitate aircraft purchases between buyer and seller. The value you add is expertise — knowing which aircraft fits the route, which operators are reliable, and what the market rate should be. That expertise starts with knowing the aircraft cold.',
+    },
+    {
+        triggers: ['platform', 'how to use', 'features', 'intel', 'fleet', 'track', 'plan'],
+        response:
+            'Altus Aero has four main tools. Intel shows live market signals with broker context on each data point. Fleet gives you full specs on every aircraft — including Broker Insights on how to position each one. Track shows live flight data with route demand context. Plan calculates charter and ownership costs for any route, with client framing built into the output. Start with Fleet if you are learning the aircraft. Start with Intel if you have a client meeting today.',
+    },
+]
+
+function getResponse(message) {
+    const lower = message.toLowerCase()
+    for (const item of AVIATION_RESPONSES) {
+        if (item.triggers.some((t) => lower.includes(t))) {
+            return item.response
+        }
+    }
+    return 'That is a good question. I can help with aircraft performance and range qualification, charter pricing and market rates, route planning and aircraft matching, sales positioning and objection handling, and how to use the Altus Aero platform. What specific aspect of your brokerage work can I assist with?'
+}
+
 export default function Chatbot() {
     const [open, setOpen] = useState(false)
     const [messages, setMessages] = useState([
         {
             role: 'assistant',
-            content: 'Welcome to Altus Aero. I am your aviation broker advisor. Ask me anything — aircraft specs, charter vs ownership, route planning, deal structures, or how to navigate the platform.',
+            text: 'Your Altus Aero AI advisor is online. Ask me about aircraft, routes, charter pricing, or how to close a deal.',
         },
     ])
     const [input, setInput] = useState('')
-    const [loading, setLoading] = useState(false)
-    const bottomRef = useRef(null)
+    const [isTyping, setIsTyping] = useState(false)
+    const messagesEndRef = useRef(null)
     const inputRef = useRef(null)
 
     useEffect(() => {
-        if (open) {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+        }
+    }, [messages, isTyping])
+
+    useEffect(() => {
+        if (open && inputRef.current) {
             setTimeout(() => inputRef.current?.focus(), 300)
         }
     }, [open])
 
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [messages, loading])
-
-    const send = async () => {
+    const sendMessage = async () => {
         const text = input.trim()
-        if (!text || loading) return
+        if (!text || isTyping) return
 
-        const userMsg = { role: 'user', content: text }
-        const next = [...messages, userMsg]
-        setMessages(next)
+        const userMsg = { role: 'user', text }
+        setMessages((prev) => [...prev, userMsg])
         setInput('')
-        setLoading(true)
+        setIsTyping(true)
 
-        try {
-            const res = await fetch('/api/chatbot', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: text,
-                    conversation_history: messages,
-                }),
-            })
-            const data = await res.json()
-            if (data.reply) {
-                setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
-            } else {
-                setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
-            }
-        } catch {
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Could not reach the advisor. Check your connection and try again.' }])
-        }
+        // Simulate realistic response delay
+        const delay = 1200 + Math.random() * 800
+        await new Promise((res) => setTimeout(res, delay))
 
-        setLoading(false)
+        const response = getResponse(text)
+        setMessages((prev) => [...prev, { role: 'assistant', text: response }])
+        setIsTyping(false)
     }
 
-    const handleKey = (e) => {
+    const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
-            send()
+            sendMessage()
         }
     }
 
     return (
         <>
             {/* Floating button */}
-            <button
+            <motion.button
                 onClick={() => setOpen(!open)}
-                className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-xl flex items-center justify-center z-50 transition-all duration-200 hover:scale-105"
-                style={{ background: '#1e3a8a', border: '1px solid rgba(212,175,55,0.3)' }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                    position: 'fixed',
+                    bottom: '80px',
+                    right: '20px',
+                    width: '52px',
+                    height: '52px',
+                    borderRadius: '50%',
+                    background: '#1e3a8a',
+                    border: '1px solid rgba(212,175,55,0.25)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                    zIndex: 100,
+                    transition: 'background 0.2s',
+                }}
+                className="md:bottom-6 md:right-6"
+                title="AI Advisor"
             >
                 <AnimatePresence mode="wait">
                     {open ? (
-                        <motion.span key="close" initial={{ opacity: 0, rotate: -90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0 }} className="text-white text-xl">
+                        <motion.span
+                            key="close"
+                            initial={{ opacity: 0, rotate: -90 }}
+                            animate={{ opacity: 1, rotate: 0 }}
+                            exit={{ opacity: 0, rotate: 90 }}
+                            transition={{ duration: 0.15 }}
+                            style={{
+                                fontFamily: 'DM Sans, sans-serif',
+                                fontSize: '18px',
+                                color: '#fff',
+                                lineHeight: 1,
+                            }}
+                        >
                             ✕
                         </motion.span>
                     ) : (
-                        <motion.svg key="open" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} width="22" height="22" viewBox="0 0 24 24" fill="none">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <motion.svg
+                            key="chat"
+                            initial={{ opacity: 0, rotate: 90 }}
+                            animate={{ opacity: 1, rotate: 0 }}
+                            exit={{ opacity: 0, rotate: -90 }}
+                            transition={{ duration: 0.15 }}
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                        >
+                            <path
+                                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                                stroke="#D4AF37"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
                         </motion.svg>
                     )}
                 </AnimatePresence>
-            </button>
+            </motion.button>
+
+            {/* PRO badge on button when closed */}
+            {!open && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        bottom: '108px',
+                        right: '20px',
+                        background: '#D4AF37',
+                        color: '#0a0a0a',
+                        fontFamily: 'Bebas Neue, sans-serif',
+                        fontSize: '8px',
+                        letterSpacing: '0.1em',
+                        padding: '2px 5px',
+                        borderRadius: '3px',
+                        zIndex: 101,
+                        pointerEvents: 'none',
+                    }}
+                    className="md:bottom-16 md:right-6"
+                >
+                    AI
+                </div>
+            )}
 
             {/* Chat panel */}
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        initial={{ opacity: 0, y: 40, scale: 0.96 }}
+                        initial={{ opacity: 0, y: 24, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 40, scale: 0.96 }}
+                        exit={{ opacity: 0, y: 24, scale: 0.97 }}
                         transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-                        className="fixed bottom-24 right-6 z-50 flex flex-col rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
                         style={{
-                            width: 'min(420px, calc(100vw - 48px))',
-                            height: 'min(560px, calc(100vh - 160px))',
-                            background: '#0d0d0d',
+                            position: 'fixed',
+                            bottom: '148px',
+                            right: '12px',
+                            width: 'calc(100vw - 24px)',
+                            maxWidth: '380px',
+                            height: '480px',
+                            background: '#111111',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '18px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflow: 'hidden',
+                            boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
+                            zIndex: 99,
                         }}
+                        className="md:bottom-20 md:right-6"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1c1c1c]" style={{ background: '#111111' }}>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-gulf flex items-center justify-center">
-                                    <span className="text-xs text-gold font-mono font-bold">AA</span>
-                                </div>
-                                <div>
-                                    <p className="font-display text-sm text-white tracking-wider">BROKER ADVISOR</p>
-                                    <div className="flex items-center gap-1.5 mt-0.5">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                                        <span className="font-mono text-xs text-gray-500">Online</span>
-                                    </div>
+                        <div
+                            style={{
+                                padding: '16px 18px',
+                                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                background: 'rgba(10,10,10,0.8)',
+                                flexShrink: 0,
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '50%',
+                                    background: '#1e3a8a',
+                                    border: '1px solid rgba(212,175,55,0.2)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontFamily: 'Bebas Neue, sans-serif',
+                                        fontSize: '11px',
+                                        color: '#D4AF37',
+                                        letterSpacing: '0.05em',
+                                    }}
+                                >
+                                    AI
+                                </span>
+                            </div>
+                            <div>
+                                <p
+                                    style={{
+                                        fontFamily: 'Bebas Neue, sans-serif',
+                                        fontSize: '13px',
+                                        color: '#D4AF37',
+                                        letterSpacing: '0.15em',
+                                        lineHeight: 1.2,
+                                    }}
+                                >
+                                    ALTUS AI ADVISOR
+                                </p>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        marginTop: '2px',
+                                    }}
+                                >
+                                    <span
+                                        style={{
+                                            width: '6px',
+                                            height: '6px',
+                                            borderRadius: '50%',
+                                            background: '#4ade80',
+                                        }}
+                                    />
+                                    <span
+                                        style={{
+                                            fontFamily: 'JetBrains Mono, monospace',
+                                            fontSize: '10px',
+                                            color: 'rgba(255,255,255,0.35)',
+                                        }}
+                                    >
+                                        Aviation broker intelligence
+                                    </span>
                                 </div>
                             </div>
-                            <span className="font-mono text-xs text-gold border border-gold/30 px-2 py-0.5 rounded">PRO</span>
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                        <div
+                            style={{
+                                flex: 1,
+                                overflowY: 'auto',
+                                padding: '16px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px',
+                                scrollbarWidth: 'none',
+                            }}
+                        >
                             {messages.map((msg, i) => (
-                                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.25 }}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                                    }}
+                                >
                                     <div
-                                        className="max-w-[85%] px-4 py-3 rounded-2xl"
                                         style={{
-                                            background: msg.role === 'user' ? '#1e3a8a' : '#1a1a1a',
-                                            border: msg.role === 'assistant' ? '1px solid #1c1c1c' : 'none',
-                                            borderRadius: msg.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                                            maxWidth: '85%',
+                                            padding: '10px 14px',
+                                            borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                                            background:
+                                                msg.role === 'user'
+                                                    ? 'rgba(30,58,138,0.35)'
+                                                    : 'rgba(255,255,255,0.04)',
+                                            border:
+                                                msg.role === 'user'
+                                                    ? '1px solid rgba(30,58,138,0.5)'
+                                                    : '1px solid rgba(255,255,255,0.07)',
                                         }}
                                     >
-                                        <p className="font-body text-sm text-white leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>
-                                            {msg.content}
+                                        {msg.role === 'assistant' && (
+                                            <p
+                                                style={{
+                                                    fontFamily: 'JetBrains Mono, monospace',
+                                                    fontSize: '9px',
+                                                    color: '#D4AF37',
+                                                    letterSpacing: '0.1em',
+                                                    marginBottom: '5px',
+                                                }}
+                                            >
+                                                ADVISOR
+                                            </p>
+                                        )}
+                                        <p
+                                            style={{
+                                                fontFamily: 'DM Sans, sans-serif',
+                                                fontSize: '13px',
+                                                color: msg.role === 'user' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)',
+                                                lineHeight: 1.55,
+                                            }}
+                                        >
+                                            {msg.text}
                                         </p>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
 
-                            {loading && (
-                                <div className="flex justify-start">
-                                    <div className="px-4 py-3 rounded-2xl border border-[#1c1c1c]" style={{ background: '#1a1a1a', borderRadius: '18px 18px 18px 4px' }}>
-                                        <div className="flex items-center gap-1.5">
-                                            {[0, 1, 2].map(i => (
-                                                <motion.span
-                                                    key={i}
-                                                    className="w-1.5 h-1.5 rounded-full bg-gold"
-                                                    animate={{ opacity: [0.3, 1, 0.3] }}
-                                                    transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                                                />
-                                            ))}
-                                        </div>
+                            {/* Typing indicator */}
+                            {isTyping && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    style={{ display: 'flex', justifyContent: 'flex-start' }}
+                                >
+                                    <div
+                                        style={{
+                                            padding: '12px 16px',
+                                            borderRadius: '14px 14px 14px 4px',
+                                            background: 'rgba(255,255,255,0.04)',
+                                            border: '1px solid rgba(255,255,255,0.07)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '5px',
+                                        }}
+                                    >
+                                        {[0, 1, 2].map((dot) => (
+                                            <motion.span
+                                                key={dot}
+                                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                                transition={{
+                                                    duration: 1.2,
+                                                    repeat: Infinity,
+                                                    delay: dot * 0.2,
+                                                }}
+                                                style={{
+                                                    width: '5px',
+                                                    height: '5px',
+                                                    borderRadius: '50%',
+                                                    background: '#D4AF37',
+                                                    display: 'inline-block',
+                                                }}
+                                            />
+                                        ))}
                                     </div>
-                                </div>
+                                </motion.div>
                             )}
-                            <div ref={bottomRef} />
+
+                            <div ref={messagesEndRef} />
                         </div>
 
                         {/* Input */}
-                        <div className="px-4 py-3 border-t border-[#1c1c1c]" style={{ background: '#111111' }}>
-                            <div className="flex items-end gap-2">
-                                <textarea
-                                    ref={inputRef}
-                                    value={input}
-                                    onChange={e => setInput(e.target.value)}
-                                    onKeyDown={handleKey}
-                                    placeholder="Ask anything about aviation, aircraft, or deals..."
-                                    rows={1}
-                                    className="flex-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-2.5 font-body text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gold/40 resize-none"
-                                    style={{ maxHeight: '100px' }}
-                                />
-                                <button
-                                    onClick={send}
-                                    disabled={!input.trim() || loading}
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200"
-                                    style={{
-                                        background: input.trim() && !loading ? '#D4AF37' : '#1a1a1a',
-                                        border: '1px solid',
-                                        borderColor: input.trim() && !loading ? '#D4AF37' : '#2a2a2a',
-                                    }}
-                                >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                        <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke={input.trim() && !loading ? '#0a0a0a' : '#4b5563'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <p className="font-mono text-xs text-gray-700 mt-2 text-center">
-                                Aviation, sales, deal structures, platform navigation
-                            </p>
+                        <div
+                            style={{
+                                padding: '12px 14px',
+                                borderTop: '1px solid rgba(255,255,255,0.06)',
+                                background: 'rgba(10,10,10,0.8)',
+                                display: 'flex',
+                                gap: '8px',
+                                alignItems: 'flex-end',
+                                flexShrink: 0,
+                            }}
+                        >
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Ask about aircraft, routes, pricing..."
+                                disabled={isTyping}
+                                style={{
+                                    flex: 1,
+                                    padding: '10px 14px',
+                                    background: 'rgba(255,255,255,0.04)',
+                                    border: '1px solid rgba(255,255,255,0.08)',
+                                    borderRadius: '10px',
+                                    fontFamily: 'DM Sans, sans-serif',
+                                    fontSize: '13px',
+                                    color: '#fff',
+                                    outline: 'none',
+                                    transition: 'border-color 0.2s',
+                                    resize: 'none',
+                                }}
+                                onFocus={(e) => (e.target.style.borderColor = 'rgba(212,175,55,0.4)')}
+                                onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                            />
+                            <button
+                                onClick={sendMessage}
+                                disabled={!input.trim() || isTyping}
+                                style={{
+                                    width: '38px',
+                                    height: '38px',
+                                    borderRadius: '10px',
+                                    background:
+                                        !input.trim() || isTyping ? 'rgba(212,175,55,0.15)' : '#D4AF37',
+                                    border: 'none',
+                                    cursor: !input.trim() || isTyping ? 'not-allowed' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                    transition: 'background 0.2s',
+                                }}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"
+                                        stroke={!input.trim() || isTyping ? 'rgba(212,175,55,0.4)' : '#0a0a0a'}
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </button>
                         </div>
                     </motion.div>
                 )}
