@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -29,6 +29,31 @@ export default function AppLayout() {
     const userInitials = username.substring(0, 2).toUpperCase()
     const isPro = plan === 'pro'
 
+    // Hide LandingHero widget inside the app
+    useEffect(() => {
+        const style = document.createElement('style')
+        style.id = 'hide-landinghero-in-app'
+        style.textContent = `
+      iframe[src*="landinghero"],
+      div[id*="landinghero"],
+      div[class*="landinghero"],
+      div[id*="blackbox"],
+      div[class*="blackbox"],
+      #blackbox-root,
+      .blackbox-widget {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+    `
+        document.head.appendChild(style)
+        return () => {
+            const el = document.getElementById('hide-landinghero-in-app')
+            if (el) el.remove()
+        }
+    }, [])
+
     useEffect(() => {
         setMobileMenuOpen(false)
         setProfileOpen(false)
@@ -51,7 +76,7 @@ export default function AppLayout() {
         return () => clearInterval(interval)
     }, [])
 
-    // Close profile dropdown on outside click
+    // Stable outside click handler — does not cause flicker
     useEffect(() => {
         const handleClick = (e) => {
             const clickedDesktop = profileRef.current && profileRef.current.contains(e.target)
@@ -60,8 +85,15 @@ export default function AppLayout() {
                 setProfileOpen(false)
             }
         }
-        document.addEventListener('mousedown', handleClick)
+        if (profileOpen) {
+            document.addEventListener('mousedown', handleClick)
+        }
         return () => document.removeEventListener('mousedown', handleClick)
+    }, [profileOpen])
+
+    const toggleProfile = useCallback((e) => {
+        e.stopPropagation()
+        setProfileOpen((prev) => !prev)
     }, [])
 
     const navItems = [
@@ -75,176 +107,88 @@ export default function AppLayout() {
 
     const mobileNavItems = navItems.slice(0, 5)
 
-    const ProfileDropdown = () => (
-        <AnimatePresence>
-            {profileOpen && (
-                <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                    transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-                    style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 'calc(100% + 6px)',
-                        width: '220px',
-                        background: '#1a1a1a',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '14px',
-                        boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
-                        zIndex: 200,
-                        overflow: 'hidden',
-                    }}
-                >
-                    {/* User info */}
-                    <div
-                        style={{
-                            padding: '14px 16px',
-                            borderBottom: '1px solid rgba(255,255,255,0.07)',
-                        }}
-                    >
-                        <p
-                            style={{
-                                fontFamily: 'JetBrains Mono, monospace',
-                                fontSize: '9px',
-                                color: 'rgba(255,255,255,0.3)',
-                                letterSpacing: '0.12em',
-                                textTransform: 'uppercase',
-                                marginBottom: '4px',
-                            }}
-                        >
-                            Signed in as
-                        </p>
-                        <p
-                            style={{
-                                fontFamily: 'DM Sans, sans-serif',
-                                fontSize: '13px',
-                                color: '#fff',
-                                fontWeight: 600,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {username}
-                        </p>
-                    </div>
+    // Dropdown rendered inline — stable, no flicker
+    const ProfileDropdown = profileOpen ? (
+        <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.12, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{
+                position: 'absolute',
+                left: 0,
+                top: 'calc(100% + 6px)',
+                width: '220px',
+                background: '#1a1a1a',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '14px',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+                zIndex: 200,
+                overflow: 'hidden',
+            }}
+        >
+            {/* User info */}
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    Signed in as
+                </p>
+                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#fff', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {username}
+                </p>
+            </div>
 
-                    {/* Plan */}
-                    <div
-                        style={{
-                            padding: '12px 16px',
-                            borderBottom: '1px solid rgba(255,255,255,0.07)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <p
-                            style={{
-                                fontFamily: 'JetBrains Mono, monospace',
-                                fontSize: '9px',
-                                color: 'rgba(255,255,255,0.3)',
-                                letterSpacing: '0.12em',
-                                textTransform: 'uppercase',
-                            }}
-                        >
-                            Current Plan
-                        </p>
-                        <span
-                            style={{
-                                fontFamily: 'Bebas Neue, sans-serif',
-                                fontSize: '12px',
-                                letterSpacing: '0.12em',
-                                color: isPro ? '#D4AF37' : '#6b7280',
-                                background: isPro ? 'rgba(212,175,55,0.1)' : 'rgba(107,114,128,0.1)',
-                                border: `1px solid ${isPro ? 'rgba(212,175,55,0.25)' : 'rgba(107,114,128,0.2)'}`,
-                                padding: '2px 8px',
-                                borderRadius: '4px',
-                            }}
-                        >
-                            {isPro ? 'PRO' : 'FREE'}
-                        </span>
-                    </div>
+            {/* Plan badge */}
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                    Current Plan
+                </p>
+                <span style={{
+                    fontFamily: 'Bebas Neue, sans-serif',
+                    fontSize: '12px',
+                    letterSpacing: '0.12em',
+                    color: isPro ? '#D4AF37' : '#6b7280',
+                    background: isPro ? 'rgba(212,175,55,0.1)' : 'rgba(107,114,128,0.1)',
+                    border: `1px solid ${isPro ? 'rgba(212,175,55,0.25)' : 'rgba(107,114,128,0.2)'}`,
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                }}>
+                    {isPro ? 'PRO' : 'FREE'}
+                </span>
+            </div>
 
-                    {/* Actions */}
-                    <Link
-                        to="/app/settings"
-                        onClick={() => setProfileOpen(false)}
-                        style={{
-                            display: 'block',
-                            padding: '12px 16px',
-                            fontFamily: 'DM Sans, sans-serif',
-                            fontSize: '13px',
-                            color: 'rgba(255,255,255,0.65)',
-                            textDecoration: 'none',
-                            transition: 'all 0.15s',
-                            borderBottom: '1px solid rgba(255,255,255,0.05)',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color = '#fff'
-                            e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color = 'rgba(255,255,255,0.65)'
-                            e.currentTarget.style.background = 'transparent'
-                        }}
-                    >
-                        Account Settings
-                    </Link>
+            {/* Account Settings */}
+            <Link
+                to="/app/settings"
+                onClick={() => setProfileOpen(false)}
+                style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', textDecoration: 'none', transition: 'all 0.15s', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; e.currentTarget.style.background = 'transparent' }}
+            >
+                Account Settings
+            </Link>
 
-                    {!isPro && (
-                        <Link
-                            to="/app/billing"
-                            onClick={() => setProfileOpen(false)}
-                            style={{
-                                display: 'block',
-                                padding: '12px 16px',
-                                fontFamily: 'DM Sans, sans-serif',
-                                fontSize: '13px',
-                                color: '#D4AF37',
-                                textDecoration: 'none',
-                                transition: 'all 0.15s',
-                                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(212,175,55,0.05)'
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'transparent'
-                            }}
-                        >
-                            Upgrade to Pro
-                        </Link>
-                    )}
+            {/* Billing */}
+            <Link
+                to="/app/billing"
+                onClick={() => setProfileOpen(false)}
+                style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: isPro ? 'rgba(255,255,255,0.65)' : '#D4AF37', textDecoration: 'none', transition: 'all 0.15s', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = isPro ? 'rgba(255,255,255,0.04)' : 'rgba(212,175,55,0.05)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+            >
+                {isPro ? 'Billing' : 'Billing — Upgrade to Pro'}
+            </Link>
 
-                    <button
-                        onClick={handleSignOut}
-                        style={{
-                            width: '100%',
-                            textAlign: 'left',
-                            padding: '12px 16px',
-                            fontFamily: 'DM Sans, sans-serif',
-                            fontSize: '13px',
-                            color: '#f87171',
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(248,113,113,0.07)'
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'transparent'
-                        }}
-                    >
-                        Sign Out
-                    </button>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    )
+            {/* Sign Out */}
+            <button
+                onClick={handleSignOut}
+                style={{ width: '100%', textAlign: 'left', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#f87171', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(248,113,113,0.07)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+            >
+                Sign Out
+            </button>
+        </motion.div>
+    ) : null
 
     return (
         <div className="flex h-screen bg-jet overflow-hidden">
@@ -256,7 +200,7 @@ export default function AppLayout() {
                 className="hidden md:flex flex-col border-r border-[#1c1c1c] overflow-hidden flex-shrink-0"
                 style={{ background: 'rgba(10,10,10,0.98)' }}
             >
-                {/* Logo */}
+                {/* Logo — goes to dashboard */}
                 <div className="flex items-center justify-between p-4 border-b border-[#1c1c1c]">
                     <AnimatePresence>
                         {!collapsed && (
@@ -264,10 +208,11 @@ export default function AppLayout() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex items-center gap-2"
                             >
-                                <span className="font-display text-gold text-xl tracking-widest">ALTUS</span>
-                                <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
+                                <Link to="/app/dashboard" className="flex items-center gap-2">
+                                    <span className="font-display text-gold text-xl tracking-widest">ALTUS</span>
+                                    <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
+                                </Link>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -279,14 +224,10 @@ export default function AppLayout() {
                     </button>
                 </div>
 
-                {/* User block — clickable, opens dropdown */}
-                <div
-                    className="p-3 border-b border-[#1c1c1c]"
-                    style={{ position: 'relative' }}
-                    ref={profileRef}
-                >
+                {/* User block */}
+                <div className="p-3 border-b border-[#1c1c1c]" style={{ position: 'relative' }} ref={profileRef}>
                     <button
-                        onClick={() => setProfileOpen(!profileOpen)}
+                        onClick={toggleProfile}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -301,29 +242,10 @@ export default function AppLayout() {
                             transition: 'all 0.15s',
                             textAlign: 'left',
                         }}
-                        onMouseEnter={(e) => {
-                            if (!profileOpen) {
-                                e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!profileOpen) {
-                                e.currentTarget.style.background = 'transparent'
-                            }
-                        }}
+                        onMouseEnter={(e) => { if (!profileOpen) e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                        onMouseLeave={(e) => { if (!profileOpen) e.currentTarget.style.background = 'transparent' }}
                     >
-                        <div
-                            style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '50%',
-                                background: '#1e3a8a',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                            }}
-                        >
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <span className="text-xs font-bold text-white">{userInitials}</span>
                         </div>
                         <AnimatePresence>
@@ -334,26 +256,10 @@ export default function AppLayout() {
                                     exit={{ opacity: 0 }}
                                     style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}
                                 >
-                                    <p
-                                        style={{
-                                            fontFamily: 'DM Sans, sans-serif',
-                                            fontSize: '13px',
-                                            fontWeight: 600,
-                                            color: '#fff',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
+                                    <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                         {username}
                                     </p>
-                                    <p
-                                        style={{
-                                            fontFamily: 'JetBrains Mono, monospace',
-                                            fontSize: '10px',
-                                            color: isPro ? '#D4AF37' : '#6b7280',
-                                        }}
-                                    >
+                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: isPro ? '#D4AF37' : '#6b7280' }}>
                                         {isPro ? 'PRO' : 'FREE PLAN'}
                                     </p>
                                 </motion.div>
@@ -363,19 +269,16 @@ export default function AppLayout() {
                             <motion.span
                                 animate={{ rotate: profileOpen ? 180 : 0 }}
                                 transition={{ duration: 0.2 }}
-                                style={{
-                                    fontFamily: 'DM Sans, sans-serif',
-                                    fontSize: '10px',
-                                    color: 'rgba(255,255,255,0.3)',
-                                    flexShrink: 0,
-                                }}
+                                style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '10px', color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}
                             >
                                 ▾
                             </motion.span>
                         )}
                     </button>
 
-                    <ProfileDropdown />
+                    <AnimatePresence>
+                        {ProfileDropdown}
+                    </AnimatePresence>
                 </div>
 
                 {/* Nav */}
@@ -389,11 +292,7 @@ export default function AppLayout() {
                             <span className="text-lg flex-shrink-0">{item.icon}</span>
                             <AnimatePresence>
                                 {!collapsed && (
-                                    <motion.span
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                    >
+                                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                         {item.label}
                                     </motion.span>
                                 )}
@@ -402,8 +301,8 @@ export default function AppLayout() {
                     ))}
                 </nav>
 
-                {/* Bottom */}
-                <div className="p-3 border-t border-[#1c1c1c] space-y-1">
+                {/* Bottom — back to site only, sign out is in dropdown */}
+                <div className="p-3 border-t border-[#1c1c1c]">
                     <Link to="/" className="nav-link">
                         <span className="flex-shrink-0">←</span>
                         <AnimatePresence>
@@ -414,19 +313,6 @@ export default function AppLayout() {
                             )}
                         </AnimatePresence>
                     </Link>
-                    <button
-                        onClick={handleSignOut}
-                        className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                    >
-                        <span className="flex-shrink-0">⏻</span>
-                        <AnimatePresence>
-                            {!collapsed && (
-                                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    Sign Out
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </button>
                 </div>
             </motion.aside>
 
@@ -445,10 +331,11 @@ export default function AppLayout() {
                         >
                             ☰
                         </button>
-                        <div className="md:hidden flex items-center gap-2">
+                        {/* Mobile logo — goes to dashboard */}
+                        <Link to="/app/dashboard" className="md:hidden flex items-center gap-2">
                             <span className="font-display text-gold text-lg tracking-widest">ALTUS</span>
                             <span className="text-xs font-mono bg-gold text-jet px-1 py-0.5 rounded font-bold">AERO</span>
-                        </div>
+                        </Link>
                         <div className="hidden md:flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                             <span className="text-xs font-mono text-gray-400">LIVE</span>
@@ -518,26 +405,17 @@ export default function AppLayout() {
                             style={{ background: 'rgba(10,10,10,0.99)' }}
                         >
                             <div className="flex items-center justify-between p-5 border-b border-[#1c1c1c]">
-                                <div className="flex items-center gap-2">
+                                <Link to="/app/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
                                     <span className="font-display text-gold text-xl tracking-widest">ALTUS</span>
                                     <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
-                                </div>
-                                <button
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="text-gray-400 hover:text-gold text-xl"
-                                >
-                                    ✕
-                                </button>
+                                </Link>
+                                <button onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-gold text-xl">✕</button>
                             </div>
 
                             {/* Mobile user block */}
-                            <div
-                                className="p-4 border-b border-[#1c1c1c]"
-                                style={{ position: 'relative' }}
-                                ref={mobileProfileRef}
-                            >
+                            <div className="p-4 border-b border-[#1c1c1c]" style={{ position: 'relative' }} ref={mobileProfileRef}>
                                 <button
-                                    onClick={() => setProfileOpen(!profileOpen)}
+                                    onClick={toggleProfile}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -552,40 +430,25 @@ export default function AppLayout() {
                                         transition: 'all 0.15s',
                                     }}
                                 >
-                                    <div
-                                        style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: '50%',
-                                            background: '#1e3a8a',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            flexShrink: 0,
-                                        }}
-                                    >
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                         <span className="text-sm font-bold text-white">{userInitials}</span>
                                     </div>
                                     <div style={{ textAlign: 'left', flex: 1 }}>
                                         <p className="text-sm font-semibold text-white">{username}</p>
-                                        <p
-                                            className="text-xs font-mono"
-                                            style={{ color: isPro ? '#D4AF37' : '#6b7280' }}
-                                        >
+                                        <p className="text-xs font-mono" style={{ color: isPro ? '#D4AF37' : '#6b7280' }}>
                                             {isPro ? 'PRO PLAN' : 'FREE PLAN'} · tap to manage
                                         </p>
                                     </div>
                                     <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px' }}>▾</span>
                                 </button>
 
-                                {/* Profile dropdown in mobile */}
                                 <AnimatePresence>
                                     {profileOpen && (
                                         <motion.div
                                             initial={{ opacity: 0, y: -8 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -8 }}
-                                            transition={{ duration: 0.15 }}
+                                            transition={{ duration: 0.12 }}
                                             style={{
                                                 position: 'absolute',
                                                 left: '16px',
@@ -605,15 +468,24 @@ export default function AppLayout() {
                                                     {isPro ? 'PRO' : 'FREE'}
                                                 </span>
                                             </div>
-                                            <Link to="/app/settings" onClick={() => { setProfileOpen(false); setMobileMenuOpen(false) }} style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <Link
+                                                to="/app/settings"
+                                                onClick={() => { setProfileOpen(false); setMobileMenuOpen(false) }}
+                                                style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                                            >
                                                 Account Settings
                                             </Link>
-                                            {!isPro && (
-                                                <Link to="/app/billing" onClick={() => { setProfileOpen(false); setMobileMenuOpen(false) }} style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#D4AF37', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                                    Upgrade to Pro
-                                                </Link>
-                                            )}
-                                            <button onClick={handleSignOut} style={{ width: '100%', textAlign: 'left', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#f87171', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                            <Link
+                                                to="/app/billing"
+                                                onClick={() => { setProfileOpen(false); setMobileMenuOpen(false) }}
+                                                style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: isPro ? 'rgba(255,255,255,0.65)' : '#D4AF37', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                                            >
+                                                {isPro ? 'Billing' : 'Billing — Upgrade to Pro'}
+                                            </Link>
+                                            <button
+                                                onClick={handleSignOut}
+                                                style={{ width: '100%', textAlign: 'left', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#f87171', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                                            >
                                                 Sign Out
                                             </button>
                                         </motion.div>
@@ -634,25 +506,17 @@ export default function AppLayout() {
                                 ))}
                             </nav>
 
-                            <div className="p-3 border-t border-[#1c1c1c] space-y-1">
+                            <div className="p-3 border-t border-[#1c1c1c]">
                                 <Link to="/" className="nav-link">
                                     <span>←</span>
                                     <span>Back to Site</span>
                                 </Link>
-                                <button
-                                    onClick={handleSignOut}
-                                    className="nav-link w-full text-left text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                                >
-                                    <span>⏻</span>
-                                    <span>Sign Out</span>
-                                </button>
                             </div>
                         </motion.div>
                     </>
                 )}
             </AnimatePresence>
 
-            {/* Chatbot — rendered for all authenticated users */}
             <Chatbot />
         </div>
     )

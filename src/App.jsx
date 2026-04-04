@@ -7,10 +7,10 @@ import Welcome from './pages/welcome.jsx'
 import AppLayout from './components/AppLayout.jsx'
 import Dashboard from './pages/app/dashboard.jsx'
 import Intel from './pages/app/intel.jsx'
-import Jets from './pages/app/jets.jsx'
-import Flights from './pages/app/flights.jsx'
+import Fleet from './pages/app/jets.jsx'
+import Track from './pages/app/flights.jsx'
+import Plan from './pages/app/mission.jsx'
 import Billing from './pages/app/billing.jsx'
-import Mission from './pages/app/mission.jsx'
 import Settings from './pages/app/settings.jsx'
 
 export default function App() {
@@ -29,11 +29,12 @@ export default function App() {
               </ProtectedRoute>
             }
           >
+            <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="intel" element={<Intel />} />
-            <Route path="fleet" element={<Jets />} />
-            <Route path="track" element={<Flights />} />
-            <Route path="plan" element={<Mission />} />
+            <Route path="fleet" element={<Fleet />} />
+            <Route path="track" element={<Track />} />
+            <Route path="plan" element={<Plan />} />
             <Route path="billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />
           </Route>
