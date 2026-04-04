@@ -23,7 +23,7 @@ function PrivacyModal({ onClose }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 24 }}
                 onClick={(e) => e.stopPropagation()}
-                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '40px', maxWidth: '640px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
+                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '40px', maxWidth: '620px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
             >
                 <button
                     onClick={onClose}
@@ -33,21 +33,32 @@ function PrivacyModal({ onClose }) {
                 </button>
                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '12px' }}>LEGAL</p>
                 <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '32px', color: '#fff', letterSpacing: '0.05em', marginBottom: '24px' }}>Privacy Policy</h2>
-                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.8 }}>
-                    <p style={{ marginBottom: '16px' }}>Last updated: April 2026</p>
-                    <p style={{ marginBottom: '20px' }}>Altus Aero is operated by Anirudh Jetly, a private aviation broker based in Mumbai, India. This policy explains what data we collect and how we use it.</p>
+                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.9 }}>
+                    <p style={{ marginBottom: '20px', color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Last updated: April 2026</p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>DATA WE COLLECT</h3>
-                    <p style={{ marginBottom: '20px' }}>We collect your email address and name when you create an account. We collect usage data such as which pages you visit and how often you log in. We do not sell your data to any third party.</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        Altus Aero is run by Anirudh Shinde, based in Mumbai, India. Here is what you need to know about how this platform handles your data.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>HOW WE USE IT</h3>
-                    <p style={{ marginBottom: '20px' }}>Your data is used to operate the platform, send account-related emails, and improve the product. Subscription payments are processed by Razorpay — we do not store your payment details.</p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>WHAT WE COLLECT</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        When you create an account, we collect your email address and name. We also collect basic usage data — which pages you visit and how often you log in. We do not sell your data to anyone.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>THIRD PARTIES</h3>
-                    <p style={{ marginBottom: '20px' }}>We use Supabase for authentication and data storage, Vercel for hosting, and Razorpay for payments. Each of these providers maintains their own privacy policy.</p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>HOW WE USE IT</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        Your data is used to operate the platform and send you account-related emails when necessary. Subscription payments are handled by Razorpay. We do not store your payment details on our side.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>CONTACT</h3>
-                    <p>For any privacy-related questions, contact us at <a href="mailto:anirudh.jets@gmail.com" style={{ color: '#D4AF37' }}>anirudh.jets@gmail.com</a>.</p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>THIRD-PARTY SERVICES</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        We use Supabase for authentication and data storage, Vercel for hosting, and Razorpay for payments. Each maintains their own privacy policy.
+                    </p>
+
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>QUESTIONS</p>
+                    <p>
+                        Write to <a href="mailto:anirudh.jets@gmail.com" style={{ color: '#D4AF37' }}>anirudh.jets@gmail.com</a> and I will get back to you.
+                    </p>
                 </div>
             </motion.div>
         </motion.div>
@@ -74,7 +85,7 @@ function TermsModal({ onClose }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 24 }}
                 onClick={(e) => e.stopPropagation()}
-                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '40px', maxWidth: '640px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
+                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '40px', maxWidth: '620px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
             >
                 <button
                     onClick={onClose}
@@ -84,24 +95,37 @@ function TermsModal({ onClose }) {
                 </button>
                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '12px' }}>LEGAL</p>
                 <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '32px', color: '#fff', letterSpacing: '0.05em', marginBottom: '24px' }}>Terms of Service</h2>
-                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.8 }}>
-                    <p style={{ marginBottom: '16px' }}>Last updated: April 2026</p>
-                    <p style={{ marginBottom: '20px' }}>By using Altus Aero, you agree to these terms. The platform is operated by Anirudh Jetly, Mumbai, India.</p>
+                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.9 }}>
+                    <p style={{ marginBottom: '20px', color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Last updated: April 2026</p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>USE OF THE PLATFORM</h3>
-                    <p style={{ marginBottom: '20px' }}>Altus Aero is a broker intelligence and education platform. The data and tools provided are for informational purposes. All charter pricing estimates are indicative only and do not constitute a binding quote.</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        By using Altus Aero, you agree to these terms. The platform is operated by Anirudh Shinde, Mumbai, India.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>SUBSCRIPTIONS</h3>
-                    <p style={{ marginBottom: '20px' }}>Pro subscriptions are billed monthly or annually. You may cancel at any time. Refunds are handled on a case-by-case basis — contact us within 48 hours of a charge if you believe an error was made.</p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>WHAT THIS PLATFORM IS</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        Altus Aero is a broker intelligence and education tool. All charter pricing estimates shown are indicative only and not binding quotes. Verify market data independently before presenting anything to a client.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>INTELLECTUAL PROPERTY</h3>
-                    <p style={{ marginBottom: '20px' }}>All content on Altus Aero — including Broker Insights, platform design, and educational content — is owned by Anirudh Jetly. You may not reproduce or redistribute it without written permission.</p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>SUBSCRIPTIONS</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        Pro subscriptions are billed monthly or annually. You can cancel at any time and your access continues until the end of that billing period. If there is an error with a charge, contact us within 48 hours at anirudh.jets@gmail.com.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>LIMITATION OF LIABILITY</h3>
-                    <p style={{ marginBottom: '20px' }}>Altus Aero is not liable for business decisions made based on information from the platform. Always verify market data independently before acting on it.</p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>INTELLECTUAL PROPERTY</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        All content on Altus Aero including broker insights, educational material, and the platform design is owned by Anirudh Shinde. Please do not reproduce or redistribute it without written permission.
+                    </p>
 
-                    <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.08em', marginBottom: '10px' }}>CONTACT</h3>
-                    <p>Questions about these terms: <a href="mailto:anirudh.jets@gmail.com" style={{ color: '#D4AF37' }}>anirudh.jets@gmail.com</a></p>
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>LIABILITY</p>
+                    <p style={{ marginBottom: '20px' }}>
+                        Altus Aero is not liable for business decisions made based on data from the platform. Always verify independently before acting on anything shown here.
+                    </p>
+
+                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>QUESTIONS</p>
+                    <p>
+                        Write to <a href="mailto:anirudh.jets@gmail.com" style={{ color: '#D4AF37' }}>anirudh.jets@gmail.com</a>
+                    </p>
                 </div>
             </motion.div>
         </motion.div>
@@ -558,37 +582,37 @@ function ChatbotShowcase() {
 /* ─── FOUNDER ─────────────────────────────────────────────────────── */
 function Founder() {
     return (
-        <section id="founder" className="py-24 md:py-32 px-6">
-            <div className="max-w-4xl mx-auto">
+        <section id="founder" className="py-20 md:py-28 px-6">
+            <div className="max-w-3xl mx-auto">
                 <Reveal>
-                    <p className="font-mono text-xs text-gold tracking-[0.3em] uppercase mb-12 text-center">Behind the Platform</p>
+                    <p className="font-mono text-xs text-gold tracking-[0.3em] uppercase mb-10 text-center">Behind the Platform</p>
                     <div
-                        className="rounded-2xl p-10 md:p-14 border border-[#1c1c1c] relative overflow-hidden"
+                        className="rounded-2xl p-8 md:p-10 border border-[#1c1c1c] relative overflow-hidden"
                         style={{ background: 'rgba(14,14,14,0.8)' }}
                     >
-                        <div className="absolute top-0 right-0 w-64 h-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
+                        <div className="absolute top-0 right-0 w-48 h-48 rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
 
-                        <div className="flex flex-col md:flex-row gap-10 items-start relative z-10">
+                        <div className="flex flex-col sm:flex-row gap-7 items-start relative z-10">
                             {/* Avatar */}
                             <div className="flex-shrink-0">
                                 <div
                                     style={{
-                                        width: '80px',
-                                        height: '80px',
+                                        width: '64px',
+                                        height: '64px',
                                         borderRadius: '50%',
                                         background: '#1e3a8a',
-                                        border: '2px solid rgba(212,175,55,0.3)',
+                                        border: '2px solid rgba(212,175,55,0.25)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                     }}
                                 >
-                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#D4AF37', letterSpacing: '0.05em' }}>AJ</span>
+                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#D4AF37', letterSpacing: '0.05em' }}>AS</span>
                                 </div>
-                                <div style={{ marginTop: '12px' }}>
-                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.05em' }}>Anirudh Jetly</p>
-                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.1em', marginTop: '3px' }}>FOUNDER</p>
-                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.05em', marginTop: '2px' }}>Mumbai, India</p>
+                                <div style={{ marginTop: '10px' }}>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '14px', color: '#fff', letterSpacing: '0.05em' }}>Anirudh Shinde</p>
+                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#D4AF37', letterSpacing: '0.1em', marginTop: '2px' }}>FOUNDER</p>
+                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.05em', marginTop: '2px' }}>Mumbai, India</p>
                                 </div>
                             </div>
 
@@ -597,41 +621,42 @@ function Founder() {
                                 <p
                                     style={{
                                         fontFamily: 'Bebas Neue, sans-serif',
-                                        fontSize: 'clamp(22px, 3vw, 30px)',
+                                        fontSize: 'clamp(18px, 2.5vw, 24px)',
                                         color: '#fff',
-                                        lineHeight: 1.2,
+                                        lineHeight: 1.25,
                                         letterSpacing: '0.03em',
-                                        marginBottom: '20px',
+                                        marginBottom: '16px',
                                     }}
                                 >
-                                    I built this because the information gap between brokers and clients should not exist.
+                                    I NEEDED THIS TOOL. SO I BUILT IT.
                                 </p>
-                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: '16px' }}>
-                                    I am an aspiring jet broker based in Mumbai. When I started studying the industry, I kept running into the same problem — the tools brokers use are either locked behind industry networks or built for back-office ops, not client education.
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.48)', lineHeight: 1.85, marginBottom: '14px' }}>
+                                    I got into private aviation through research rather than experience. The more I studied how brokerage actually worked, the more I noticed how much brokers were expected to just know things their clients didn't. There wasn't much to bridge that gap.
                                 </p>
-                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: '16px' }}>
-                                    Steve Varsano changed how I thought about this. His approach — educate the client before you sell — is the most honest framework in the industry. Altus Aero is what I wish existed when I started: a platform that teaches you to think like a broker and gives you the tools to act like one.
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.48)', lineHeight: 1.85, marginBottom: '14px' }}>
+                                    Steve Varsano's approach made sense to me from the first time I came across it. Educate the client before you try to sell them anything. It's the most honest way to operate in this industry.
                                 </p>
-                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8 }}>
-                                    Every feature is built around one belief: the broker who educates closes. That is not a tagline. It is the whole model.
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.48)', lineHeight: 1.85 }}>
+                                    Altus Aero is the platform I needed when I was starting out. The aircraft, the market signals, the deal structure — all in one place. The broker who educates closes. That's the whole idea.
                                 </p>
 
-                                <div style={{ marginTop: '28px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <div style={{ marginTop: '22px' }}>
                                     <a
                                         href="mailto:anirudh.jets@gmail.com"
                                         style={{
                                             fontFamily: 'JetBrains Mono, monospace',
                                             fontSize: '11px',
-                                            color: 'rgba(255,255,255,0.4)',
+                                            color: 'rgba(255,255,255,0.35)',
                                             letterSpacing: '0.08em',
                                             textDecoration: 'none',
-                                            padding: '8px 14px',
-                                            borderRadius: '8px',
-                                            border: '1px solid rgba(255,255,255,0.08)',
+                                            padding: '7px 12px',
+                                            borderRadius: '7px',
+                                            border: '1px solid rgba(255,255,255,0.07)',
                                             transition: 'all 0.2s',
+                                            display: 'inline-block',
                                         }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.3)' }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.25)' }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)' }}
                                     >
                                         anirudh.jets@gmail.com
                                     </a>
@@ -851,7 +876,7 @@ function Footer({ onPrivacy, onTerms }) {
                 </div>
 
                 <div className="pt-8 border-t border-[#1c1c1c] flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="font-mono text-xs text-gray-700">© 2026 Altus Aero · Anirudh Jetly. All rights reserved.</p>
+                    <p className="font-mono text-xs text-gray-700">© 2026 Altus Aero · Anirudh Shinde. All rights reserved.</p>
                     <div className="flex items-center gap-4">
                         <button
                             onClick={onPrivacy}

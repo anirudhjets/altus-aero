@@ -85,11 +85,21 @@ export default function Settings() {
     })
     const [notifSaved, setNotifSaved] = useState(false)
 
-    // Theme — persisted to localStorage
+    // Theme — proper state variable
     const [theme, setTheme] = useState(() => {
         return localStorage.getItem('altus_theme') || 'dark'
     })
 
+    // Collapsed sidebar — proper state variable (no hack)
+    const [collapsedDefault, setCollapsedDefault] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('altus_collapsed_sidebar') || 'false')
+        } catch {
+            return false
+        }
+    })
+
+    // Apply theme to document + save to localStorage whenever theme changes
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme)
         localStorage.setItem('altus_theme', theme)
@@ -145,6 +155,11 @@ export default function Settings() {
         setTimeout(() => setNotifSaved(false), 2000)
     }
 
+    const handleCollapsedChange = (v) => {
+        setCollapsedDefault(v)
+        localStorage.setItem('altus_collapsed_sidebar', JSON.stringify(v))
+    }
+
     const handleDeleteAccount = async () => {
         if (deleteConfirm !== email) return
         await signOut()
@@ -187,7 +202,6 @@ export default function Settings() {
                 <div className="space-y-4">
                     <Section title="PROFILE">
 
-                        {/* Avatar — plan synced from auth */}
                         <Field label="Your Profile" hint="Your display name and current plan.">
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-14 rounded-full bg-[#1e3a8a] border border-gold/20 flex items-center justify-center flex-shrink-0">
@@ -398,11 +412,8 @@ export default function Settings() {
                         <Field label="Collapsed Sidebar by Default" hint="Start with the sidebar collapsed on every session.">
                             <div className="flex justify-start sm:justify-end">
                                 <Toggle
-                                    value={JSON.parse(localStorage.getItem('altus_collapsed_sidebar') || 'false')}
-                                    onChange={v => {
-                                        localStorage.setItem('altus_collapsed_sidebar', JSON.stringify(v))
-                                        setActiveTab('appearance')
-                                    }}
+                                    value={collapsedDefault}
+                                    onChange={handleCollapsedChange}
                                 />
                             </div>
                         </Field>

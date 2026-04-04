@@ -35,9 +35,9 @@ const fleetShortlist = [
 ]
 
 function getLast6Months() {
-    const months = []
     const chartValues = [175000, 192000, 210000, 185000, 198000, 220000]
     const ownership = 95000
+    const months = []
     for (let i = 5; i >= 0; i--) {
         const d = new Date()
         d.setMonth(d.getMonth() - i)
@@ -73,7 +73,9 @@ export default function Dashboard() {
     const [time, setTime] = useState('')
     const [insightIndex, setInsightIndex] = useState(0)
     const [insightVisible, setInsightVisible] = useState(true)
-    const [proPreview, setProPreview] = useState(false)
+    const [proPreview, setProPreview] = useState(() => {
+        return sessionStorage.getItem('altus_pro_preview') === 'true'
+    })
     const [usage, setUsage] = useState({ sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 })
     const navigate = useNavigate()
     const { plan } = useAuth()
@@ -81,6 +83,14 @@ export default function Dashboard() {
 
     const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
     const chartData = getLast6Months()
+
+    // Toggle pro preview — persists to sessionStorage + signals AppLayout
+    const toggleProPreview = () => {
+        const newVal = !proPreview
+        setProPreview(newVal)
+        sessionStorage.setItem('altus_pro_preview', String(newVal))
+        window.dispatchEvent(new CustomEvent('altusProPreviewChange', { detail: { isPro: newVal } }))
+    }
 
     useEffect(() => {
         setUsage(getUsageStats())
@@ -135,9 +145,9 @@ export default function Dashboard() {
                     <p className="font-mono text-gold text-xs sm:text-sm mt-1">{time} IST</p>
                 </div>
 
-                {/* Pro preview toggle — developer tool */}
+                {/* Pro preview toggle — dev tool, no banner, just the button */}
                 <button
-                    onClick={() => setProPreview(!proPreview)}
+                    onClick={toggleProPreview}
                     style={{
                         alignSelf: 'flex-start',
                         padding: '6px 14px',
@@ -152,31 +162,11 @@ export default function Dashboard() {
                         background: proPreview ? 'rgba(212,175,55,0.08)' : 'transparent',
                         color: proPreview ? '#D4AF37' : 'rgba(255,255,255,0.35)',
                     }}
-                    title="Toggle Pro preview — for testing only"
+                    title="Toggle Pro preview"
                 >
                     {proPreview ? 'VIEWING: PRO' : 'PREVIEW PRO'}
                 </button>
             </div>
-
-            {/* Pro mode banner */}
-            {proPreview && plan !== 'pro' && (
-                <div
-                    style={{
-                        padding: '10px 16px',
-                        borderRadius: '10px',
-                        background: 'rgba(212,175,55,0.06)',
-                        border: '1px solid rgba(212,175,55,0.2)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                    }}
-                >
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D4AF37', flexShrink: 0 }} />
-                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(212,175,55,0.8)', letterSpacing: '0.05em' }}>
-                        PRO PREVIEW ACTIVE — you are viewing the platform as a Pro subscriber
-                    </p>
-                </div>
-            )}
 
             {/* Today's Insight */}
             <div className="glass-gold p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
@@ -347,22 +337,8 @@ export default function Dashboard() {
                                     }}
                                     formatter={(v) => [`$${v.toLocaleString()}`, '']}
                                 />
-                                <Area
-                                    type="monotone"
-                                    dataKey="charter"
-                                    stroke="#D4AF37"
-                                    fill="url(#charter)"
-                                    strokeWidth={2}
-                                    name="Charter"
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="ownership"
-                                    stroke="#1e3a8a"
-                                    fill="url(#ownership)"
-                                    strokeWidth={2}
-                                    name="Ownership"
-                                />
+                                <Area type="monotone" dataKey="charter" stroke="#D4AF37" fill="url(#charter)" strokeWidth={2} name="Charter" />
+                                <Area type="monotone" dataKey="ownership" stroke="#1e3a8a" fill="url(#ownership)" strokeWidth={2} name="Ownership" />
                             </AreaChart>
                         </ResponsiveContainer>
                         <div className="flex items-center gap-4 mt-2">
@@ -385,7 +361,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Usage This Month — live from localStorage */}
+            {/* Usage This Month */}
             <div className="glass p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div>
@@ -412,26 +388,14 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                        {
-                            label: 'Sessions',
-                            value: String(usage.sessions || 1),
-                            sub: 'platform logins',
-                        },
-                        {
-                            label: 'Days Active',
-                            value: String(usage.days?.length || 1),
-                            sub: 'unique days',
-                        },
+                        { label: 'Sessions', value: String(usage.sessions || 1), sub: 'platform logins' },
+                        { label: 'Days Active', value: String(usage.days?.length || 1), sub: 'unique days' },
                         {
                             label: 'Routes Planned',
                             value: isPro ? String(usage.routesPlanned || 0) : '1 of 1',
                             sub: isPro ? 'this month' : 'free limit reached',
                         },
-                        {
-                            label: 'Fleet Views',
-                            value: String(usage.fleetViews || 0),
-                            sub: 'aircraft profiles',
-                        },
+                        { label: 'Fleet Views', value: String(usage.fleetViews || 0), sub: 'aircraft profiles' },
                     ].map((u, i) => (
                         <div
                             key={i}
@@ -492,6 +456,22 @@ export default function Dashboard() {
                         </button>
                     </div>
                 )}
+
+                {isPro && plan !== 'pro' && (
+                    <div
+                        style={{
+                            marginTop: '14px',
+                            padding: '10px 14px',
+                            borderRadius: '8px',
+                            background: 'rgba(212,175,55,0.04)',
+                            border: '1px solid rgba(212,175,55,0.12)',
+                        }}
+                    >
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(212,175,55,0.6)', letterSpacing: '0.06em' }}>
+                            Pro preview active — toggle off to return to Free view
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Quick Actions */}
@@ -505,18 +485,12 @@ export default function Dashboard() {
                     <button
                         key={i}
                         onClick={() => navigate(a.path)}
-                        className={`glass p-3 sm:p-4 text-center hover:border-gold transition-colors group ${a.highlight ? 'border-gold/40' : ''
-                            }`}
+                        className={`glass p-3 sm:p-4 text-center hover:border-gold transition-colors group ${a.highlight ? 'border-gold/40' : ''}`}
                     >
-                        <span
-                            className={`text-xl sm:text-2xl block mb-1 sm:mb-2 ${a.highlight ? 'text-gold' : ''}`}
-                        >
+                        <span className={`text-xl sm:text-2xl block mb-1 sm:mb-2 ${a.highlight ? 'text-gold' : ''}`}>
                             {a.icon}
                         </span>
-                        <p
-                            className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight ? 'text-gold' : 'text-gray-400 group-hover:text-gold'
-                                } transition-colors`}
-                        >
+                        <p className={`font-display text-xs sm:text-sm tracking-wider ${a.highlight ? 'text-gold' : 'text-gray-400 group-hover:text-gold'} transition-colors`}>
                             {a.label}
                         </p>
                         {a.pro && !isPro && (

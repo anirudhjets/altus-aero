@@ -4,11 +4,71 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import Chatbot from './Chatbot'
 
+/* ─── LIGHT MODE CSS ─────────────────────────────────────────────── */
+const LIGHT_MODE_CSS = `
+html[data-theme="light"] body { background-color: #f4f3ef; color: #111; }
+html[data-theme="light"] .grid-bg {
+  background-color: #f4f3ef !important;
+  background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px) !important;
+}
+html[data-theme="light"] .glass {
+  background: rgba(255,255,255,0.93) !important;
+  border-color: rgba(0,0,0,0.09) !important;
+}
+html[data-theme="light"] .glass-gold {
+  background: rgba(212,175,55,0.07) !important;
+  border-color: rgba(212,175,55,0.3) !important;
+}
+html[data-theme="light"] .stat-card {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.09) !important;
+}
+html[data-theme="light"] .nav-link {
+  color: rgba(0,0,0,0.52) !important;
+}
+html[data-theme="light"] .nav-link:hover {
+  background: rgba(0,0,0,0.05) !important;
+  color: #111 !important;
+}
+html[data-theme="light"] .nav-link.active {
+  background: rgba(212,175,55,0.1) !important;
+  color: #0a0a0a !important;
+  border-color: rgba(212,175,55,0.3) !important;
+}
+html[data-theme="light"] .section-label { color: rgba(0,0,0,0.38) !important; }
+html[data-theme="light"] .btn-primary { background: #D4AF37 !important; color: #0a0a0a !important; }
+html[data-theme="light"] aside {
+  background: rgba(248,247,244,0.99) !important;
+  border-right-color: rgba(0,0,0,0.09) !important;
+}
+html[data-theme="light"] header {
+  background: rgba(248,247,244,0.97) !important;
+  border-bottom-color: rgba(0,0,0,0.09) !important;
+}
+html[data-theme="light"] .text-white { color: #111 !important; }
+html[data-theme="light"] .text-gray-400 { color: rgba(0,0,0,0.5) !important; }
+html[data-theme="light"] .text-gray-500 { color: rgba(0,0,0,0.4) !important; }
+html[data-theme="light"] .text-gray-600 { color: rgba(0,0,0,0.33) !important; }
+html[data-theme="light"] .text-gray-700 { color: rgba(0,0,0,0.43) !important; }
+html[data-theme="light"] .border-t,
+html[data-theme="light"] .border-b { border-color: rgba(0,0,0,0.08); }
+`
+
 export default function AppLayout() {
-    const [collapsed, setCollapsed] = useState(false)
+    const [collapsed, setCollapsed] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('altus_collapsed_sidebar') || 'false')
+        } catch {
+            return false
+        }
+    })
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [profileOpen, setProfileOpen] = useState(false)
     const [time, setTime] = useState('')
+    const [devProPreview, setDevProPreview] = useState(() => {
+        return sessionStorage.getItem('altus_pro_preview') === 'true'
+    })
     const profileRef = useRef(null)
     const mobileProfileRef = useRef(null)
     const location = useLocation()
@@ -27,7 +87,30 @@ export default function AppLayout() {
         user?.email?.split('@')[0] ||
         'Broker'
     const userInitials = username.substring(0, 2).toUpperCase()
-    const isPro = plan === 'pro'
+    const isPro = plan === 'pro' || devProPreview
+
+    // Inject light mode CSS once on mount (always present, activates via data-theme attribute)
+    useEffect(() => {
+        const existing = document.getElementById('altus-light-mode-css')
+        if (!existing) {
+            const style = document.createElement('style')
+            style.id = 'altus-light-mode-css'
+            style.textContent = LIGHT_MODE_CSS
+            document.head.appendChild(style)
+        }
+        // Apply saved theme immediately
+        const savedTheme = localStorage.getItem('altus_theme') || 'dark'
+        document.documentElement.setAttribute('data-theme', savedTheme)
+
+        return () => {
+            // Do not remove on unmount — other pages need it
+        }
+    }, [])
+
+    // Persist collapsed state to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('altus_collapsed_sidebar', JSON.stringify(collapsed))
+    }, [collapsed])
 
     // Hide LandingHero widget inside the app
     useEffect(() => {
@@ -54,6 +137,13 @@ export default function AppLayout() {
         }
     }, [])
 
+    // Listen for pro preview toggle from dashboard
+    useEffect(() => {
+        const handler = (e) => setDevProPreview(e.detail.isPro)
+        window.addEventListener('altusProPreviewChange', handler)
+        return () => window.removeEventListener('altusProPreviewChange', handler)
+    }, [])
+
     useEffect(() => {
         setMobileMenuOpen(false)
         setProfileOpen(false)
@@ -76,7 +166,7 @@ export default function AppLayout() {
         return () => clearInterval(interval)
     }, [])
 
-    // Stable outside click handler — does not cause flicker
+    // Stable outside click handler
     useEffect(() => {
         const handleClick = (e) => {
             const clickedDesktop = profileRef.current && profileRef.current.contains(e.target)
@@ -107,7 +197,7 @@ export default function AppLayout() {
 
     const mobileNavItems = navItems.slice(0, 5)
 
-    // Dropdown rendered inline — stable, no flicker
+    // Profile dropdown — no Billing link (already in sidebar nav)
     const ProfileDropdown = profileOpen ? (
         <motion.div
             initial={{ opacity: 0, y: -6, scale: 0.98 }}
@@ -167,17 +257,6 @@ export default function AppLayout() {
                 Account Settings
             </Link>
 
-            {/* Billing */}
-            <Link
-                to="/app/billing"
-                onClick={() => setProfileOpen(false)}
-                style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: isPro ? 'rgba(255,255,255,0.65)' : '#D4AF37', textDecoration: 'none', transition: 'all 0.15s', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = isPro ? 'rgba(255,255,255,0.04)' : 'rgba(212,175,55,0.05)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-            >
-                {isPro ? 'Billing' : 'Billing — Upgrade to Pro'}
-            </Link>
-
             {/* Sign Out */}
             <button
                 onClick={handleSignOut}
@@ -200,15 +279,11 @@ export default function AppLayout() {
                 className="hidden md:flex flex-col border-r border-[#1c1c1c] overflow-hidden flex-shrink-0"
                 style={{ background: 'rgba(10,10,10,0.98)' }}
             >
-                {/* Logo — goes to dashboard */}
+                {/* Logo */}
                 <div className="flex items-center justify-between p-4 border-b border-[#1c1c1c]">
                     <AnimatePresence>
                         {!collapsed && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                            >
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                 <Link to="/app/dashboard" className="flex items-center gap-2">
                                     <span className="font-display text-gold text-xl tracking-widest">ALTUS</span>
                                     <span className="text-xs font-mono bg-gold text-jet px-1.5 py-0.5 rounded font-bold">AERO</span>
@@ -301,7 +376,7 @@ export default function AppLayout() {
                     ))}
                 </nav>
 
-                {/* Bottom — back to site only, sign out is in dropdown */}
+                {/* Back to site */}
                 <div className="p-3 border-t border-[#1c1c1c]">
                     <Link to="/" className="nav-link">
                         <span className="flex-shrink-0">←</span>
@@ -331,7 +406,6 @@ export default function AppLayout() {
                         >
                             ☰
                         </button>
-                        {/* Mobile logo — goes to dashboard */}
                         <Link to="/app/dashboard" className="md:hidden flex items-center gap-2">
                             <span className="font-display text-gold text-lg tracking-widest">ALTUS</span>
                             <span className="text-xs font-mono bg-gold text-jet px-1 py-0.5 rounded font-bold">AERO</span>
@@ -374,8 +448,7 @@ export default function AppLayout() {
                             key={item.path}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors ${isActive ? 'text-gold' : 'text-gray-500'
-                                }`
+                                `flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors ${isActive ? 'text-gold' : 'text-gray-500'}`
                             }
                         >
                             <span className="text-base">{item.icon}</span>
@@ -474,13 +547,6 @@ export default function AppLayout() {
                                                 style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
                                             >
                                                 Account Settings
-                                            </Link>
-                                            <Link
-                                                to="/app/billing"
-                                                onClick={() => { setProfileOpen(false); setMobileMenuOpen(false) }}
-                                                style={{ display: 'block', padding: '12px 16px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: isPro ? 'rgba(255,255,255,0.65)' : '#D4AF37', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                                            >
-                                                {isPro ? 'Billing' : 'Billing — Upgrade to Pro'}
                                             </Link>
                                             <button
                                                 onClick={handleSignOut}
