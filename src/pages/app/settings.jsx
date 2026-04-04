@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
@@ -8,9 +8,7 @@ const Section = ({ title, children }) => (
         <div className="px-4 md:px-6 py-4 border-b border-[#1c1c1c]">
             <p className="section-label">{title}</p>
         </div>
-        <div className="p-4 md:p-6 space-y-5">
-            {children}
-        </div>
+        <div className="p-4 md:p-6 space-y-5">{children}</div>
     </div>
 )
 
@@ -20,9 +18,7 @@ const Field = ({ label, hint, children }) => (
             <p className="font-mono text-sm text-white">{label}</p>
             {hint && <p className="font-body text-xs text-gray-500 mt-0.5">{hint}</p>}
         </div>
-        <div className="sm:w-72 flex-shrink-0">
-            {children}
-        </div>
+        <div className="sm:w-72 flex-shrink-0">{children}</div>
     </div>
 )
 
@@ -49,66 +45,75 @@ const inputStyle = {
 }
 
 export default function Settings() {
-    const { user, signOut } = useAuth()
+    const { user, plan, signOut } = useAuth()
     const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState('profile')
+    const isPro = plan === 'pro'
 
-    const username = user?.user_metadata?.username || ''
+    const fullName = user?.user_metadata?.full_name || ''
     const email = user?.email || ''
+    const displayName = user?.user_metadata?.full_name || user?.user_metadata?.username || email?.split('@')[0] || 'Broker'
+    const initials = displayName.substring(0, 2).toUpperCase()
 
     // Profile state
-    const [newUsername, setNewUsername] = useState(username)
-    const [usernameLoading, setUsernameLoading] = useState(false)
-    const [usernameMsg, setUsernameMsg] = useState('')
-    const [usernameError, setUsernameError] = useState('')
+    const [newName, setNewName] = useState(fullName)
+    const [nameLoading, setNameLoading] = useState(false)
+    const [nameMsg, setNameMsg] = useState('')
+    const [nameError, setNameError] = useState('')
 
     // Password state
-    const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [passwordLoading, setPasswordLoading] = useState(false)
     const [passwordMsg, setPasswordMsg] = useState('')
     const [passwordError, setPasswordError] = useState('')
 
-    // Notification state
-    const [notif, setNotif] = useState({
-        marketInsights: true,
-        weeklyDigest: true,
-        billingReminders: true,
-        flightAlerts: false,
-        productUpdates: true,
+    // Notifications — persisted to localStorage
+    const [notif, setNotif] = useState(() => {
+        try {
+            const saved = localStorage.getItem('altus_notif_prefs')
+            return saved ? JSON.parse(saved) : {
+                marketInsights: true,
+                weeklyDigest: true,
+                billingReminders: true,
+                flightAlerts: false,
+                productUpdates: true,
+            }
+        } catch {
+            return { marketInsights: true, weeklyDigest: true, billingReminders: true, flightAlerts: false, productUpdates: true }
+        }
+    })
+    const [notifSaved, setNotifSaved] = useState(false)
+
+    // Theme — persisted to localStorage
+    const [theme, setTheme] = useState(() => {
+        return localStorage.getItem('altus_theme') || 'dark'
     })
 
-    // Appearance state
-    const [appearance, setAppearance] = useState({
-        collapsedSidebar: false,
-        compactMode: false,
-        showApiUsage: true,
-    })
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme)
+        localStorage.setItem('altus_theme', theme)
+    }, [theme])
 
     // Delete account
     const [deleteConfirm, setDeleteConfirm] = useState('')
     const [showDelete, setShowDelete] = useState(false)
 
-    const handleUsernameUpdate = async () => {
-        setUsernameError('')
-        setUsernameMsg('')
-        if (!newUsername.trim() || newUsername.trim().length < 3) {
-            setUsernameError('Username must be at least 3 characters.')
+    const handleNameUpdate = async () => {
+        setNameError('')
+        setNameMsg('')
+        if (!newName.trim() || newName.trim().length < 2) {
+            setNameError('Name must be at least 2 characters.')
             return
         }
-        if (!/^[a-zA-Z0-9_]+$/.test(newUsername.trim())) {
-            setUsernameError('Only letters, numbers, and underscores allowed.')
-            return
-        }
-        setUsernameLoading(true)
-        const { error } = await supabase.auth.updateUser({ data: { username: newUsername.trim() } })
+        setNameLoading(true)
+        const { error } = await supabase.auth.updateUser({ data: { full_name: newName.trim() } })
         if (error) {
-            setUsernameError(error.message)
+            setNameError(error.message)
         } else {
-            setUsernameMsg('Username updated successfully.')
+            setNameMsg('Name updated.')
         }
-        setUsernameLoading(false)
+        setNameLoading(false)
     }
 
     const handlePasswordUpdate = async () => {
@@ -127,16 +132,21 @@ export default function Settings() {
         if (error) {
             setPasswordError(error.message)
         } else {
-            setPasswordMsg('Password updated successfully.')
+            setPasswordMsg('Password updated.')
             setNewPassword('')
             setConfirmPassword('')
-            setCurrentPassword('')
         }
         setPasswordLoading(false)
     }
 
+    const handleNotifSave = () => {
+        localStorage.setItem('altus_notif_prefs', JSON.stringify(notif))
+        setNotifSaved(true)
+        setTimeout(() => setNotifSaved(false), 2000)
+    }
+
     const handleDeleteAccount = async () => {
-        if (deleteConfirm !== username) return
+        if (deleteConfirm !== email) return
         await signOut()
         navigate('/')
     }
@@ -176,27 +186,56 @@ export default function Settings() {
             {activeTab === 'profile' && (
                 <div className="space-y-4">
                     <Section title="PROFILE">
-                        <Field label="Username" hint="Shown in the sidebar and on your profile.">
-                            <div className="space-y-2">
-                                <input
-                                    type="text"
-                                    value={newUsername}
-                                    onChange={e => setNewUsername(e.target.value)}
-                                    maxLength={20}
-                                    placeholder="Enter username"
-                                    style={inputStyle}
-                                />
-                                {usernameError && <p className="font-mono text-xs text-red-400">{usernameError}</p>}
-                                {usernameMsg && <p className="font-mono text-xs text-green-400">{usernameMsg}</p>}
-                                <button
-                                    onClick={handleUsernameUpdate}
-                                    disabled={usernameLoading}
-                                    className="btn-primary text-xs py-2 px-4 w-full sm:w-auto"
-                                >
-                                    {usernameLoading ? 'SAVING...' : 'SAVE USERNAME'}
-                                </button>
+
+                        {/* Avatar — plan synced from auth */}
+                        <Field label="Your Profile" hint="Your display name and current plan.">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-full bg-[#1e3a8a] border border-gold/20 flex items-center justify-center flex-shrink-0">
+                                    <span className="font-display text-xl text-gold">{initials}</span>
+                                </div>
+                                <div>
+                                    <p className="font-mono text-sm text-white">{displayName}</p>
+                                    <span style={{
+                                        fontFamily: 'Bebas Neue, sans-serif',
+                                        fontSize: '11px',
+                                        letterSpacing: '0.12em',
+                                        color: isPro ? '#D4AF37' : '#6b7280',
+                                        background: isPro ? 'rgba(212,175,55,0.1)' : 'rgba(107,114,128,0.1)',
+                                        border: `1px solid ${isPro ? 'rgba(212,175,55,0.25)' : 'rgba(107,114,128,0.2)'}`,
+                                        padding: '2px 8px',
+                                        borderRadius: '4px',
+                                        display: 'inline-block',
+                                        marginTop: '4px',
+                                    }}>
+                                        {isPro ? 'PRO' : 'FREE'}
+                                    </span>
+                                </div>
                             </div>
                         </Field>
+
+                        <div className="border-t border-[#1c1c1c] pt-5">
+                            <Field label="Display Name" hint="Shown in the sidebar and your profile.">
+                                <div className="space-y-2">
+                                    <input
+                                        type="text"
+                                        value={newName}
+                                        onChange={e => setNewName(e.target.value)}
+                                        maxLength={40}
+                                        placeholder="Your full name"
+                                        style={inputStyle}
+                                    />
+                                    {nameError && <p className="font-mono text-xs text-red-400">{nameError}</p>}
+                                    {nameMsg && <p className="font-mono text-xs text-green-400">{nameMsg}</p>}
+                                    <button
+                                        onClick={handleNameUpdate}
+                                        disabled={nameLoading}
+                                        className="btn-primary text-xs py-2 px-4 w-full sm:w-auto"
+                                    >
+                                        {nameLoading ? 'SAVING...' : 'SAVE NAME'}
+                                    </button>
+                                </div>
+                            </Field>
+                        </div>
 
                         <div className="border-t border-[#1c1c1c] pt-5">
                             <Field label="Email" hint="Your login email. Cannot be changed here.">
@@ -209,21 +248,6 @@ export default function Settings() {
                             </Field>
                         </div>
 
-                        <div className="border-t border-[#1c1c1c] pt-5">
-                            <Field label="Avatar" hint="Your initials are used as your avatar.">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-full bg-gulf flex items-center justify-center flex-shrink-0">
-                                        <span className="font-display text-xl text-white">
-                                            {newUsername.substring(0, 2).toUpperCase() || 'AA'}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <p className="font-mono text-xs text-white">{newUsername || 'Your Username'}</p>
-                                        <p className="font-mono text-xs text-gold mt-0.5">PRO TIER</p>
-                                    </div>
-                                </div>
-                            </Field>
-                        </div>
                     </Section>
                 </div>
             )}
@@ -232,29 +256,13 @@ export default function Settings() {
             {activeTab === 'account' && (
                 <div className="space-y-4">
                     <Section title="CHANGE PASSWORD">
-                        <Field label="New Password" hint="Minimum 6 characters.">
+                        <Field label="New Password" hint="Minimum 6 characters. Does not affect Google sign-in.">
                             <div className="space-y-2">
-                                <input
-                                    type="password"
-                                    value={newPassword}
-                                    onChange={e => setNewPassword(e.target.value)}
-                                    placeholder="New password"
-                                    style={inputStyle}
-                                />
-                                <input
-                                    type="password"
-                                    value={confirmPassword}
-                                    onChange={e => setConfirmPassword(e.target.value)}
-                                    placeholder="Confirm new password"
-                                    style={inputStyle}
-                                />
+                                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password" style={inputStyle} />
+                                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Confirm new password" style={inputStyle} />
                                 {passwordError && <p className="font-mono text-xs text-red-400">{passwordError}</p>}
                                 {passwordMsg && <p className="font-mono text-xs text-green-400">{passwordMsg}</p>}
-                                <button
-                                    onClick={handlePasswordUpdate}
-                                    disabled={passwordLoading}
-                                    className="btn-primary text-xs py-2 px-4 w-full sm:w-auto"
-                                >
+                                <button onClick={handlePasswordUpdate} disabled={passwordLoading} className="btn-primary text-xs py-2 px-4 w-full sm:w-auto">
                                     {passwordLoading ? 'UPDATING...' : 'UPDATE PASSWORD'}
                                 </button>
                             </div>
@@ -273,46 +281,40 @@ export default function Settings() {
                     </Section>
 
                     <Section title="DANGER ZONE">
-                        <Field label="Delete account" hint="This action is permanent and cannot be undone.">
+                        <Field label="Delete account" hint="Permanent and cannot be undone. Type your email to confirm.">
                             {!showDelete ? (
-                                <button
-                                    onClick={() => setShowDelete(true)}
-                                    className="font-display text-xs tracking-widest px-4 py-2 border border-red-800 text-red-400 hover:border-red-400 rounded-lg transition-all w-full sm:w-auto"
-                                >
+                                <button onClick={() => setShowDelete(true)} className="font-display text-xs tracking-widest px-4 py-2 border border-red-800 text-red-400 hover:border-red-400 rounded-lg transition-all w-full sm:w-auto">
                                     DELETE ACCOUNT
                                 </button>
                             ) : (
                                 <div className="space-y-2">
-                                    <p className="font-mono text-xs text-red-400">Type your username to confirm deletion:</p>
+                                    <p className="font-mono text-xs text-red-400">Type your email to confirm:</p>
                                     <input
                                         type="text"
                                         value={deleteConfirm}
                                         onChange={e => setDeleteConfirm(e.target.value)}
-                                        placeholder={username}
+                                        placeholder={email}
                                         style={{ ...inputStyle, borderColor: '#7f1d1d' }}
                                     />
                                     <div className="flex gap-2">
                                         <button
                                             onClick={handleDeleteAccount}
-                                            disabled={deleteConfirm !== username}
+                                            disabled={deleteConfirm !== email}
                                             style={{
-                                                background: deleteConfirm === username ? '#dc2626' : '#1c1c1c',
-                                                color: deleteConfirm === username ? '#fff' : '#4b5563',
+                                                background: deleteConfirm === email ? '#dc2626' : '#1c1c1c',
+                                                color: deleteConfirm === email ? '#fff' : '#4b5563',
                                                 border: 'none',
                                                 borderRadius: '8px',
                                                 padding: '8px 16px',
                                                 fontFamily: 'Bebas Neue',
                                                 fontSize: '12px',
                                                 letterSpacing: '0.1em',
-                                                cursor: deleteConfirm === username ? 'pointer' : 'not-allowed',
+                                                cursor: deleteConfirm === email ? 'pointer' : 'not-allowed',
                                             }}
                                         >
                                             CONFIRM DELETE
                                         </button>
-                                        <button
-                                            onClick={() => { setShowDelete(false); setDeleteConfirm('') }}
-                                            className="font-display text-xs tracking-widest px-4 py-2 glass text-gray-400 hover:text-white rounded-lg transition-all"
-                                        >
+                                        <button onClick={() => { setShowDelete(false); setDeleteConfirm('') }} className="font-display text-xs tracking-widest px-4 py-2 glass text-gray-400 hover:text-white rounded-lg transition-all">
                                             CANCEL
                                         </button>
                                     </div>
@@ -325,52 +327,87 @@ export default function Settings() {
 
             {/* NOTIFICATIONS TAB */}
             {activeTab === 'notifications' && (
-                <Section title="NOTIFICATIONS">
-                    {[
-                        { key: 'marketInsights', label: 'Market Insights', hint: 'Daily broker intelligence delivered to your inbox.' },
-                        { key: 'weeklyDigest', label: 'Weekly Digest', hint: 'A summary of market moves, fleet changes, and deals.' },
-                        { key: 'billingReminders', label: 'Billing Reminders', hint: 'Get notified before your subscription renews.' },
-                        { key: 'flightAlerts', label: 'Flight Alerts', hint: 'Real-time notifications for tracked routes.' },
-                        { key: 'productUpdates', label: 'Product Updates', hint: 'New features, tools, and improvements.' },
-                    ].map((item, i, arr) => (
-                        <div key={item.key}>
-                            <Field label={item.label} hint={item.hint}>
-                                <div className="flex justify-start sm:justify-end">
-                                    <Toggle value={notif[item.key]} onChange={v => setNotif(prev => ({ ...prev, [item.key]: v }))} />
-                                </div>
-                            </Field>
-                            {i < arr.length - 1 && <div className="border-t border-[#1c1c1c] mt-5" />}
-                        </div>
-                    ))}
-                </Section>
+                <div className="space-y-4">
+                    <Section title="EMAIL PREFERENCES">
+                        {[
+                            { key: 'marketInsights', label: 'Market Insights', hint: 'Daily broker intelligence delivered to your inbox.' },
+                            { key: 'weeklyDigest', label: 'Weekly Digest', hint: 'A summary of market moves, fleet changes, and route demand.' },
+                            { key: 'billingReminders', label: 'Billing Reminders', hint: 'Get notified before your subscription renews.' },
+                            { key: 'flightAlerts', label: 'Flight Alerts', hint: 'Real-time notifications for tracked routes.' },
+                            { key: 'productUpdates', label: 'Product Updates', hint: 'New features, tools, and platform improvements.' },
+                        ].map((item, i, arr) => (
+                            <div key={item.key}>
+                                <Field label={item.label} hint={item.hint}>
+                                    <div className="flex justify-start sm:justify-end">
+                                        <Toggle value={notif[item.key]} onChange={v => setNotif(prev => ({ ...prev, [item.key]: v }))} />
+                                    </div>
+                                </Field>
+                                {i < arr.length - 1 && <div className="border-t border-[#1c1c1c] mt-5" />}
+                            </div>
+                        ))}
+                    </Section>
+
+                    <div className="flex justify-end">
+                        <button onClick={handleNotifSave} className="btn-primary text-xs py-2 px-6">
+                            {notifSaved ? 'SAVED' : 'SAVE PREFERENCES'}
+                        </button>
+                    </div>
+                </div>
             )}
 
             {/* APPEARANCE TAB */}
             {activeTab === 'appearance' && (
-                <Section title="APPEARANCE">
-                    {[
-                        { key: 'collapsedSidebar', label: 'Collapsed Sidebar by Default', hint: 'Start with the sidebar collapsed on every session.' },
-                        { key: 'compactMode', label: 'Compact Mode', hint: 'Tighter spacing for power users who want more on screen.' },
-                        { key: 'showApiUsage', label: 'Show API Usage in Header', hint: 'Display remaining API calls in the top bar.' },
-                    ].map((item, i, arr) => (
-                        <div key={item.key}>
-                            <Field label={item.label} hint={item.hint}>
-                                <div className="flex justify-start sm:justify-end">
-                                    <Toggle value={appearance[item.key]} onChange={v => setAppearance(prev => ({ ...prev, [item.key]: v }))} />
-                                </div>
-                            </Field>
-                            {i < arr.length - 1 && <div className="border-t border-[#1c1c1c] mt-5" />}
-                        </div>
-                    ))}
-                    <div className="border-t border-[#1c1c1c] pt-5">
-                        <Field label="Theme" hint="Dark mode is the only theme. It is not optional.">
-                            <div className="flex items-center gap-2 px-3 py-2 bg-[#0d0d0d] border border-[#1c1c1c] rounded-lg">
-                                <span className="w-2 h-2 rounded-full bg-gold" />
-                                <span className="font-mono text-xs text-white">Dark — Always</span>
+                <div className="space-y-4">
+                    <Section title="THEME">
+                        <Field label="Interface Theme" hint="Choose how Altus Aero looks for you.">
+                            <div className="flex gap-2">
+                                {[
+                                    { value: 'dark', label: 'Dark', icon: '◑' },
+                                    { value: 'light', label: 'Light', icon: '○' },
+                                ].map((t) => (
+                                    <button
+                                        key={t.value}
+                                        onClick={() => setTheme(t.value)}
+                                        style={{
+                                            flex: 1,
+                                            padding: '10px',
+                                            borderRadius: '8px',
+                                            fontFamily: 'Bebas Neue, sans-serif',
+                                            fontSize: '12px',
+                                            letterSpacing: '0.12em',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            background: theme === t.value ? 'rgba(212,175,55,0.1)' : 'transparent',
+                                            color: theme === t.value ? '#D4AF37' : 'rgba(255,255,255,0.3)',
+                                            border: theme === t.value ? '1px solid rgba(212,175,55,0.3)' : '1px solid #1c1c1c',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px',
+                                        }}
+                                    >
+                                        <span>{t.icon}</span>
+                                        <span>{t.label}</span>
+                                    </button>
+                                ))}
                             </div>
                         </Field>
-                    </div>
-                </Section>
+                    </Section>
+
+                    <Section title="LAYOUT">
+                        <Field label="Collapsed Sidebar by Default" hint="Start with the sidebar collapsed on every session.">
+                            <div className="flex justify-start sm:justify-end">
+                                <Toggle
+                                    value={JSON.parse(localStorage.getItem('altus_collapsed_sidebar') || 'false')}
+                                    onChange={v => {
+                                        localStorage.setItem('altus_collapsed_sidebar', JSON.stringify(v))
+                                        setActiveTab('appearance')
+                                    }}
+                                />
+                            </div>
+                        </Field>
+                    </Section>
+                </div>
             )}
 
             {/* SUBSCRIPTION TAB */}
@@ -379,53 +416,60 @@ export default function Settings() {
                     <Section title="CURRENT PLAN">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <p className="font-display text-3xl text-gold mb-1">PRO</p>
-                                <p className="font-mono text-xs text-gray-400 mb-2">Master the fleet</p>
-                                <p className="font-display text-2xl text-white">$99<span className="text-sm text-gray-400">/mo</span></p>
+                                <p className="font-display text-3xl mb-1" style={{ color: isPro ? '#D4AF37' : '#6b7280' }}>
+                                    {isPro ? 'PRO' : 'FREE'}
+                                </p>
+                                <p className="font-mono text-xs text-gray-400 mb-2">
+                                    {isPro ? 'Full platform access · AI advisor included' : 'Core features · Upgrade to unlock everything'}
+                                </p>
+                                {isPro && (
+                                    <p className="font-display text-2xl text-white">₹2,499<span className="text-sm text-gray-400 font-body">/mo</span></p>
+                                )}
                             </div>
-                            <div className="space-y-2 text-right">
-                                <p className="font-mono text-xs text-gray-500">Next billing date</p>
-                                <p className="font-mono text-sm text-white">Apr 1, 2026</p>
-                                <p className="font-mono text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded inline-block border border-green-400/20">Active</p>
+                            <div>
+                                <span className="font-mono text-xs px-3 py-1.5 rounded border inline-block" style={{
+                                    color: isPro ? '#4ade80' : '#6b7280',
+                                    background: isPro ? 'rgba(74,222,128,0.08)' : 'rgba(107,114,128,0.08)',
+                                    borderColor: isPro ? 'rgba(74,222,128,0.2)' : 'rgba(107,114,128,0.2)',
+                                }}>
+                                    {isPro ? 'Active' : 'Free tier'}
+                                </span>
                             </div>
                         </div>
                     </Section>
 
-                    <Section title="USAGE THIS PERIOD">
-                        {[
-                            { label: 'API Calls', used: 847, total: 1000, color: '#D4AF37' },
-                            { label: 'Reports Generated', used: 12, total: 25, color: '#1e3a8a' },
-                            { label: 'Flight Searches', used: 34, total: 100, color: '#0f3460' },
-                        ].map((m, i) => (
-                            <div key={i}>
-                                <div className="flex items-center justify-between mb-1">
-                                    <p className="font-mono text-xs text-gray-400">{m.label}</p>
-                                    <p className="font-mono text-xs text-gray-500">{m.used} / {m.total}</p>
-                                </div>
-                                <div className="h-2 bg-[#1c1c1c] rounded-full">
-                                    <div className="h-2 rounded-full transition-all" style={{ width: `${(m.used / m.total) * 100}%`, background: m.color }} />
-                                </div>
+                    {!isPro && (
+                        <Section title="UPGRADE TO PRO">
+                            <div className="space-y-4">
+                                <p className="font-body text-sm text-gray-400 leading-relaxed">
+                                    Pro unlocks the full platform — real-time market data, Broker Insights on every aircraft, 3D cockpit views, live flight tracking, client framing on every cost calculation, and the AI Advisor powered by Claude.
+                                </p>
+                                <button
+                                    onClick={() => navigate('/app/billing')}
+                                    className="btn-primary text-xs py-2.5 px-6 w-full sm:w-auto"
+                                >
+                                    VIEW PLANS AND UPGRADE
+                                </button>
                             </div>
-                        ))}
-                    </Section>
+                        </Section>
+                    )}
 
-                    <Section title="MANAGE">
-                        <Field label="Upgrade Plan" hint="Get more API calls, reports, and premium data.">
-                            <button
-                                onClick={() => navigate('/app/billing')}
-                                className="btn-primary text-xs py-2 px-4 w-full sm:w-auto"
-                            >
-                                VIEW ALL PLANS
-                            </button>
-                        </Field>
-                        <div className="border-t border-[#1c1c1c] pt-5">
-                            <Field label="Cancel Subscription" hint="Your access continues until the end of the billing period.">
-                                <button className="font-display text-xs tracking-widest px-4 py-2 border border-[#333] text-gray-500 hover:border-red-800 hover:text-red-400 rounded-lg transition-all w-full sm:w-auto">
-                                    CANCEL PLAN
+                    {isPro && (
+                        <Section title="MANAGE">
+                            <Field label="Billing" hint="View invoices and manage your subscription.">
+                                <button onClick={() => navigate('/app/billing')} className="btn-primary text-xs py-2 px-4 w-full sm:w-auto">
+                                    GO TO BILLING
                                 </button>
                             </Field>
-                        </div>
-                    </Section>
+                            <div className="border-t border-[#1c1c1c] pt-5">
+                                <Field label="Cancel Subscription" hint="Your access continues until the end of the billing period.">
+                                    <button className="font-display text-xs tracking-widest px-4 py-2 border border-[#333] text-gray-500 hover:border-red-800 hover:text-red-400 rounded-lg transition-all w-full sm:w-auto">
+                                        CANCEL PLAN
+                                    </button>
+                                </Field>
+                            </div>
+                        </Section>
+                    )}
                 </div>
             )}
         </div>
