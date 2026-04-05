@@ -1,380 +1,271 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useProPreview } from '../../context/proPreview'
+
+function getLiveUsage() {
+    try {
+        const monthKey = new Date().toISOString().slice(0, 7)
+        const raw = JSON.parse(localStorage.getItem('altus_usage') || '{}')
+        return raw[monthKey] || { sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 }
+    } catch {
+        return { sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 }
+    }
+}
 
 const FREE_FEATURES = [
-    'Fleet guide — all 14 aircraft with full specs',
-    'Academy and learning section',
-    'Basic charter vs ownership calculator',
-    'One sample mission plan',
-    'Market education content',
+    'Dashboard with market education content',
+    'Fleet — browse all 14 aircraft with full specifications',
+    'Cost calculator — unlimited calculations',
+    'Market Intel — 24-hour delayed signals',
+    'Flight tracking — previous day data',
 ]
 
 const PRO_FEATURES = [
     'Everything in Free',
-    'Full mission planner with route map',
-    'Live flight tracker',
-    'Broker intelligence dashboard',
-    'Unlimited cost calculations',
-    'Branded client proposals',
-    'Market data and insights',
-    'Priority support',
+    'Fleet — Broker Insight on every aircraft',
+    'Fleet — Cockpit Brief per aircraft',
+    'Fleet — side-by-side comparison (up to 3 aircraft)',
+    'Intel — live real-time market signals',
+    'Intel — Broker Context on every signal',
+    'Track — live real-time flight intelligence',
+    'Track — interactive map with live positions',
+    'Plan — Client Framing on every calculation',
+    'Plan — Route Optimisation suggestions',
+    'AI Advisor — powered by Claude (coming soon)',
 ]
 
 export default function Billing() {
-    const { user, plan, refreshPlan } = useAuth()
-    const [annual, setAnnual] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState('')
-    const [copied, setCopied] = useState(false)
+    const { user, plan, signOut } = useAuth()
+    const [isProPreview] = useProPreview()
+    const isPro = plan === 'pro' || isProPreview
+    const navigate = useNavigate()
     const [searchParams] = useSearchParams()
+    const [annual, setAnnual] = useState(false)
+    const [usage, setUsage] = useState({ sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 })
 
-    const monthlyPrice = 2499
-    const annualMonthlyPrice = 1999
-    const annualTotalPrice = annualMonthlyPrice * 12
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
 
-    const isPro = plan === 'pro'
-
+    // Reload usage on every mount so numbers are always fresh
     useEffect(() => {
-        if (searchParams.get('upgrade') === 'true' && !isPro) {
-            setTimeout(() => handleUpgrade(), 800)
-        }
+        setUsage(getLiveUsage())
+        // Refresh every 5 seconds in case user is using the app in another tab
+        const iv = setInterval(() => setUsage(getLiveUsage()), 5000)
+        return () => clearInterval(iv)
     }, [])
 
-    const loadRazorpay = () => {
-        return new Promise((resolve) => {
-            if (window.Razorpay) return resolve(true)
-            const script = document.createElement('script')
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-            script.onload = () => resolve(true)
-            script.onerror = () => resolve(false)
-            document.body.appendChild(script)
-        })
-    }
-
-    const handleUpgrade = async () => {
-        setError('')
-        setSuccess('')
-        setLoading(true)
-
-        const loaded = await loadRazorpay()
-        if (!loaded) {
-            setError('Payment system failed to load. Please check your connection.')
-            setLoading(false)
-            return
+    // Auto-open checkout if redirected from homepage GET PRO button
+    useEffect(() => {
+        if (searchParams.get('plan') === 'pro' && !isPro) {
+            setTimeout(() => {
+                const el = document.getElementById('upgrade-section')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+            }, 400)
         }
+    }, [searchParams, isPro])
 
-        const planKey = annual ? 'pro_annual' : 'pro_monthly'
-
-        try {
-            const res = await fetch('/api/payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan: planKey })
-            })
-            const data = await res.json()
-
-            if (!data.success) {
-                setError('Could not create payment. Please try again.')
-                setLoading(false)
-                return
-            }
-
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: data.order.amount,
-                currency: 'INR',
-                name: 'Altus Aero',
-                description: annual ? 'Pro — Annual' : 'Pro — Monthly',
-                order_id: data.order.id,
-                prefill: { email: user?.email || '' },
-                theme: { color: '#D4AF37' },
-                modal: {
-                    ondismiss: () => setLoading(false)
-                },
-                handler: async (response) => {
-                    try {
-                        const verifyRes = await fetch('/api/verify', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                plan: planKey,
-                                user_id: user?.id
-                            })
-                        })
-                        const verifyData = await verifyRes.json()
-                        if (verifyData.success) {
-                            await refreshPlan()
-                            setSuccess('Payment confirmed. Your Pro plan is now active.')
-                        } else {
-                            setError('Payment could not be verified. Contact support with your payment ID: ' + response.razorpay_payment_id)
-                        }
-                    } catch {
-                        setError('Something went wrong during verification. Contact support.')
-                    }
-                    setLoading(false)
-                }
-            }
-
-            const rzp = new window.Razorpay(options)
-            rzp.open()
-
-        } catch {
-            setError('Something went wrong. Please try again.')
-            setLoading(false)
-        }
+    const handleRazorpay = () => {
+        // Razorpay KYC pending — opens support email until wired
+        window.open('mailto:anirudh.jets@gmail.com?subject=Altus Aero Pro Upgrade&body=I would like to upgrade to Pro. Please send payment details.', '_blank')
     }
-
-    const handleCopyReferral = () => {
-        const link = 'https://altus-aero.vercel.app'
-        navigator.clipboard.writeText(link).then(() => {
-            setCopied(true)
-            setTimeout(() => setCopied(false), 2500)
-        })
-    }
-
-    const usageItems = [
-        {
-            label: 'Mission Plans',
-            used: isPro ? 12 : 1,
-            total: isPro ? null : 1,
-            proOnly: false,
-        },
-        {
-            label: 'Flight Searches',
-            used: 0,
-            total: null,
-            proOnly: !isPro,
-        },
-        {
-            label: 'Reports Generated',
-            used: isPro ? 8 : 0,
-            total: isPro ? 25 : null,
-            proOnly: !isPro,
-        },
-    ]
 
     return (
-        <div className="space-y-4 md:space-y-6 max-w-4xl mx-auto">
+        <div className="space-y-4 md:space-y-6 max-w-3xl mx-auto">
 
             {/* Header */}
             <div>
-                <p className="section-label">ACCOUNT AND BILLING</p>
-                <h1 className="font-display text-3xl md:text-4xl text-white">YOUR PLAN</h1>
+                <p className="section-label">SUBSCRIPTION</p>
+                <h1 className="font-display text-3xl md:text-4xl text-white">BILLING</h1>
                 <p className="font-body text-gray-400 text-sm mt-1">
-                    Learn for free. Go Pro when you are ready to close.
+                    Your plan, usage, and subscription management.
                 </p>
             </div>
 
-            {/* Auto-upgrade notice */}
-            {searchParams.get('upgrade') === 'true' && !isPro && (
-                <div className="p-4 rounded-xl border border-gold/30 bg-gold/5 flex items-start gap-3">
-                    <span className="text-gold flex-shrink-0">◆</span>
+            {/* Current Plan */}
+            <div className="glass p-5 md:p-6">
+                <p className="section-label mb-4">CURRENT PLAN</p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
                     <div>
-                        <p className="font-display text-sm text-gold mb-1">OPENING CHECKOUT</p>
-                        <p className="font-body text-xs text-gray-400">
-                            The payment window is loading. If it does not appear, click the Upgrade button below.
+                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '40px', lineHeight: 1, color: isPro ? '#D4AF37' : '#6b7280' }}>
+                            {isPro ? 'PRO' : 'FREE'}
                         </p>
-                    </div>
-                </div>
-            )}
-
-            {/* Current Plan + Usage */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-                {/* Current plan card */}
-                <div className="glass-gold p-5 md:p-6">
-                    <p className="section-label mb-2">CURRENT PLAN</p>
-                    <p className="font-display text-3xl md:text-4xl text-gold mb-1">
-                        {isPro ? 'PRO' : 'FREE'}
-                    </p>
-                    <p className="font-mono text-xs text-gray-400 mb-4">
-                        {isPro ? 'Full access — all tools active' : 'Learning the market'}
-                    </p>
-                    {isPro ? (
-                        <>
-                            <p className="font-display text-2xl text-white mb-1">
-                                {annual ? '₹1,999' : '₹2,499'}
-                                <span className="text-sm text-gray-400">/mo</span>
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '4px' }}>
+                            {isPro ? 'Full platform access · All features active' : 'Core features · Upgrade to unlock everything'}
+                        </p>
+                        {isPro && plan === 'pro' && (
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '24px', color: '#fff', marginTop: '8px' }}>
+                                ₹2,499<span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}> /month</span>
                             </p>
-                            <p className="font-mono text-xs text-gray-500">Next billing: May 1, 2026</p>
-                        </>
-                    ) : (
-                        <p className="font-body text-xs text-gray-500">
-                            Upgrade to Pro to unlock all the professional tools.
-                        </p>
-                    )}
+                        )}
+                        {isProPreview && plan !== 'pro' && (
+                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(212,175,55,0.5)', marginTop: '6px' }}>
+                                Viewing as Pro · Preview mode active from dashboard
+                            </p>
+                        )}
+                    </div>
+                    <span style={{
+                        fontFamily: 'JetBrains Mono, monospace', fontSize: '11px',
+                        padding: '6px 14px', borderRadius: '6px',
+                        color: isPro ? '#4ade80' : '#6b7280',
+                        background: isPro ? 'rgba(74,222,128,0.08)' : 'rgba(107,114,128,0.08)',
+                        border: `1px solid ${isPro ? 'rgba(74,222,128,0.2)' : 'rgba(107,114,128,0.2)'}`,
+                    }}>
+                        {isPro ? 'Active' : 'Free tier'}
+                    </span>
                 </div>
+            </div>
 
-                {/* Usage card */}
-                <div className="glass p-5 md:p-6 md:col-span-2">
-                    <p className="section-label mb-4">USAGE THIS MONTH</p>
-                    <div className="space-y-5">
-                        {usageItems.map((m, i) => {
-                            const pct = m.proOnly
-                                ? 0
-                                : m.total === null
-                                    ? 5
-                                    : Math.min((m.used / m.total) * 100, 100)
+            {/* Live Usage */}
+            <div className="glass p-5 md:p-6">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+                    <div>
+                        <p className="section-label mb-0.5">USAGE THIS MONTH</p>
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>{currentMonth}</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.15)' }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80' }} />
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#4ade80', letterSpacing: '0.08em' }}>LIVE</span>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                        { label: 'Sessions', value: String(usage.sessions || 1), sub: 'platform logins' },
+                        { label: 'Days Active', value: String(usage.days?.length || 1), sub: 'unique days this month' },
+                        { label: 'Routes Planned', value: String(usage.routesPlanned || 0), sub: isPro ? 'unlimited' : 'calculated on Plan page' },
+                        { label: 'Fleet Views', value: String(usage.fleetViews || 0), sub: 'aircraft profiles opened' },
+                    ].map((u, i) => (
+                        <div key={i} style={{ padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.06)' }}>
+                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{u.label}</p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#D4AF37', lineHeight: 1 }}>{u.value}</p>
+                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>{u.sub}</p>
+                        </div>
+                    ))}
+                </div>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.15)', marginTop: '12px' }}>
+                    Usage tracked locally on this device. Routes Planned increments each time you run a calculation on the Plan page. Fleet Views increments each time you open an aircraft profile.
+                </p>
+            </div>
 
-                            return (
-                                <div key={i}>
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <p className="font-mono text-xs text-gray-400">{m.label}</p>
-                                        <p className="font-mono text-xs text-gray-500">
-                                            {m.proOnly
-                                                ? 'Pro only'
-                                                : m.total === null
-                                                    ? `${m.used} used`
-                                                    : `${m.used} / ${m.total}`}
-                                        </p>
-                                    </div>
-                                    <div className="h-1.5 bg-[#1c1c1c] rounded-full overflow-hidden">
-                                        <div
-                                            className="h-1.5 rounded-full transition-all duration-700"
-                                            style={{
-                                                width: `${pct}%`,
-                                                background: m.proOnly ? 'transparent' : '#D4AF37',
-                                                opacity: m.proOnly ? 0 : 1,
-                                            }}
-                                        />
-                                    </div>
+            {/* Upgrade section — only shown to free users */}
+            {!isPro || isProPreview ? (
+                <div id="upgrade-section" className="space-y-4">
+
+                    {/* Toggle */}
+                    <div className="glass p-5 md:p-6">
+                        <p className="section-label mb-4">CHOOSE YOUR PLAN</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: !annual ? '#D4AF37' : 'rgba(255,255,255,0.3)' }}>Monthly</span>
+                            <button
+                                onClick={() => setAnnual(!annual)}
+                                style={{ width: '44px', height: '24px', borderRadius: '12px', position: 'relative', border: 'none', cursor: 'pointer', background: annual ? '#D4AF37' : '#1c1c1c', transition: 'background 0.2s' }}
+                            >
+                                <span style={{ position: 'absolute', top: '4px', left: '4px', width: '16px', height: '16px', borderRadius: '50%', background: '#0a0a0a', transform: annual ? 'translateX(20px)' : 'none', transition: 'transform 0.2s' }} />
+                            </button>
+                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: annual ? '#D4AF37' : 'rgba(255,255,255,0.3)' }}>
+                                Annual <span style={{ color: '#4ade80' }}>— save 20%</span>
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Free */}
+                            <div style={{ padding: '20px', borderRadius: '14px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '20px', color: '#fff', letterSpacing: '0.05em', marginBottom: '4px' }}>Free</p>
+                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '34px', color: '#fff', marginBottom: '16px' }}>
+                                    ₹0<span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}> / forever</span>
+                                </p>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginBottom: '16px' }}>
+                                    {FREE_FEATURES.map((f, i) => (
+                                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                                            <span style={{ color: '#D4AF37', flexShrink: 0, marginTop: '1px' }}>✓</span>
+                                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)' }}>{f}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>CURRENT PLAN</p>
+                            </div>
+
+                            {/* Pro */}
+                            <div style={{ padding: '20px', borderRadius: '14px', background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.3)', position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '60%', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent)' }} />
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '20px', color: '#fff', letterSpacing: '0.05em' }}>Pro</p>
+                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#D4AF37', color: '#0a0a0a', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>RECOMMENDED</span>
                                 </div>
-                            )
-                        })}
+                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '34px', color: '#fff', marginBottom: '2px' }}>
+                                    ₹{annual ? '1,999' : '2,499'}<span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}> /mo</span>
+                                </p>
+                                {annual && (
+                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#4ade80', marginBottom: '4px' }}>₹23,988 billed annually — you save ₹6,000</p>
+                                )}
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)', marginBottom: '16px' }}>
+                                    {annual ? 'Billed once a year' : 'Cancel any time'}
+                                </p>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginBottom: '20px' }}>
+                                    {PRO_FEATURES.map((f, i) => (
+                                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                                            <span style={{ color: '#D4AF37', flexShrink: 0, marginTop: '1px' }}>✓</span>
+                                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>{f}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <button
+                                    onClick={handleRazorpay}
+                                    style={{
+                                        width: '100%', padding: '13px', background: '#D4AF37', color: '#0a0a0a',
+                                        border: 'none', borderRadius: '10px', fontFamily: 'Bebas Neue, sans-serif',
+                                        fontSize: '14px', letterSpacing: '0.15em', cursor: 'pointer', transition: 'opacity 0.2s',
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                                >
+                                    {annual ? 'UPGRADE — ₹23,988/yr' : 'UPGRADE — ₹2,499/mo'}
+                                </button>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: '10px' }}>
+                                    Payment via Razorpay · Secure · Cancel any time
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Status messages */}
-            {success && (
-                <div className="p-4 rounded-xl border border-green-400/30 bg-green-400/5">
-                    <p className="font-mono text-sm text-green-400">{success}</p>
+            ) : (
+                /* Pro subscriber management */
+                <div className="glass p-5 md:p-6 space-y-5">
+                    <p className="section-label">MANAGE SUBSCRIPTION</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                            <div>
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#fff', fontWeight: 500 }}>Billing & Invoices</p>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>View payment history and download invoices</p>
+                            </div>
+                            <button
+                                onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Billing%20Query', '_blank')}
+                                style={{ padding: '8px 16px', borderRadius: '8px', background: 'transparent', border: '1px solid #1c1c1c', color: 'rgba(255,255,255,0.5)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.1em', cursor: 'pointer' }}
+                            >
+                                CONTACT
+                            </button>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                            <div>
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#fff', fontWeight: 500 }}>Cancel Subscription</p>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>Access continues until the end of your billing period</p>
+                            </div>
+                            <button
+                                onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Cancel%20Subscription', '_blank')}
+                                style={{ padding: '8px 16px', borderRadius: '8px', background: 'transparent', border: '1px solid #7f1d1d', color: '#f87171', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.1em', cursor: 'pointer' }}
+                            >
+                                CANCEL
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
-            {error && (
-                <div className="p-4 rounded-xl border border-red-400/30 bg-red-400/5">
-                    <p className="font-mono text-sm text-red-400">{error}</p>
-                </div>
-            )}
 
-            {/* Plans */}
-            <div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                    <p className="section-label">CHOOSE YOUR PLAN</p>
-                    <div className="flex items-center gap-3">
-                        <span className={`font-mono text-xs ${!annual ? 'text-gold' : 'text-gray-500'}`}>Monthly</span>
-                        <button
-                            onClick={() => setAnnual(!annual)}
-                            className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${annual ? 'bg-gold' : 'bg-[#1c1c1c]'}`}
-                        >
-                            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-jet transition-transform ${annual ? 'translate-x-5' : ''}`} />
-                        </button>
-                        <span className={`font-mono text-xs ${annual ? 'text-gold' : 'text-gray-500'}`}>
-                            Annual <span className="text-green-400">-20%</span>
-                        </span>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                    {/* Free */}
-                    <div className={`p-5 md:p-6 rounded-xl border transition-all ${!isPro ? 'border-gold bg-gold/5' : 'border-[#1c1c1c] glass'}`}>
-                        {!isPro && (
-                            <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3">CURRENT PLAN</p>
-                        )}
-                        <p className="font-display text-2xl text-white mb-1">Free</p>
-                        <p className="font-mono text-xs text-gold mb-4">Learn the market — always free</p>
-                        <p className="font-display text-4xl text-white mb-6">
-                            ₹0<span className="text-sm text-gray-400 font-body"> forever</span>
-                        </p>
-                        <ul className="space-y-2 mb-6">
-                            {FREE_FEATURES.map((f, i) => (
-                                <li key={i} className="flex items-start gap-2 font-body text-xs text-gray-300">
-                                    <span className="text-gold mt-0.5 flex-shrink-0">✓</span> {f}
-                                </li>
-                            ))}
-                        </ul>
-                        <button
-                            disabled
-                            className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest border border-[#1c1c1c] text-gray-600 cursor-default"
-                        >
-                            {!isPro ? 'YOUR CURRENT PLAN' : 'FREE PLAN'}
-                        </button>
-                    </div>
-
-                    {/* Pro */}
-                    <div className={`p-5 md:p-6 rounded-xl border transition-all ${isPro ? 'border-gold bg-gold/5' : 'border-gulf bg-gulf/5'}`}>
-                        <p className="font-mono text-xs text-jet bg-gold px-2 py-0.5 rounded inline-block mb-3">
-                            {isPro ? 'CURRENT PLAN' : 'RECOMMENDED'}
-                        </p>
-                        <p className="font-display text-2xl text-white mb-1">Pro</p>
-                        <p className="font-mono text-xs text-gold mb-4">Everything you need to close deals</p>
-                        <p className="font-display text-4xl text-white mb-1">
-                            ₹{annual ? annualMonthlyPrice.toLocaleString() : monthlyPrice.toLocaleString()}
-                            <span className="text-sm text-gray-400 font-body">/mo</span>
-                        </p>
-                        {annual && (
-                            <p className="font-mono text-xs text-green-400 mb-1">₹{annualTotalPrice.toLocaleString()} billed once a year</p>
-                        )}
-                        <p className="font-mono text-xs text-gray-500 mb-4">
-                            {annual ? 'You save ₹6,000 vs monthly' : 'Switch to annual and save ₹6,000/year'}
-                        </p>
-                        <ul className="space-y-2 mb-6">
-                            {PRO_FEATURES.map((f, i) => (
-                                <li key={i} className="flex items-start gap-2 font-body text-xs text-gray-300">
-                                    <span className="text-gold mt-0.5 flex-shrink-0">✓</span> {f}
-                                </li>
-                            ))}
-                        </ul>
-                        {isPro ? (
-                            <button
-                                disabled
-                                className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest bg-gold/20 text-gold border border-gold cursor-default"
-                            >
-                                YOUR CURRENT PLAN
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleUpgrade}
-                                disabled={loading}
-                                className="w-full py-2.5 rounded-lg font-display text-sm tracking-widest transition-all"
-                                style={{
-                                    background: loading ? 'rgba(212,175,55,0.2)' : '#D4AF37',
-                                    color: loading ? '#D4AF37' : '#0a0a0a',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    border: '1px solid #D4AF37'
-                                }}
-                            >
-                                {loading
-                                    ? 'OPENING PAYMENT...'
-                                    : annual
-                                        ? `UPGRADE — ₹${annualTotalPrice.toLocaleString()}/yr`
-                                        : `UPGRADE — ₹${monthlyPrice.toLocaleString()}/mo`}
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {/* Referral */}
-            <div className="glass-gold p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <p className="font-display text-lg md:text-xl text-white mb-1">REFER A BROKER. EARN 20% RECURRING.</p>
-                    <p className="font-body text-gray-300 text-sm">
-                        Share Altus Aero with another broker and earn on every payment they make.
-                    </p>
-                </div>
-                <button
-                    className="btn-primary whitespace-nowrap flex-shrink-0 w-full md:w-auto"
-                    onClick={handleCopyReferral}
-                >
-                    {copied ? 'LINK COPIED' : 'COPY REFERRAL LINK'}
-                </button>
+            {/* Education note */}
+            <div style={{ padding: '16px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', marginBottom: '6px' }}>A NOTE ON FREE FOREVER</p>
+                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
+                    The Free plan will always exist. You can learn the aircraft, run cost calculations, and study the market without paying anything. Pro is for brokers who are actively pitching clients and need the depth that converts a conversation into a deal.
+                </p>
             </div>
         </div>
     )

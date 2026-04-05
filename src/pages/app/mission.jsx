@@ -1,496 +1,376 @@
-import { useState, useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { useProPreview } from '../../context/proPreview'
 
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-})
-
-const currencies = [
-    { code: 'USD', symbol: '$', name: 'US Dollar', rate: 1 },
-    { code: 'INR', symbol: '₹', name: 'Indian Rupee', rate: 83.5 },
-    { code: 'AED', symbol: 'AED', name: 'UAE Dirham', rate: 3.67 },
-    { code: 'GBP', symbol: '£', name: 'British Pound', rate: 0.79 },
-    { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.92 },
-    { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar', rate: 1.35 },
-    { code: 'HKD', symbol: 'HK$', name: 'Hong Kong Dollar', rate: 7.82 },
-    { code: 'JPY', symbol: '¥', name: 'Japanese Yen', rate: 149.5 },
-    { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc', rate: 0.90 },
-    { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar', rate: 1.36 },
-    { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', rate: 1.53 },
-    { code: 'SAR', symbol: 'SAR', name: 'Saudi Riyal', rate: 3.75 },
-    { code: 'QAR', symbol: 'QAR', name: 'Qatari Riyal', rate: 3.64 },
-    { code: 'MYR', symbol: 'RM', name: 'Malaysian Ringgit', rate: 4.72 },
-    { code: 'THB', symbol: '฿', name: 'Thai Baht', rate: 35.1 },
+/* ─── RATES ──────────────────────────────────────────────────────── */
+const CATEGORIES = [
+    { label: 'Light Jet', rateMin: 3200, rateMax: 4500, speed: 450, examples: 'Phenom 300E, Citation CJ4' },
+    { label: 'Midsize', rateMin: 4000, rateMax: 6000, speed: 460, examples: 'Challenger 350 entry, Hawker 900XP' },
+    { label: 'Super Midsize', rateMin: 5500, rateMax: 8500, speed: 475, examples: 'Challenger 350, G280' },
+    { label: 'Large Jet', rateMin: 8500, rateMax: 12000, speed: 480, examples: 'Falcon 7X, Challenger 604' },
+    { label: 'Ultra Long Range', rateMin: 11000, rateMax: 16000, speed: 510, examples: 'G650ER, G700, Global 7500' },
 ]
 
-const airports = [
-    { code: 'VABB', name: 'Chhatrapati Shivaji', city: 'Mumbai, India', lat: 19.0896, lng: 72.8656 },
-    { code: 'VIDP', name: 'Indira Gandhi Intl', city: 'Delhi, India', lat: 28.5562, lng: 77.1000 },
-    { code: 'VOBL', name: 'Kempegowda Intl', city: 'Bangalore, India', lat: 13.1986, lng: 77.7066 },
-    { code: 'VOGO', name: 'Mopa Intl', city: 'Goa, India', lat: 15.3808, lng: 73.8314 },
-    { code: 'VOCI', name: 'Cochin Intl', city: 'Kochi, India', lat: 10.1520, lng: 76.4019 },
-    { code: 'VOHY', name: 'Rajiv Gandhi Intl', city: 'Hyderabad, India', lat: 17.2313, lng: 78.4298 },
-    { code: 'VOMM', name: 'Chennai Intl', city: 'Chennai, India', lat: 12.9900, lng: 80.1693 },
-    { code: 'VAAH', name: 'Sardar Vallabhbhai', city: 'Ahmedabad, India', lat: 23.0772, lng: 72.6347 },
-    { code: 'EGLL', name: 'Heathrow', city: 'London, UK', lat: 51.4775, lng: -0.4614 },
-    { code: 'EGLF', name: 'Farnborough', city: 'Farnborough, UK', lat: 51.2775, lng: -0.7764 },
-    { code: 'LFPB', name: 'Le Bourget', city: 'Paris, France', lat: 48.9694, lng: 2.4414 },
-    { code: 'LFPO', name: 'Orly', city: 'Paris, France', lat: 48.7233, lng: 2.3794 },
-    { code: 'EDDB', name: 'Brandenburg', city: 'Berlin, Germany', lat: 52.3667, lng: 13.5033 },
-    { code: 'LIML', name: 'Linate', city: 'Milan, Italy', lat: 45.4453, lng: 9.2768 },
-    { code: 'LEMD', name: 'Barajas', city: 'Madrid, Spain', lat: 40.4936, lng: -3.5668 },
-    { code: 'LSZH', name: 'Zurich', city: 'Zurich, Switzerland', lat: 47.4647, lng: 8.5492 },
-    { code: 'EHAM', name: 'Schiphol', city: 'Amsterdam, Netherlands', lat: 52.3086, lng: 4.7639 },
-    { code: 'OMDB', name: 'Dubai Intl', city: 'Dubai, UAE', lat: 25.2528, lng: 55.3644 },
-    { code: 'OMDW', name: 'Al Maktoum Intl', city: 'Dubai World Central, UAE', lat: 24.8963, lng: 55.1614 },
-    { code: 'OMAA', name: 'Zayed Intl', city: 'Abu Dhabi, UAE', lat: 24.4330, lng: 54.6511 },
-    { code: 'OTHH', name: 'Hamad Intl', city: 'Doha, Qatar', lat: 25.2731, lng: 51.6081 },
-    { code: 'OERK', name: 'King Khalid Intl', city: 'Riyadh, Saudi Arabia', lat: 24.9578, lng: 46.6989 },
-    { code: 'OEJN', name: 'King Abdulaziz Intl', city: 'Jeddah, Saudi Arabia', lat: 21.6796, lng: 39.1565 },
-    { code: 'OKBK', name: 'Kuwait Intl', city: 'Kuwait City, Kuwait', lat: 29.2267, lng: 47.9689 },
-    { code: 'KTEB', name: 'Teterboro', city: 'New York, USA', lat: 40.8501, lng: -74.0608 },
-    { code: 'KJFK', name: 'JFK Intl', city: 'New York, USA', lat: 40.6413, lng: -73.7781 },
-    { code: 'KLAX', name: 'LAX', city: 'Los Angeles, USA', lat: 33.9425, lng: -118.4081 },
-    { code: 'KVNY', name: 'Van Nuys', city: 'Los Angeles, USA', lat: 34.2098, lng: -118.4898 },
-    { code: 'KORD', name: "O'Hare Intl", city: 'Chicago, USA', lat: 41.9742, lng: -87.9073 },
-    { code: 'KMIA', name: 'Miami Intl', city: 'Miami, USA', lat: 25.7959, lng: -80.2870 },
-    { code: 'KSFO', name: 'San Francisco Intl', city: 'San Francisco, USA', lat: 37.6213, lng: -122.3790 },
-    { code: 'VHHH', name: 'Hong Kong Intl', city: 'Hong Kong', lat: 22.3080, lng: 113.9185 },
-    { code: 'WSSS', name: 'Changi', city: 'Singapore', lat: 1.3644, lng: 103.9915 },
-    { code: 'RJTT', name: 'Haneda', city: 'Tokyo, Japan', lat: 35.5494, lng: 139.7798 },
-    { code: 'RKSS', name: 'Gimpo Intl', city: 'Seoul, South Korea', lat: 37.5583, lng: 126.7906 },
-    { code: 'ZBAA', name: 'Capital Intl', city: 'Beijing, China', lat: 40.0799, lng: 116.6031 },
-    { code: 'VTBS', name: 'Suvarnabhumi', city: 'Bangkok, Thailand', lat: 13.6900, lng: 100.7501 },
-    { code: 'WMKK', name: 'KLIA', city: 'Kuala Lumpur, Malaysia', lat: 2.7456, lng: 101.7072 },
-    { code: 'YSSY', name: 'Kingsford Smith', city: 'Sydney, Australia', lat: -33.9461, lng: 151.1772 },
-    { code: 'YMML', name: 'Melbourne Intl', city: 'Melbourne, Australia', lat: -37.6733, lng: 144.8433 },
-    { code: 'FAOR', name: 'O.R. Tambo Intl', city: 'Johannesburg, South Africa', lat: -26.1392, lng: 28.2460 },
-    { code: 'HECA', name: 'Cairo Intl', city: 'Cairo, Egypt', lat: 30.1219, lng: 31.4056 },
-]
-
-const aircraft = [
-    { model: 'G650ER', manufacturer: 'Gulfstream', category: 'Ultra Long Range', range_nm: 7500, speed_kts: 516, pax: 19, hourly: 12000, purchase: 75, notes: 'Default for Mumbai HNWI wanting London or NYC nonstop.' },
-    { model: 'G700', manufacturer: 'Gulfstream', category: 'Ultra Long Range', range_nm: 7750, speed_kts: 526, pax: 19, hourly: 14000, purchase: 90, notes: '20% more cabin than G650. Stateroom option closes deals.' },
-    { model: 'G800', manufacturer: 'Gulfstream', category: 'Ultra Long Range', range_nm: 8000, speed_kts: 516, pax: 19, hourly: 15000, purchase: 95, notes: 'Longest range Gulfstream. Singapore to NYC nonstop.' },
-    { model: 'Global 7500', manufacturer: 'Bombardier', category: 'Ultra Long Range', range_nm: 7700, speed_kts: 516, pax: 19, hourly: 13500, purchase: 85, notes: 'Range leader. VABB to KLAX nonstop. 4 living spaces.' },
-    { model: 'Global 6500', manufacturer: 'Bombardier', category: 'Super Long Range', range_nm: 6600, speed_kts: 513, pax: 17, hourly: 11000, purchase: 55, notes: 'Best value Bombardier. Mumbai to London with ease.' },
-    { model: 'Falcon 8X', manufacturer: 'Dassault', category: 'Ultra Long Range', range_nm: 6450, speed_kts: 482, pax: 16, hourly: 11500, purchase: 58, notes: '3 engines. Access to high altitude airports others cannot use.' },
-    { model: 'Falcon 7X', manufacturer: 'Dassault', category: 'Long Range', range_nm: 5950, speed_kts: 482, pax: 16, hourly: 10500, purchase: 55, notes: 'European favourite. NetJets Europe clients often prefer this.' },
-    { model: 'Falcon 6X', manufacturer: 'Dassault', category: 'Long Range', range_nm: 5500, speed_kts: 480, pax: 16, hourly: 9500, purchase: 42, notes: 'Widest cabin in its class. Ideal for 8-10hr routes.' },
-    { model: 'Challenger 350', manufacturer: 'Bombardier', category: 'Super Midsize', range_nm: 3200, speed_kts: 466, pax: 10, hourly: 5500, purchase: 27, notes: 'Most sold business jet globally. Mumbai-Dubai-Delhi routes.' },
-    { model: 'Challenger 650', manufacturer: 'Bombardier', category: 'Large Cabin', range_nm: 4000, speed_kts: 459, pax: 12, hourly: 7000, purchase: 32, notes: 'Best large cabin value. Regional Asia routes.' },
-    { model: 'Citation Longitude', manufacturer: 'Cessna', category: 'Super Midsize', range_nm: 3500, speed_kts: 476, pax: 12, hourly: 5800, purchase: 26, notes: 'Quietest cabin in super midsize. First class comfort.' },
-    { model: 'Praetor 600', manufacturer: 'Embraer', category: 'Super Midsize', range_nm: 4018, speed_kts: 466, pax: 12, hourly: 6200, purchase: 21, notes: 'Best range in class. Mumbai to Riyadh nonstop easily.' },
-    { model: 'Phenom 300E', manufacturer: 'Embraer', category: 'Light Jet', range_nm: 2010, speed_kts: 453, pax: 10, hourly: 4500, purchase: 10.5, notes: 'Best entry level jet. Regional India routes. Lowest cost.' },
-    { model: 'Citation CJ4', manufacturer: 'Cessna', category: 'Light Jet', range_nm: 2165, speed_kts: 451, pax: 9, hourly: 3800, purchase: 9, notes: 'Popular light jet for short hops. Easy to operate.' },
-]
-
-function toRad(deg) { return deg * Math.PI / 180 }
-
-function getDistanceNm(lat1, lng1, lat2, lng2) {
-    const R = 3440.065
-    const dLat = toRad(lat2 - lat1)
-    const dLng = toRad(lng2 - lng1)
-    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+/* Common airports for range lookup */
+const AIRPORTS = {
+    VABB: { name: 'Mumbai', lat: 19.09, lon: 72.87 },
+    VIDP: { name: 'Delhi', lat: 28.56, lon: 77.10 },
+    VOBL: { name: 'Bangalore', lat: 13.20, lon: 77.71 },
+    VOMM: { name: 'Chennai', lat: 12.99, lon: 80.18 },
+    EGLL: { name: 'London Heathrow', lat: 51.48, lon: -0.45 },
+    LFPG: { name: 'Paris CDG', lat: 49.01, lon: 2.55 },
+    OMDB: { name: 'Dubai', lat: 25.25, lon: 55.36 },
+    OTHH: { name: 'Doha', lat: 25.27, lon: 51.61 },
+    KJFK: { name: 'New York JFK', lat: 40.64, lon: -73.78 },
+    KLAX: { name: 'Los Angeles', lat: 33.94, lon: -118.41 },
+    YSSY: { name: 'Sydney', lat: -33.95, lon: 151.18 },
+    RJTT: { name: 'Tokyo', lat: 35.55, lon: 139.78 },
+    ZBAA: { name: 'Beijing', lat: 40.08, lon: 116.58 },
+    WSSS: { name: 'Singapore', lat: 1.36, lon: 103.99 },
 }
 
-function getGreatCirclePoints(lat1, lng1, lat2, lng2, n = 80) {
-    const points = []
-    const d = toRad(getDistanceNm(lat1, lng1, lat2, lng2) / 3440.065 * 180 / Math.PI)
-    if (d === 0) return [[lat1, lng1]]
-    for (let i = 0; i <= n; i++) {
-        const f = i / n
-        const A = Math.sin((1 - f) * d) / Math.sin(d)
-        const B = Math.sin(f * d) / Math.sin(d)
-        const x = A * Math.cos(toRad(lat1)) * Math.cos(toRad(lng1)) + B * Math.cos(toRad(lat2)) * Math.cos(toRad(lng2))
-        const y = A * Math.cos(toRad(lat1)) * Math.sin(toRad(lng1)) + B * Math.cos(toRad(lat2)) * Math.sin(toRad(lng2))
-        const z = A * Math.sin(toRad(lat1)) + B * Math.sin(toRad(lat2))
-        points.push([Math.atan2(z, Math.sqrt(x ** 2 + y ** 2)) * 180 / Math.PI, Math.atan2(y, x) * 180 / Math.PI])
-    }
-    return points
+function toRad(d) { return (d * Math.PI) / 180 }
+
+function greatCircleNm(origin, dest) {
+    const a = AIRPORTS[origin.toUpperCase()]
+    const b = AIRPORTS[dest.toUpperCase()]
+    if (!a || !b) return null
+    const R = 3440 // nm
+    const dLat = toRad(b.lat - a.lat)
+    const dLon = toRad(b.lon - a.lon)
+    const sin = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2
+    return Math.round(R * 2 * Math.asin(Math.sqrt(sin)))
 }
 
-function MapUpdater({ from, to }) {
-    const map = useMap()
-    useEffect(() => {
-        if (from && to) {
-            map.fitBounds(L.latLngBounds([[from.lat, from.lng], [to.lat, to.lng]]), { padding: [40, 40] })
-        } else if (from) {
-            map.setView([from.lat, from.lng], 5)
-        }
-    }, [from, to, map])
-    return null
+/* ─── INCREMENT MISSION COUNTER ─────────────────────────────────── */
+function recordMissionPlan() {
+    try {
+        const monthKey = new Date().toISOString().slice(0, 7)
+        const raw = JSON.parse(localStorage.getItem('altus_usage') || '{}')
+        if (!raw[monthKey]) raw[monthKey] = { sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 }
+        raw[monthKey].routesPlanned = (raw[monthKey].routesPlanned || 0) + 1
+        localStorage.setItem('altus_usage', JSON.stringify(raw))
+    } catch { /* silent */ }
+}
+
+function ProLock({ navigate, label, children }) {
+    return (
+        <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ filter: 'blur(3px)', userSelect: 'none', pointerEvents: 'none' }}>
+                {children}
+            </div>
+            <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(10,10,10,0.82)', backdropFilter: 'blur(2px)',
+                borderRadius: '12px', gap: '10px', padding: '16px',
+            }}>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em' }}>PRO FEATURE</span>
+                {label && <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: '240px', lineHeight: 1.5 }}>{label}</p>}
+                <button
+                    onClick={() => navigate('/app/billing')}
+                    style={{ padding: '8px 20px', borderRadius: '8px', background: '#D4AF37', color: '#0a0a0a', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.12em', border: 'none', cursor: 'pointer' }}
+                >
+                    UPGRADE TO PRO
+                </button>
+            </div>
+        </div>
+    )
 }
 
 const inputStyle = {
-    background: '#0d0d0d',
-    border: '1px solid #1c1c1c',
-    borderRadius: '8px',
-    padding: '8px 12px',
-    color: 'white',
-    fontFamily: 'JetBrains Mono',
-    fontSize: '13px',
-    width: '100%',
-    outline: 'none',
-    boxSizing: 'border-box',
+    width: '100%', padding: '12px 14px',
+    background: 'rgba(255,255,255,0.04)', border: '1px solid #1c1c1c',
+    borderRadius: '10px', color: '#fff',
+    fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', outline: 'none',
+    transition: 'border-color 0.2s', boxSizing: 'border-box',
 }
 
-const selectStyle = { ...inputStyle }
+export default function Plan() {
+    const { plan } = useAuth()
+    const [isProPreview] = useProPreview()
+    const isPro = plan === 'pro' || isProPreview
+    const navigate = useNavigate()
 
-export default function Mission() {
-    const [from, setFrom] = useState(airports[0])
-    const [to, setTo] = useState(airports[8])
-    const [selectedAircraft, setSelectedAircraft] = useState(aircraft[0])
-    const [hours, setHours] = useState(200)
-    const [passengers, setPassengers] = useState(4)
-    const [currency, setCurrency] = useState(currencies[0])
-    const [activeTab, setActiveTab] = useState('route')
+    const [origin, setOrigin] = useState('')
+    const [destination, setDestination] = useState('')
+    const [manualNm, setManualNm] = useState('')
+    const [pax, setPax] = useState(4)
+    const [categoryIndex, setCategoryIndex] = useState(2)
+    const [result, setResult] = useState(null)
+    const [error, setError] = useState('')
+    const [distanceUsed, setDistanceUsed] = useState(null)
 
-    const [calcHours, setCalcHours] = useState(200)
-    const [charterRate, setCharterRate] = useState(12000)
-    const [fuelPrice, setFuelPrice] = useState(6.5)
-    const [ownershipCost, setOwnershipCost] = useState(6888)
-    const [crewCost, setCrewCost] = useState(400000)
-    const [maintenance, setMaintenance] = useState(380000)
-    const [hangar, setHangar] = useState(150000)
-    const [insurance, setInsurance] = useState(120000)
+    const cat = CATEGORIES[categoryIndex]
 
-    const distance = from && to ? Math.round(getDistanceNm(from.lat, from.lng, to.lat, to.lng)) : 0
-    const flightTime = selectedAircraft ? (distance / selectedAircraft.speed_kts).toFixed(1) : 0
-    const nonstop = selectedAircraft ? distance <= selectedAircraft.range_nm : false
+    const handleCalculate = () => {
+        setError('')
+        setResult(null)
 
-    const fuelCost = Math.round(distance * 8.5)
-    const landingFee = 2200
-    const handlingFee = 1800
-    const overflightPermits = distance > 2000 ? 3500 : 1200
-    const crewExpenses = parseFloat(flightTime) > 8 ? 6000 : 4000
-    const totalTripCost = fuelCost + landingFee + handlingFee + overflightPermits + crewExpenses
+        // Try ICAO lookup first, then fall back to manual distance
+        let nm = null
+        const origUpper = origin.trim().toUpperCase()
+        const destUpper = destination.trim().toUpperCase()
 
-    const annualCharterCost = (hours || 0) * selectedAircraft.hourly
-    const annualOwnershipCost = Math.round(selectedAircraft.purchase * 1000000 * 0.12 + 800000)
-    const breakevenHours = Math.round(annualOwnershipCost / selectedAircraft.hourly)
-    const recommendation = (hours || 0) >= breakevenHours ? 'ownership' : 'charter'
+        if (origUpper && destUpper) {
+            nm = greatCircleNm(origUpper, destUpper)
+            if (!nm && !manualNm) {
+                setError(`Airport code not found. Enter distance in nm manually below, or use a known code like VABB, EGLL, OMDB, KJFK.`)
+                return
+            }
+        }
 
-    const annualCharterTotal = (calcHours || 0) * (charterRate || 0)
-    const annualOwnershipTotal = (ownershipCost || 0) * (calcHours || 0) * (fuelPrice || 0) + (crewCost || 0) + (maintenance || 0) + (hangar || 0) + (insurance || 0)
-    const advBreakeven = charterRate ? Math.round(annualOwnershipTotal / charterRate) : 0
-    const advRecommendation = (calcHours || 0) >= advBreakeven ? 'OWNERSHIP' : 'CHARTER'
-    const saving = Math.abs(annualCharterTotal - annualOwnershipTotal)
+        if (!nm && manualNm) {
+            nm = parseInt(manualNm, 10)
+            if (isNaN(nm) || nm < 50 || nm > 12000) {
+                setError('Please enter a valid distance between 50 and 12,000nm.')
+                return
+            }
+        }
 
-    const fmt = (val) => {
-        const converted = (val || 0) * currency.rate
-        if (converted >= 10000000) return `${currency.symbol}${(converted / 10000000).toFixed(1)}Cr`
-        if (converted >= 100000) return `${currency.symbol}${(converted / 100000).toFixed(1)}L`
-        if (converted >= 1000) return `${currency.symbol}${(converted / 1000).toFixed(0)}K`
-        return `${currency.symbol}${converted.toFixed(0)}`
+        if (!nm) {
+            setError('Enter origin and destination airport codes, or a distance in nm.')
+            return
+        }
+
+        setDistanceUsed(nm)
+
+        // Add 10% for reserves and routing deviations
+        const adjustedNm = Math.round(nm * 1.10)
+        const hours = adjustedNm / cat.speed
+        const costMin = Math.round(hours * cat.rateMin / 1000) * 1000
+        const costMax = Math.round(hours * cat.rateMax / 1000) * 1000
+        const perSeatMin = Math.round(costMin / pax / 100) * 100
+        const perSeatMax = Math.round(costMax / pax / 100) * 100
+        const midCost = Math.round((costMin + costMax) / 2)
+
+        recordMissionPlan()
+
+        setResult({
+            nm, adjustedNm, hours, costMin, costMax, perSeatMin, perSeatMax, midCost,
+            categoryLabel: cat.label,
+            aircraftExamples: cat.examples,
+            pax,
+        })
     }
 
-    const routePoints = from && to ? getGreatCirclePoints(from.lat, from.lng, to.lat, to.lng) : []
+    const getClientFraming = (r) => {
+        const businessClassRate = 1800
+        const bcTotal = businessClassRate * r.pax
+        const bcVsCharter = Math.round(r.midCost / bcTotal * 10) / 10
+        return `At approximately $${(r.midCost / 1000).toFixed(0)}k for ${r.pax} passengers, that is $${r.perSeatMax.toLocaleString()} per seat. Compare that to ${r.pax} business class tickets at roughly $${businessClassRate.toLocaleString()} each — a total of $${bcTotal.toLocaleString()} — and you are looking at ${bcVsCharter}x the cost for full privacy, no connections, door-to-door convenience, and zero time in an airport queue. For clients who value their time, the conversation is not about price. It is about what they are buying per dollar.`
+    }
 
-    const tabs = [
-        { key: 'route', label: 'ROUTE PLANNER' },
-        { key: 'calculator', label: 'COST CALCULATOR' },
-    ]
-
-    const numInput = (label, value, setter, unit = '') => (
-        <div>
-            <div className="flex items-center justify-between mb-1.5">
-                <p className="font-mono text-xs text-gray-400">{label}</p>
-                {unit && <p className="font-mono text-xs text-gray-600">{unit}</p>}
-            </div>
-            <input
-                type="number"
-                value={value}
-                onChange={e => setter(parseFloat(e.target.value) || 0)}
-                style={inputStyle}
-            />
-        </div>
-    )
+    const getRouteOptimisation = (r) => {
+        const lowerCat = CATEGORIES[Math.max(0, categoryIndex - 1)]
+        const canDowngrade = r.nm < 2800 && categoryIndex > 0
+        return canDowngrade
+            ? `Your distance of ${r.nm}nm is within range of a ${lowerCat.label}. At $${Math.round(r.hours * lowerCat.rateMin / 1000) * 1000 / 1000}k–$${Math.round(r.hours * lowerCat.rateMax / 1000) * 1000 / 1000}k estimated, you save ${Math.round((r.costMin - r.hours * lowerCat.rateMax) / 1000) * -1}k–${Math.round((r.costMax - r.hours * lowerCat.rateMin) / 1000)}k. If the client can accommodate a smaller cabin, present this as the cost-optimised option and let them choose. You look like the advisor, not the salesperson.`
+            : `A ${r.categoryLabel} is the right category for this route at ${r.nm}nm. Going down a category would compromise range safety margins. Going up a category adds $${(Math.round(r.hours * CATEGORIES[Math.min(categoryIndex + 1, 4)].rateMin / 1000) * 1000 / 1000).toFixed(0)}k+ but unlocks a larger cabin — worth presenting to clients who mention comfort or need to work in flight.`
+    }
 
     return (
-        <div className="space-y-4 md:space-y-6 max-w-screen-2xl mx-auto">
+        <div className="space-y-4 md:space-y-6 max-w-3xl">
 
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            <div>
+                <p className="section-label">CHARTER COST CALCULATOR</p>
+                <h1 className="font-display text-3xl md:text-4xl text-white">PLAN</h1>
+                <p className="font-body text-gray-400 text-sm mt-1">
+                    Calculate any charter cost. Frame it for the client.
+                </p>
+            </div>
+
+            {/* Inputs */}
+            <div className="glass p-5 md:p-6 space-y-5">
+                <p className="section-label">ROUTE DETAILS</p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '8px' }}>ORIGIN (ICAO)</p>
+                        <input
+                            type="text"
+                            placeholder="e.g. VABB"
+                            value={origin}
+                            onChange={(e) => setOrigin(e.target.value.toUpperCase().slice(0, 4))}
+                            style={inputStyle}
+                            onFocus={(e) => (e.target.style.borderColor = 'rgba(212,175,55,0.4)')}
+                            onBlur={(e) => (e.target.style.borderColor = '#1c1c1c')}
+                        />
+                    </div>
+                    <div>
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '8px' }}>DESTINATION (ICAO)</p>
+                        <input
+                            type="text"
+                            placeholder="e.g. EGLL"
+                            value={destination}
+                            onChange={(e) => setDestination(e.target.value.toUpperCase().slice(0, 4))}
+                            style={inputStyle}
+                            onFocus={(e) => (e.target.style.borderColor = 'rgba(212,175,55,0.4)')}
+                            onBlur={(e) => (e.target.style.borderColor = '#1c1c1c')}
+                        />
+                    </div>
+                </div>
+
+                {/* Supported airports hint */}
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', lineHeight: 1.6 }}>
+                    Supported: VABB · VIDP · VOBL · VOMM · EGLL · LFPG · OMDB · OTHH · KJFK · KLAX · YSSY · RJTT · ZBAA · WSSS
+                </p>
+
                 <div>
-                    <p className="section-label">MISSION PLANNING CENTER</p>
-                    <h1 className="font-display text-3xl md:text-4xl text-white">PLAN MISSION</h1>
-                    <p className="font-body text-gray-400 text-sm mt-1">Plan every detail before the client asks.</p>
+                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '8px' }}>DISTANCE (NM) — OPTIONAL IF USING ICAO CODES ABOVE</p>
+                    <input
+                        type="number"
+                        placeholder="Enter distance in nautical miles"
+                        value={manualNm}
+                        onChange={(e) => setManualNm(e.target.value)}
+                        style={inputStyle}
+                        onFocus={(e) => (e.target.style.borderColor = 'rgba(212,175,55,0.4)')}
+                        onBlur={(e) => (e.target.style.borderColor = '#1c1c1c')}
+                    />
                 </div>
-                <div className="glass p-3 flex items-center gap-3 self-start">
-                    <p className="font-mono text-xs text-gray-500 whitespace-nowrap">CURRENCY</p>
-                    <select
-                        value={currency.code}
-                        onChange={e => setCurrency(currencies.find(c => c.code === e.target.value))}
-                        style={{ ...selectStyle, width: 'auto', minWidth: '140px' }}
-                    >
-                        {currencies.map(c => (
-                            <option key={c.code} value={c.code}>{c.code} — {c.name}</option>
-                        ))}
-                    </select>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '8px' }}>PASSENGERS</p>
+                        <input
+                            type="number"
+                            min={1} max={19}
+                            value={pax}
+                            onChange={(e) => setPax(Math.min(19, Math.max(1, parseInt(e.target.value) || 1)))}
+                            style={inputStyle}
+                            onFocus={(e) => (e.target.style.borderColor = 'rgba(212,175,55,0.4)')}
+                            onBlur={(e) => (e.target.style.borderColor = '#1c1c1c')}
+                        />
+                    </div>
+                    <div>
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '8px' }}>AIRCRAFT CATEGORY</p>
+                        <select
+                            value={categoryIndex}
+                            onChange={(e) => setCategoryIndex(parseInt(e.target.value))}
+                            style={{ ...inputStyle, cursor: 'pointer' }}
+                        >
+                            {CATEGORIES.map((c, i) => (
+                                <option key={i} value={i}>{c.label}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
+
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)' }}>
+                    {cat.label}: {cat.examples}
+                </p>
+
+                {error && (
+                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#f87171', padding: '10px 14px', background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.15)', borderRadius: '8px' }}>
+                        {error}
+                    </p>
+                )}
+
+                <button
+                    onClick={handleCalculate}
+                    style={{
+                        width: '100%', padding: '14px', background: '#D4AF37', color: '#0a0a0a',
+                        border: 'none', borderRadius: '10px', fontFamily: 'Bebas Neue, sans-serif',
+                        fontSize: '15px', letterSpacing: '0.15em', cursor: 'pointer', transition: 'opacity 0.2s',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                >
+                    CALCULATE CHARTER COST
+                </button>
             </div>
 
-            {/* Tabs — 2 only, Fleet Guide removed */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
-                {tabs.map(tab => (
-                    <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`font-display text-xs sm:text-sm tracking-widest px-4 sm:px-6 py-2.5 rounded-lg transition-all whitespace-nowrap flex-shrink-0 ${activeTab === tab.key ? 'bg-gold text-jet' : 'glass text-gray-400 hover:text-gold'}`}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
+            {/* Result */}
+            {result && (
+                <div className="space-y-4">
 
-            {/* ROUTE PLANNER */}
-            {activeTab === 'route' && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-
-                    {/* Controls */}
-                    <div className="space-y-4 lg:col-span-1">
-
-                        {/* Route Selector */}
-                        <div className="glass p-4 md:p-5">
-                            <p className="section-label mb-4">ROUTE</p>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-mono text-xs text-gray-500 mb-1">DEPARTURE</p>
-                                    <select value={from.code} onChange={e => setFrom(airports.find(a => a.code === e.target.value))} style={selectStyle}>
-                                        {airports.map(a => <option key={a.code} value={a.code}>{a.code} — {a.city}</option>)}
-                                    </select>
-                                </div>
-                                <div className="flex items-center justify-center">
-                                    <div className="h-px flex-1 bg-[#1c1c1c]" />
-                                    <span className="font-mono text-xs text-gold mx-3">→</span>
-                                    <div className="h-px flex-1 bg-[#1c1c1c]" />
-                                </div>
-                                <div>
-                                    <p className="font-mono text-xs text-gray-500 mb-1">DESTINATION</p>
-                                    <select value={to.code} onChange={e => setTo(airports.find(a => a.code === e.target.value))} style={selectStyle}>
-                                        {airports.map(a => <option key={a.code} value={a.code}>{a.code} — {a.city}</option>)}
-                                    </select>
-                                </div>
+                    {/* Cost output */}
+                    <div className="glass p-5 md:p-6">
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+                            <div>
+                                <p className="section-label mb-1">ESTIMATED CHARTER COST</p>
+                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px', color: '#fff', lineHeight: 1 }}>
+                                    ${(result.costMin / 1000).toFixed(0)}k – ${(result.costMax / 1000).toFixed(0)}k
+                                </p>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>
+                                    One way · {result.categoryLabel} · {result.hours.toFixed(1)} hrs
+                                </p>
                             </div>
-                            {from && to && (
-                                <div className="mt-4 grid grid-cols-2 gap-3">
-                                    <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500 mb-1">Distance</p>
-                                        <p className="font-display text-lg text-white">{distance.toLocaleString()}<span className="text-xs text-gray-500 ml-1">nm</span></p>
-                                    </div>
-                                    <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500 mb-1">Flight Time</p>
-                                        <p className="font-display text-lg text-white">{flightTime}<span className="text-xs text-gray-500 ml-1">hrs</span></p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Aircraft Selector */}
-                        <div className="glass p-4 md:p-5">
-                            <p className="section-label mb-4">AIRCRAFT</p>
-                            <div className="space-y-2 max-h-64 md:max-h-80 overflow-y-auto pr-1">
-                                {aircraft.map((ac, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setSelectedAircraft(ac)}
-                                        className={`w-full text-left p-3 rounded-lg border transition-all ${selectedAircraft.model === ac.model ? 'border-gold bg-gold/5' : 'border-[#1c1c1c] hover:border-gulf'}`}
-                                    >
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="min-w-0">
-                                                <p className="font-display text-sm text-white">{ac.model}</p>
-                                                <p className="font-mono text-xs text-gray-500 truncate">{ac.manufacturer} · {ac.range_nm.toLocaleString()}nm</p>
-                                            </div>
-                                            <p className="font-mono text-xs text-gold whitespace-nowrap flex-shrink-0">{fmt(ac.hourly)}/hr</p>
-                                        </div>
-                                    </button>
-                                ))}
+                            <div style={{ textAlign: 'right' }}>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.25)', marginBottom: '3px' }}>PER SEAT</p>
+                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#D4AF37' }}>
+                                    ${result.perSeatMin.toLocaleString()} – ${result.perSeatMax.toLocaleString()}
+                                </p>
                             </div>
                         </div>
 
-                        {/* Parameters — number inputs */}
-                        <div className="glass p-4 md:p-5">
-                            <p className="section-label mb-4">PARAMETERS</p>
-                            <div className="space-y-4">
-                                {numInput('Annual Flight Hours', hours, setHours, 'hrs/year')}
-                                {numInput('Passengers', passengers, setPassengers, `max ${selectedAircraft.pax}`)}
-                            </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { label: 'Route Distance', value: `${result.nm.toLocaleString()} nm` },
+                                { label: 'With Reserves', value: `${result.adjustedNm.toLocaleString()} nm` },
+                                { label: 'Passengers', value: result.pax },
+                            ].map((item, i) => (
+                                <div key={i} style={{ padding: '10px', borderRadius: '8px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '8px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', marginBottom: '4px' }}>{item.label.toUpperCase()}</p>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: 'rgba(255,255,255,0.7)' }}>{item.value}</p>
+                                </div>
+                            ))}
                         </div>
+
+                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.18)', marginTop: '12px', lineHeight: 1.6 }}>
+                            Estimates based on current charter market rates for {result.categoryLabel} category aircraft. Actual pricing varies by operator, routing, and availability. Always verify with operators before quoting to a client.
+                        </p>
                     </div>
 
-                    {/* Map + Results */}
-                    <div className="lg:col-span-2 space-y-4">
-
-                        {/* Nonstop Banner */}
-                        <div className={`p-3 md:p-4 rounded-xl border flex flex-wrap items-center gap-3 ${nonstop ? 'border-green-400/30 bg-green-400/5' : 'border-red-400/30 bg-red-400/5'}`}>
-                            <span className={`font-display text-xl md:text-2xl ${nonstop ? 'text-green-400' : 'text-red-400'}`}>
-                                {nonstop ? 'NONSTOP' : 'FUEL STOP REQUIRED'}
-                            </span>
-                            <p className="font-body text-xs md:text-sm text-gray-300">
-                                {nonstop
-                                    ? `${selectedAircraft.model} range: ${selectedAircraft.range_nm.toLocaleString()}nm. Route: ${distance.toLocaleString()}nm. Confirmed.`
-                                    : `${selectedAircraft.model} range (${selectedAircraft.range_nm.toLocaleString()}nm) is less than ${distance.toLocaleString()}nm.`}
+                    {/* Client Framing — Pro only */}
+                    {isPro ? (
+                        <div style={{ padding: '20px', borderRadius: '12px', background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.15)' }}>
+                            <p className="section-label mb-3">CLIENT FRAMING</p>
+                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.85 }}>
+                                {getClientFraming(result)}
                             </p>
                         </div>
-
-                        {/* Map */}
-                        <div className="glass overflow-hidden rounded-xl" style={{ height: '300px' }}>
-                            <MapContainer center={[20, 50]} zoom={3} style={{ height: '100%', width: '100%' }} zoomControl>
-                                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
-                                <MapUpdater from={from} to={to} />
-                                {from && <Marker position={[from.lat, from.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{from.code}</strong><br />{from.city}</div></Popup></Marker>}
-                                {to && <Marker position={[to.lat, to.lng]}><Popup><div style={{ background: '#0a0a0a', color: '#D4AF37', fontFamily: 'JetBrains Mono', fontSize: '12px', padding: '4px' }}><strong>{to.code}</strong><br />{to.city}</div></Popup></Marker>}
-                                {routePoints.length > 0 && <Polyline positions={routePoints} color="#D4AF37" weight={2} opacity={0.8} dashArray="6 4" />}
-                            </MapContainer>
-                        </div>
-
-                        {/* Trip Cost + Charter vs Ownership */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="glass p-4 md:p-5">
-                                <p className="section-label mb-4">TRIP COST — {currency.code}</p>
-                                <div className="space-y-2">
-                                    {[
-                                        { label: 'Fuel Cost', value: fuelCost },
-                                        { label: 'Landing Fee', value: landingFee },
-                                        { label: 'Handling Fee', value: handlingFee },
-                                        { label: 'Overflight Permits', value: overflightPermits },
-                                        { label: 'Crew Expenses', value: crewExpenses },
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-center justify-between py-1.5 border-b border-[#1c1c1c]">
-                                            <p className="font-mono text-xs text-gray-400">{item.label}</p>
-                                            <p className="font-mono text-xs text-white">{fmt(item.value)}</p>
-                                        </div>
-                                    ))}
-                                    <div className="flex items-center justify-between pt-2">
-                                        <p className="font-display text-sm text-gold">TOTAL TRIP</p>
-                                        <p className="font-display text-lg text-gold">{fmt(totalTripCost)}</p>
-                                    </div>
-                                </div>
+                    ) : (
+                        <ProLock navigate={navigate} label="Client Framing shows you exactly how to present this number so the client understands the value.">
+                            <div style={{ padding: '20px', borderRadius: '12px', background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.15)' }}>
+                                <p className="section-label mb-3">CLIENT FRAMING</p>
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.85 }}>
+                                    At approximately $X per seat — comparable to business class, but with full privacy and no connections — the conversation is not about price. It is about what the client is buying per dollar.
+                                </p>
                             </div>
+                        </ProLock>
+                    )}
 
-                            <div className="glass p-4 md:p-5">
-                                <p className="section-label mb-4">CHARTER VS OWNERSHIP</p>
-                                <div className="space-y-3">
-                                    <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter ({hours || 0} hrs)</p>
-                                        <p className="font-display text-xl text-white">{fmt(annualCharterCost)}</p>
-                                    </div>
-                                    <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500 mb-1">Annual Ownership</p>
-                                        <p className="font-display text-xl text-white">{fmt(annualOwnershipCost)}</p>
-                                    </div>
-                                    <div className="bg-[#0d0d0d] rounded-lg p-3 border border-[#1c1c1c]">
-                                        <p className="font-mono text-xs text-gray-500 mb-1">Breakeven</p>
-                                        <p className="font-display text-xl text-white">{breakevenHours} hrs/year</p>
-                                    </div>
-                                    <div className={`p-3 rounded-lg border ${recommendation === 'ownership' ? 'border-gold bg-gold/5' : 'border-gulf bg-gulf/5'}`}>
-                                        <p className="font-mono text-xs text-gray-500 mb-1">RECOMMENDATION</p>
-                                        <p className="font-display text-xl text-gold">{recommendation.toUpperCase()}</p>
-                                        <p className="font-body text-xs text-gray-400 mt-1">
-                                            {recommendation === 'ownership'
-                                                ? `At ${hours || 0} hrs/yr, ownership saves ${fmt(annualCharterCost - annualOwnershipCost)} annually.`
-                                                : `At ${hours || 0} hrs/yr, charter saves ${fmt(annualOwnershipCost - annualCharterCost)} annually.`}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                    {/* Route Optimisation — Pro only */}
+                    {isPro ? (
+                        <div style={{ padding: '20px', borderRadius: '12px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                            <p className="section-label mb-3">ROUTE OPTIMISATION</p>
+                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.85 }}>
+                                {getRouteOptimisation(result)}
+                            </p>
                         </div>
-
-                        {/* Mission Summary */}
-                        <div className="glass-gold p-4 md:p-5">
-                            <p className="section-label mb-4">MISSION SUMMARY</p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Route</p><p className="font-display text-base md:text-lg text-white">{from.code} → {to.code}</p></div>
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Aircraft</p><p className="font-display text-base md:text-lg text-white">{selectedAircraft.model}</p></div>
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Trip Cost</p><p className="font-display text-base md:text-lg text-gold">{fmt(totalTripCost)}</p></div>
-                                <div><p className="font-mono text-xs text-gray-500 mb-1">Recommendation</p><p className="font-display text-base md:text-lg text-gold">{recommendation.toUpperCase()}</p></div>
+                    ) : (
+                        <ProLock navigate={navigate} label="Route Optimisation suggests the best aircraft category for this budget and route.">
+                            <div style={{ padding: '20px', borderRadius: '12px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                                <p className="section-label mb-3">ROUTE OPTIMISATION</p>
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.85 }}>
+                                    Consider a different aircraft category for this route and passenger count. Pro unlocks the full optimisation.
+                                </p>
                             </div>
-                        </div>
-                    </div>
+                        </ProLock>
+                    )}
                 </div>
             )}
 
-            {/* COST CALCULATOR */}
-            {activeTab === 'calculator' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                    <div className="glass p-4 md:p-6">
-                        <p className="section-label mb-5">ANNUAL PARAMETERS — {currency.code}</p>
-                        <div className="space-y-4">
-                            {numInput('Annual Flight Hours', calcHours, setCalcHours, 'hrs')}
-                            {numInput('Charter Rate (USD/hr)', charterRate, setCharterRate, '/hr')}
-                            {numInput('Fuel Price (USD/gal)', fuelPrice, setFuelPrice, '/gal')}
-                            {numInput('Ownership Variable Cost (USD/hr)', ownershipCost, setOwnershipCost, '/hr')}
-                            {numInput('Annual Crew Cost (USD)', crewCost, setCrewCost)}
-                            {numInput('Annual Maintenance (USD)', maintenance, setMaintenance)}
-                            {numInput('Annual Hangar (USD)', hangar, setHangar)}
-                            {numInput('Annual Insurance (USD)', insurance, setInsurance)}
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="glass-gold p-4 md:p-6">
-                            <p className="section-label mb-5">RESULTS</p>
-                            <div className="space-y-4">
-                                <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
-                                    <p className="font-mono text-xs text-gray-500 mb-1">Annual Charter Cost ({calcHours || 0} hrs)</p>
-                                    <p className="font-display text-2xl md:text-3xl text-white">{fmt(annualCharterTotal)}</p>
-                                    <p className="font-mono text-xs text-gray-600 mt-1">{fmt(charterRate)}/hr × {calcHours || 0} hrs</p>
-                                </div>
-                                <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
-                                    <p className="font-mono text-xs text-gray-500 mb-1">Annual Ownership Cost</p>
-                                    <p className="font-display text-2xl md:text-3xl text-white">{fmt(annualOwnershipTotal)}</p>
-                                    <p className="font-mono text-xs text-gray-600 mt-1">Variable + Crew + Maintenance + Hangar + Insurance</p>
-                                </div>
-                                <div className="bg-[#0d0d0d] rounded-xl p-4 border border-[#1c1c1c]">
-                                    <p className="font-mono text-xs text-gray-500 mb-1">Breakeven Point</p>
-                                    <p className="font-display text-2xl md:text-3xl text-white">{advBreakeven} hrs/year</p>
-                                    <p className="font-mono text-xs text-gray-600 mt-1">Below this — charter wins. Above — ownership wins.</p>
-                                </div>
-                                <div className={`rounded-xl p-4 md:p-5 border ${advRecommendation === 'OWNERSHIP' ? 'border-gold bg-gold/10' : 'border-gulf bg-gulf/10'}`}>
-                                    <p className="font-mono text-xs text-gray-400 mb-2">RECOMMENDATION</p>
-                                    <p className="font-display text-4xl md:text-5xl text-gold mb-2">{advRecommendation}</p>
-                                    <p className="font-body text-sm text-gray-300">
-                                        At {calcHours || 0} hrs/year, {advRecommendation.toLowerCase()} saves {fmt(saving)} annually.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="glass p-4 md:p-5">
-                            <p className="section-label mb-3">OWNERSHIP COST BREAKDOWN</p>
-                            <div className="space-y-2">
-                                {[
-                                    { label: 'Variable (Fuel & Op)', value: ownershipCost * calcHours * fuelPrice / 6.5 },
-                                    { label: 'Crew', value: crewCost },
-                                    { label: 'Maintenance', value: maintenance },
-                                    { label: 'Hangar', value: hangar },
-                                    { label: 'Insurance', value: insurance },
-                                ].map((item, i) => {
-                                    const pct = annualOwnershipTotal > 0 ? Math.round((item.value / annualOwnershipTotal) * 100) : 0
-                                    return (
-                                        <div key={i}>
-                                            <div className="flex items-center justify-between mb-1">
-                                                <p className="font-mono text-xs text-gray-400">{item.label}</p>
-                                                <p className="font-mono text-xs text-white">{fmt(item.value)} <span className="text-gray-600">({pct}%)</span></p>
-                                            </div>
-                                            <div className="h-1.5 bg-[#1c1c1c] rounded-full">
-                                                <div className="h-1.5 bg-gold rounded-full" style={{ width: `${pct}%` }} />
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Education note */}
+            <div style={{ padding: '16px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', marginBottom: '6px' }}>HOW THIS WORKS</p>
+                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
+                    Estimates use great-circle distance plus 10% for reserves and routing deviations, multiplied by current market charter rate ranges for the selected aircraft category. Never quote these numbers to a client without confirming with an operator first. Use them to qualify the conversation, not close the deal.
+                </p>
+            </div>
         </div>
     )
 }

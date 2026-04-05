@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -26,8 +26,16 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
-  const { signIn } = useAuth()
+  const { signIn, user } = useAuth()
   const navigate = useNavigate()
+
+  // If user is already authenticated (including after Google OAuth callback),
+  // redirect them away from this page immediately.
+  useEffect(() => {
+    if (user) {
+      navigate('/app/dashboard', { replace: true })
+    }
+  }, [user, navigate])
 
   const switchTab = (t) => {
     setTab(t)
@@ -74,10 +82,19 @@ export default function Login() {
 
   const handleGoogle = async () => {
     setLoading(true)
-    await supabase.auth.signInWithOAuth({
+    setError('')
+    const { error: err } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/welcome` },
+      options: {
+        // Must also be added to Supabase dashboard → Authentication → URL Configuration → Redirect URLs
+        redirectTo: `${window.location.origin}/welcome`,
+      },
     })
+    if (err) {
+      setError(err.message || 'Google sign in failed.')
+      setLoading(false)
+    }
+    // If successful, browser navigates away — no further code runs here
   }
 
   const handleKeyDown = (e) => {

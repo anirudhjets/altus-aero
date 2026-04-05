@@ -1,411 +1,537 @@
-import { useState, Suspense, useRef, useEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { useGLTF, OrbitControls } from '@react-three/drei'
-import * as THREE from 'three'
-import { useAuth } from '../../context/AuthContext'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { useProPreview } from '../../context/proPreview'
 
-const fleet = [
-    { id: 1, model: 'G650ER', manufacturer: 'Gulfstream', category: 'Ultra Long Range', range_nm: 7500, passengers: 19, cruise_speed_kts: 516, cabin_length_ft: 53.6, cabin_height_ft: 6.3, baggage_cuft: 195, hourly_rate_usd: 12000, purchase_price_usd: 75000000, color: '#0d1b3e', broker_insight: 'The default answer for Mumbai HNWI clients wanting London or New York nonstop. If they say I want a Gulfstream — this is what they mean. VABB to EGLL nonstop with full passengers and bags.' },
-    { id: 2, model: 'G700', manufacturer: 'Gulfstream', category: 'Ultra Long Range', range_nm: 7750, passengers: 19, cruise_speed_kts: 526, cabin_length_ft: 56.2, cabin_height_ft: 6.3, baggage_cuft: 207, hourly_rate_usd: 14000, purchase_price_usd: 90000000, color: '#1e3a8a', broker_insight: 'Newer, larger, slightly faster than the G650ER. 20% more cabin volume. If a client already owns a G650 and wants an upgrade conversation, start here. The stateroom option closes deals.' },
-    { id: 3, model: 'G800', manufacturer: 'Gulfstream', category: 'Ultra Long Range', range_nm: 8000, passengers: 19, cruise_speed_kts: 516, cabin_length_ft: 56.2, cabin_height_ft: 6.3, baggage_cuft: 207, hourly_rate_usd: 15000, purchase_price_usd: 95000000, color: '#0a1628', broker_insight: 'Longest range Gulfstream ever built. Singapore to New York nonstop. Lead with the range when clients ask about ultra-long-range options.' },
-    { id: 4, model: 'Global 7500', manufacturer: 'Bombardier', category: 'Ultra Long Range', range_nm: 7700, passengers: 19, cruise_speed_kts: 516, cabin_length_ft: 54.5, cabin_height_ft: 6.2, baggage_cuft: 195, hourly_rate_usd: 13500, purchase_price_usd: 85000000, color: '#0f3460', broker_insight: 'The range leader. VABB to KLAX nonstop — no other production jet does this reliably. Four living spaces including a permanent bedroom. Lead with the range fact and the bedroom.' },
-    { id: 5, model: 'Global 6500', manufacturer: 'Bombardier', category: 'Super Long Range', range_nm: 6600, passengers: 17, cruise_speed_kts: 513, cabin_length_ft: 48.4, cabin_height_ft: 6.2, baggage_cuft: 195, hourly_rate_usd: 11000, purchase_price_usd: 55000000, color: '#1a3a6c', broker_insight: 'Best value Bombardier. Mumbai to London with ease. Clients who cannot justify the Global 7500 price find this a natural step down without losing much range.' },
-    { id: 6, model: 'Falcon 8X', manufacturer: 'Dassault', category: 'Ultra Long Range', range_nm: 6450, passengers: 16, cruise_speed_kts: 482, cabin_length_ft: 43.1, cabin_height_ft: 6.2, baggage_cuft: 140, hourly_rate_usd: 11500, purchase_price_usd: 58000000, color: '#2a4a8a', broker_insight: 'Three engines means access to airports others cannot use. High altitude airstrips in Asia and Africa. Clients who need flexibility in their destinations should know this first.' },
-    { id: 7, model: 'Falcon 7X', manufacturer: 'Dassault', category: 'Long Range', range_nm: 5950, passengers: 16, cruise_speed_kts: 482, cabin_length_ft: 39.1, cabin_height_ft: 6.2, baggage_cuft: 140, hourly_rate_usd: 10500, purchase_price_usd: 55000000, color: '#2d4a7a', broker_insight: 'The European choice. Three engines means a different insurance profile and access to airports others cannot use. Clients who have flown NetJets Europe often prefer this.' },
-    { id: 8, model: 'Challenger 350', manufacturer: 'Bombardier', category: 'Super Midsize', range_nm: 3200, passengers: 10, cruise_speed_kts: 466, cabin_length_ft: 24.0, cabin_height_ft: 6.1, baggage_cuft: 106, hourly_rate_usd: 5500, purchase_price_usd: 27000000, color: '#1e4a6a', broker_insight: 'Most sold business jet in the world. Mumbai to Dubai to Delhi routes. If a client is flying regionally and wants value — this is the answer every time.' },
-    { id: 9, model: 'Challenger 650', manufacturer: 'Bombardier', category: 'Large Cabin', range_nm: 4000, passengers: 12, cruise_speed_kts: 459, cabin_length_ft: 28.6, cabin_height_ft: 6.1, baggage_cuft: 115, hourly_rate_usd: 7000, purchase_price_usd: 32000000, color: '#1a3a5c', broker_insight: 'Best large cabin value in the market. Excellent for regional Asia routes where cabin space matters but ultra-long range is not needed.' },
-    { id: 10, model: 'Citation Longitude', manufacturer: 'Cessna', category: 'Super Midsize', range_nm: 3500, passengers: 12, cruise_speed_kts: 476, cabin_length_ft: 25.2, cabin_height_ft: 6.0, baggage_cuft: 127, hourly_rate_usd: 5800, purchase_price_usd: 26000000, color: '#2a3a5a', broker_insight: 'Quietest cabin in the super midsize category. Clients who value comfort over range find this compelling. First class experience at midsize pricing.' },
-    { id: 11, model: 'Praetor 600', manufacturer: 'Embraer', category: 'Super Midsize', range_nm: 4018, passengers: 12, cruise_speed_kts: 466, cabin_length_ft: 27.3, cabin_height_ft: 6.0, baggage_cuft: 114, hourly_rate_usd: 6200, purchase_price_usd: 21000000, color: '#1e3050', broker_insight: 'Best range in the super midsize class. Mumbai to Riyadh nonstop easily. Exceptional value proposition — lead with the range-to-cost ratio.' },
-    { id: 12, model: 'Phenom 300E', manufacturer: 'Embraer', category: 'Light Jet', range_nm: 2010, passengers: 10, cruise_speed_kts: 453, cabin_length_ft: 17.2, cabin_height_ft: 4.9, baggage_cuft: 84, hourly_rate_usd: 4500, purchase_price_usd: 10500000, color: '#1a3a5c', broker_insight: 'Best entry level jet for new private flyers. Regional India routes — Mumbai to Delhi, Bangalore, Goa. First time ownership conversation starter. Lowest operating cost in its class.' },
-    { id: 13, model: 'Citation CJ4', manufacturer: 'Cessna', category: 'Light Jet', range_nm: 2165, passengers: 9, cruise_speed_kts: 451, cabin_length_ft: 17.3, cabin_height_ft: 4.8, baggage_cuft: 77, hourly_rate_usd: 3800, purchase_price_usd: 9000000, color: '#162a4a', broker_insight: 'Popular entry light jet for short regional hops. Easy to operate and maintain. Good first ownership conversation for clients flying under 2 hours regularly.' },
+/* ─── AIRCRAFT DATABASE ──────────────────────────────────────────── */
+const AIRCRAFT = [
+    {
+        id: 'g650er', model: 'G650ER', manufacturer: 'Gulfstream', category: 'Ultra Long Range',
+        range: 7500, speed: 516, paxMax: 19, ceiling: 51000,
+        cabin: { length: 53.6, width: 8.2, height: 6.3 },
+        charterHr: 12000, purchase: 75,
+        description: 'The benchmark ultra-long-range aircraft. Capable of nonstop Mumbai to London, New York to Hong Kong, and Los Angeles to Sydney with reserves.',
+        brokerInsight: 'Lead with the nonstop argument on routes where competitors need a tech stop. VABB to EGLL is 4,387nm — G650ER clears it with reserves. Clients who have done the route on commercial or a connecting charter immediately understand the value. On price: $12k/hr sounds high until you compare per-seat to business class on a group of eight. Do the math in front of them. Most close on the spot.',
+    },
+    {
+        id: 'g700', model: 'G700', manufacturer: 'Gulfstream', category: 'Ultra Long Range',
+        range: 7750, speed: 526, paxMax: 19, ceiling: 51000,
+        cabin: { length: 56.1, width: 8.2, height: 6.2 },
+        charterHr: 14000, purchase: 90,
+        description: 'Gulfstream\'s flagship. Longer range and more cabin volume than the G650ER. The aircraft for routes over 7,000nm where no tech stop is acceptable.',
+        brokerInsight: 'The G700 has 20% more cabin volume than the G650ER and a longer range. On routes over 7,000nm — VABB to KSFO or EGLL to YSSY — it is the only option for nonstop. On shorter routes, position it as the ultimate comfort play: 13 passengers in a cabin designed for eight. The per-hour premium over a G650ER is real — earn it by anchoring on the cabin experience difference, not the range.',
+    },
+    {
+        id: 'global7500', model: 'Global 7500', manufacturer: 'Bombardier', category: 'Ultra Long Range',
+        range: 7700, speed: 516, paxMax: 19, ceiling: 51000,
+        cabin: { length: 57.1, width: 8.2, height: 6.3 },
+        charterHr: 13000, purchase: 73,
+        description: 'Bombardier\'s answer to the G700. A dedicated stateroom and four living spaces make it the choice for clients who want a private bedroom at altitude.',
+        brokerInsight: 'Range and speed are nearly identical to the G700 — the decision comes down to cabin layout. The Global 7500 has a dedicated stateroom with a real bed, not a fold-flat seat. For clients flying VABB-EGLL overnight, that one detail often closes the deal. Price is slightly below the G700 — if you are positioning against Gulfstream, lead with the stateroom and the Bombardier maintenance network in India.',
+    },
+    {
+        id: 'falcon7x', model: 'Falcon 7X', manufacturer: 'Dassault', category: 'Large Jet',
+        range: 5950, speed: 482, paxMax: 14, ceiling: 51000,
+        cabin: { length: 39.1, width: 8.2, height: 6.2 },
+        charterHr: 9500, purchase: 45,
+        description: 'Three-engine large jet with transcontinental range. The only trijet in this category — relevant for remote or overwater routes where engine-out policy matters.',
+        brokerInsight: 'Three-engine safety is real and resonates with clients who fly over remote terrain or water. ETOPS restrictions are not a concern with three engines. Works particularly well in the Middle East and African markets. Price is 30-40% below ULR — easy to justify on routes under 5,500nm. If the client is deciding between Falcon 7X and G650ER, ask how often they actually fly routes over 5,500nm. For most, the answer is rarely.',
+    },
+    {
+        id: 'challenger604', model: 'Challenger 604', manufacturer: 'Bombardier', category: 'Large Jet',
+        range: 4077, speed: 459, paxMax: 12, ceiling: 41000,
+        cabin: { length: 28.4, width: 8.2, height: 6.1 },
+        charterHr: 8500, purchase: 15,
+        description: 'Pre-owned large jet with proven reliability. A 4,000nm range at significantly lower acquisition cost than new large jets.',
+        brokerInsight: 'A $75M new large jet for $12-18M pre-owned. For cost-sensitive clients who need 10-plus passengers and 4,000nm range, this is the argument. Cabin is dated by current standards — your job is making sure the client is buying range and capacity, not interior. Maintenance reserves matter on a 2005-2010 aircraft: make sure they understand the cost-per-hour difference vs a new midsize before they anchor on acquisition price alone.',
+    },
+    {
+        id: 'challenger350', model: 'Challenger 350', manufacturer: 'Bombardier', category: 'Super Midsize',
+        range: 3200, speed: 470, paxMax: 10, ceiling: 45000,
+        cabin: { length: 24.6, width: 7.8, height: 6.1 },
+        charterHr: 6500, purchase: 26,
+        description: 'The benchmark super midsize. Best range-to-cost ratio in its class, with a flat-floor cabin and strong operator network.',
+        brokerInsight: 'Most value-efficient super midsize on the market. $6,500/hr for 3,200nm range covers most Asian domestic and regional international routes without compromise. Compare to the Latitude: Challenger wins on range and speed. Compare to the G280: Challenger has a larger cabin. Position it as best-in-class in the $25M new aircraft range. For Indian regional clients — VABB to OMDB, VABB to VABB — it is the default recommendation before you go larger.',
+    },
+    {
+        id: 'g280', model: 'G280', manufacturer: 'Gulfstream', category: 'Super Midsize',
+        range: 3600, speed: 482, paxMax: 10, ceiling: 45000,
+        cabin: { length: 25.2, width: 7.2, height: 6.3 },
+        charterHr: 7000, purchase: 25,
+        description: 'Gulfstream branding at the super midsize price point. Best range in its category with the Gulfstream operator network.',
+        brokerInsight: 'Gulfstream branding at the super midsize price. Clients who want to say they fly Gulfstream but are not ready for a large jet — this is the aircraft. Range of 3,600nm is genuine — covers VABB to OMDB nonstop with margin and connects to destinations the Challenger 350 cannot reach. Often overlooked because it sits between the 350 and the G450, but it outperforms both on range at this price. Use it to qualify clients before moving them up the Gulfstream line.',
+    },
+    {
+        id: 'citationlatitude', model: 'Citation Latitude', manufacturer: 'Cessna', category: 'Super Midsize',
+        range: 2700, speed: 446, paxMax: 9, ceiling: 45000,
+        cabin: { length: 21.8, width: 6.4, height: 6.0 },
+        charterHr: 5500, purchase: 17,
+        description: 'Entry point to stand-up cabin territory. Flat floor and a 45,000ft ceiling in a super midsize package.',
+        brokerInsight: 'Entry to stand-up cabin at the lowest cost in the category. A 45,000ft ceiling and flat floor makes it feel larger than the numbers suggest. Best argument: compare total trip cost across 50 flights per year against a Challenger 350 — the Latitude saves $400-600k annually. For high-frequency regional clients who need a dedicated aircraft, that math is often the closer. Best positioned for routes under 2,500nm with 6-8 passengers.',
+    },
+    {
+        id: 'learjet75', model: 'Learjet 75 Liberty', manufacturer: 'Bombardier', category: 'Midsize',
+        range: 2080, speed: 465, paxMax: 9, ceiling: 51000,
+        cabin: { length: 19.9, width: 5.9, height: 4.9 },
+        charterHr: 4500, purchase: 13,
+        description: 'The final production Learjet. Highest climb rate in its class with a 51,000ft ceiling — above most weather.',
+        brokerInsight: 'The last Learjet. Bombardier discontinued the line in 2021, which makes pre-owned values interesting — finite supply. Fastest climb rate in its class gets clients to FL510 before most competitors pass FL350. Best positioned for short-to-medium routes where speed matters: VABB to VIDP in under 2 hours. If a client asks about the brand: Bombardier still supports every Learjet in service. The heritage is a selling point, not a liability.',
+    },
+    {
+        id: 'hawker900xp', model: 'Hawker 900XP', manufacturer: 'Hawker Beechcraft', category: 'Midsize',
+        range: 2810, speed: 448, paxMax: 8, ceiling: 41000,
+        cabin: { length: 21.5, width: 6.0, height: 5.7 },
+        charterHr: 4200, purchase: 8,
+        description: 'Pre-owned midsize with real range. One of the longer-ranging aircraft in the pre-owned midsize segment.',
+        brokerInsight: 'Pre-owned bargain with genuine range. A 2,800nm midsize for under $4M makes it one of the most cost-effective options in the market. Best for clients who want a dedicated aircraft without new-aircraft acquisition cost. Be direct about maintenance: the cost-per-hour on a 2005-2010 aircraft is higher than a new midsize. The comparison that works is: acquisition cost plus five-year maintenance estimate vs a new Citation XLS on lease. Run those numbers before the client does.',
+    },
+    {
+        id: 'citationxls', model: 'Citation XLS+', manufacturer: 'Cessna', category: 'Midsize',
+        range: 2100, speed: 442, paxMax: 9, ceiling: 45000,
+        cabin: { length: 18.7, width: 5.6, height: 5.7 },
+        charterHr: 3800, purchase: 12,
+        description: 'The most popular midsize in the charter market. Wide operator network and strong availability across India and the Middle East.',
+        brokerInsight: 'Best availability in the midsize category in India. More operators fly the XLS than any other midsize, which means better charter availability, more competitive pricing, and faster response times. For clients who charter frequently on 1-3 hour regional routes, the XLS is often the most practical recommendation — not because it is the best aircraft, but because it is consistently available when they need it. Pair it with a positioning argument: when range or size is the priority, here is what you move up to.',
+    },
+    {
+        id: 'phenom300e', model: 'Phenom 300E', manufacturer: 'Embraer', category: 'Light Jet',
+        range: 2010, speed: 453, paxMax: 9, ceiling: 45000,
+        cabin: { length: 17.6, width: 5.1, height: 4.9 },
+        charterHr: 2200, purchase: 10,
+        description: 'Six consecutive years as the world\'s best-selling light jet. Best-in-class performance for the category.',
+        brokerInsight: 'Six consecutive years as the world\'s best-selling light jet. That is the pitch — the market voted. Best on shorter routes under 2,000nm with 4-6 passengers where operational cost matters. For Indian regional routes — VABB-VIDP, VABB-VAAH, VABB-VOMM — it is the default recommendation before moving to a midsize. When a client asks why not a bigger aircraft: at $2,200/hr vs $4,000/hr, the difference over 100 hours per year is $180,000. Show them what that buys.',
+    },
+    {
+        id: 'cj4', model: 'Citation CJ4', manufacturer: 'Cessna', category: 'Light Jet',
+        range: 2165, speed: 451, paxMax: 8, ceiling: 45000,
+        cabin: { length: 17.3, width: 4.8, height: 4.8 },
+        charterHr: 2400, purchase: 9.5,
+        description: 'Reliable entry-level light jet with a strong operator base. Proven on short regional routes.',
+        brokerInsight: 'Excellent entry for clients new to private aviation. Lower operating cost than the Phenom 300E with comparable performance on short legs. Range covers VABB to VIDP, Hyderabad, Chennai with margin. First-time buyer pitch: understand your flight-hour needs on a CJ4 for two to three years. You will have real data when it is time to step up. This positions you as the advisor, not the salesperson — and that is exactly where you want to be for the next transaction.',
+    },
+    {
+        id: 'hondajet', model: 'HondaJet Elite II', manufacturer: 'Honda', category: 'Light Jet',
+        range: 1437, speed: 422, paxMax: 5, ceiling: 43000,
+        cabin: { length: 14.9, width: 5.0, height: 4.8 },
+        charterHr: 1900, purchase: 6.7,
+        description: 'Unconventional over-wing engine design dramatically reduces cabin noise. Built for short routes with a focus on interior quality.',
+        brokerInsight: 'The disruption story is part of the pitch. Over-wing engine mounting significantly reduces cabin noise — measurably quieter than any comparable light jet. For clients who fly 3-4 passengers on 1-2 hour legs and care about detail, this is a conversation starter. Do not position it against the Phenom 300E on range — it loses at 1,437nm. Position it on the cabin experience for 4-passenger short-leg flying, where noise and interior quality matter more than the range numbers.',
+    },
 ]
 
-const specs = [
-    { key: 'range_nm', label: 'Range', unit: 'nm', format: v => v.toLocaleString() },
-    { key: 'passengers', label: 'Passengers', unit: 'max', format: v => v },
-    { key: 'cruise_speed_kts', label: 'Cruise Speed', unit: 'kts', format: v => v },
-    { key: 'cabin_length_ft', label: 'Cabin Length', unit: 'ft', format: v => v },
-    { key: 'cabin_height_ft', label: 'Cabin Height', unit: 'ft', format: v => v },
-    { key: 'baggage_cuft', label: 'Baggage', unit: 'cu ft', format: v => v },
-    { key: 'hourly_rate_usd', label: 'Charter Rate', unit: '/hr', format: v => '$' + v.toLocaleString() },
-    { key: 'purchase_price_usd', label: 'Purchase Price', unit: '', format: v => '$' + (v / 1000000).toFixed(1) + 'M' },
-]
+const CATEGORIES = ['All', 'Ultra Long Range', 'Large Jet', 'Super Midsize', 'Midsize', 'Light Jet']
 
-function JetModel3D() {
-    const groupRef = useRef()
-    const { scene } = useGLTF('/models/jet.glb')
+/* ─── USAGE TRACKING ─────────────────────────────────────────────── */
+function incrementFleetViews() {
+    try {
+        const monthKey = new Date().toISOString().slice(0, 7)
+        const raw = JSON.parse(localStorage.getItem('altus_usage') || '{}')
+        if (!raw[monthKey]) raw[monthKey] = { sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 }
+        raw[monthKey].fleetViews = (raw[monthKey].fleetViews || 0) + 1
+        localStorage.setItem('altus_usage', JSON.stringify(raw))
+    } catch { /* silent */ }
+}
 
-    useEffect(() => {
-        if (scene) {
-            const box = new THREE.Box3().setFromObject(scene)
-            const center = box.getCenter(new THREE.Vector3())
-            scene.position.set(-center.x, -center.y, -center.z)
-            scene.traverse((child) => {
-                if (child.isMesh) {
-                    child.material = new THREE.MeshStandardMaterial({
-                        color: '#dce8f5',
-                        metalness: 0.92,
-                        roughness: 0.08,
-                    })
-                }
-            })
-        }
-    }, [scene])
-
-    useFrame((state) => {
-        if (groupRef.current) {
-            groupRef.current.rotation.y = state.clock.elapsedTime * 0.3
-        }
-    })
-
+/* ─── PRO LOCK OVERLAY ───────────────────────────────────────────── */
+function ProLock({ navigate, label, children }) {
     return (
-        <group ref={groupRef} scale={0.28}>
-            <primitive object={scene} />
-        </group>
+        <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ filter: 'blur(3px)', userSelect: 'none', pointerEvents: 'none' }}>
+                {children}
+            </div>
+            <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(10,10,10,0.82)', backdropFilter: 'blur(2px)',
+                borderRadius: '12px', gap: '10px', padding: '16px',
+            }}>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em' }}>PRO FEATURE</span>
+                {label && <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: '200px', lineHeight: 1.5 }}>{label}</p>}
+                <button
+                    onClick={() => navigate('/app/billing')}
+                    style={{
+                        padding: '8px 20px', borderRadius: '8px', background: '#D4AF37', color: '#0a0a0a',
+                        fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.12em',
+                        border: 'none', cursor: 'pointer',
+                    }}
+                >
+                    UPGRADE TO PRO
+                </button>
+            </div>
+        </div>
     )
 }
 
-function CockpitViewer() {
+/* ─── COMPARE PANEL ──────────────────────────────────────────────── */
+function ComparePanel({ aircraft, onRemove, navigate }) {
+    if (aircraft.length === 0) return null
+
+    const fields = [
+        { label: 'Range', key: (a) => `${a.range.toLocaleString()}nm` },
+        { label: 'Speed', key: (a) => `${a.speed} kts` },
+        { label: 'Max Passengers', key: (a) => `${a.paxMax}` },
+        { label: 'Cabin Length', key: (a) => `${a.cabin.length} ft` },
+        { label: 'Charter/hr', key: (a) => `$${a.charterHr.toLocaleString()}` },
+        { label: 'Purchase', key: (a) => `$${a.purchase}M` },
+    ]
+
     return (
-        <Canvas
-            camera={{ position: [0, 1, 4], fov: 50 }}
-            gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.4, alpha: true }}
-            style={{ background: 'transparent', width: '100%', height: '100%' }}
-        >
-            <Suspense fallback={null}>
-                <ambientLight intensity={0.8} color="#ffffff" />
-                <directionalLight position={[10, 10, 5]} color="#ffffff" intensity={4} />
-                <directionalLight position={[-8, 4, -5]} color="#D4AF37" intensity={2} />
-                <pointLight position={[0, 5, 8]} color="#b0c4ff" intensity={2} distance={25} />
-                <JetModel3D />
-                <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1.5} />
-            </Suspense>
-        </Canvas>
+        <div style={{
+            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
+            background: 'rgba(10,10,10,0.98)', borderTop: '1px solid rgba(212,175,55,0.2)',
+            padding: '20px 24px', boxShadow: '0 -20px 60px rgba(0,0,0,0.8)',
+        }}>
+            <div className="max-w-6xl mx-auto">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em' }}>
+                        COMPARING {aircraft.length} AIRCRAFT
+                    </p>
+                    <button onClick={() => aircraft.forEach((a) => onRemove(a.id))}
+                        style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                        CLEAR ALL
+                    </button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: `140px repeat(${aircraft.length}, 1fr)`, gap: '0' }}>
+                    <div>
+                        <div style={{ height: '52px' }} />
+                        {fields.map((f) => (
+                            <div key={f.label} style={{ padding: '8px 0', borderTop: '1px solid #1c1c1c' }}>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em' }}>{f.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                    {aircraft.map((a) => (
+                        <div key={a.id} style={{ paddingLeft: '12px' }}>
+                            <div style={{ height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#fff', letterSpacing: '0.05em' }}>{a.model}</p>
+                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{a.manufacturer}</p>
+                                </div>
+                                <button onClick={() => onRemove(a.id)}
+                                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', cursor: 'pointer', fontSize: '14px', paddingRight: '8px' }}>✕</button>
+                            </div>
+                            {fields.map((f) => (
+                                <div key={f.label} style={{ padding: '8px 0', borderTop: '1px solid #1c1c1c' }}>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', color: '#D4AF37' }}>{f.key(a)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     )
 }
 
-export default function Jets() {
-    const [selected, setSelected] = useState(fleet[0])
-    const [search, setSearch] = useState('')
-    const [category, setCategory] = useState('ALL')
-    const [compareList, setCompareList] = useState([])
-    const [showCompare, setShowCompare] = useState(false)
+/* ─── MAIN PAGE ──────────────────────────────────────────────────── */
+export default function Fleet() {
     const { plan } = useAuth()
+    const [isProPreview] = useProPreview()
+    const isPro = plan === 'pro' || isProPreview
     const navigate = useNavigate()
-    const isPro = plan === 'pro'
 
-    const categories = ['ALL', 'Ultra Long Range', 'Super Long Range', 'Long Range', 'Large Cabin', 'Super Midsize', 'Light Jet']
+    const [search, setSearch] = useState('')
+    const [category, setCategory] = useState('All')
+    const [selected, setSelected] = useState(AIRCRAFT[0])
+    const [compareIds, setCompareIds] = useState([])
+    const [activeTab, setActiveTab] = useState('specs')
 
-    const filtered = fleet.filter(j => {
-        const matchSearch = j.model.toLowerCase().includes(search.toLowerCase()) || j.manufacturer.toLowerCase().includes(search.toLowerCase())
-        const matchCat = category === 'ALL' || j.category === category
-        return matchSearch && matchCat
+    const filtered = AIRCRAFT.filter((a) => {
+        const matchCat = category === 'All' || a.category === category
+        const matchSearch = a.model.toLowerCase().includes(search.toLowerCase()) ||
+            a.manufacturer.toLowerCase().includes(search.toLowerCase())
+        return matchCat && matchSearch
     })
 
-    const toggleCompare = (jet) => {
-        if (!isPro) return
-        setCompareList(prev => {
-            const exists = prev.find(j => j.id === jet.id)
-            if (exists) return prev.filter(j => j.id !== jet.id)
-            if (prev.length >= 3) return prev
-            return [...prev, jet]
-        })
+    const handleSelect = (aircraft) => {
+        setSelected(aircraft)
+        setActiveTab('specs')
+        incrementFleetViews()
     }
 
-    const inCompare = (jet) => compareList.some(j => j.id === jet.id)
+    const toggleCompare = (id) => {
+        if (!isPro) { navigate('/app/billing'); return }
+        setCompareIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 3 ? [...prev, id] : prev
+        )
+    }
+
+    const compareAircraft = AIRCRAFT.filter((a) => compareIds.includes(a.id))
 
     return (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 md:space-y-6" style={{ paddingBottom: compareIds.length > 0 ? '200px' : '0' }}>
 
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                <div>
-                    <p className="section-label text-xs sm:text-sm">FLEET INTELLIGENCE</p>
-                    <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">FLEET</h1>
-                    <p className="font-body text-xs sm:text-sm text-gray-400 mt-2 max-w-2xl">
-                        A broker who cannot explain the difference between a G650 and a Global 7500 loses the client to someone who can.
-                    </p>
-                </div>
-                {isPro && compareList.length > 0 && (
-                    <button
-                        onClick={() => setShowCompare(true)}
-                        className="self-start flex items-center gap-2 px-4 py-2.5 rounded-lg font-display text-sm tracking-wider transition-all"
-                        style={{ background: '#D4AF37', color: '#0a0a0a' }}
-                    >
-                        COMPARE ({compareList.length}/3)
-                    </button>
-                )}
+            <div>
+                <p className="section-label">FLEET INTELLIGENCE</p>
+                <h1 className="font-display text-3xl md:text-4xl text-white">FLEET</h1>
+                <p className="font-body text-gray-400 text-sm mt-1">
+                    A broker who cannot explain the difference between a G650 and a Global 7500 loses the client to someone who can.
+                </p>
             </div>
 
             {/* Search + Filter */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex gap-3 flex-col sm:flex-row">
                 <input
                     type="text"
                     placeholder="Search aircraft..."
                     value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="flex-1 bg-[#0d0d0d] border border-[#1c1c1c] rounded-lg px-4 py-2.5 font-mono text-sm text-white focus:border-gold focus:outline-none"
+                    onChange={(e) => setSearch(e.target.value)}
+                    style={{
+                        flex: 1, padding: '10px 16px', background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid #1c1c1c', borderRadius: '10px',
+                        color: '#fff', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', outline: 'none',
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = 'rgba(212,175,55,0.4)')}
+                    onBlur={(e) => (e.target.style.borderColor = '#1c1c1c')}
                 />
                 <select
                     value={category}
-                    onChange={e => setCategory(e.target.value)}
-                    className="bg-[#0d0d0d] border border-[#1c1c1c] rounded-lg px-4 py-2.5 font-mono text-sm text-white focus:border-gold focus:outline-none"
+                    onChange={(e) => setCategory(e.target.value)}
+                    style={{
+                        padding: '10px 16px', background: '#0d0d0d', border: '1px solid #1c1c1c',
+                        borderRadius: '10px', color: '#fff', fontFamily: 'JetBrains Mono, monospace',
+                        fontSize: '12px', outline: 'none', cursor: 'pointer', minWidth: '180px',
+                    }}
                 >
-                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                    {CATEGORIES.map((c) => <option key={c} value={c}>{c.toUpperCase()}</option>)}
                 </select>
             </div>
 
-            {/* Pro compare hint for free users */}
+            {/* Pro compare banner — only shown when not pro */}
             {!isPro && (
-                <div className="border border-[#D4AF37]/20 bg-[#D4AF37]/5 rounded-xl p-4 flex items-center justify-between gap-4">
-                    <p className="font-body text-sm text-white/60">Side-by-side aircraft comparison and 3D cockpit view are available on Pro.</p>
-                    <button
-                        onClick={() => navigate('/app/billing')}
-                        className="font-display text-sm px-4 py-2 rounded-lg flex-shrink-0 transition-colors"
-                        style={{ background: '#D4AF37', color: '#0a0a0a' }}
-                    >
-                        Upgrade to Pro
+                <div style={{
+                    padding: '12px 16px', borderRadius: '10px',
+                    background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px',
+                }}>
+                    <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
+                        Side-by-side comparison, Broker Insights, and detailed cockpit briefs are Pro features.
+                    </p>
+                    <button onClick={() => navigate('/app/billing')} style={{
+                        padding: '7px 16px', borderRadius: '7px', background: '#D4AF37', color: '#0a0a0a',
+                        fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.12em',
+                        border: 'none', cursor: 'pointer', flexShrink: 0,
+                    }}>
+                        UPGRADE TO PRO
                     </button>
                 </div>
             )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+            {/* Main Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-                {/* Left — Detail */}
-                <div className="space-y-4">
+                {/* Left — Aircraft Detail */}
+                <div className="lg:col-span-2 space-y-4">
 
-                    {/* Jet Visual */}
-                    <div className="glass p-6 sm:p-8 flex items-center justify-center min-h-[200px] sm:min-h-[260px] relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at center, ${selected.color}, transparent 70%)` }} />
-                        <div className="relative text-center">
-                            <div
-                                className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full mx-auto mb-3 sm:mb-4 flex items-center justify-center"
-                                style={{ background: `radial-gradient(circle, ${selected.color}, #0a0a0a)`, boxShadow: `0 0 60px ${selected.color}` }}
-                            >
-                                <span className="text-3xl sm:text-4xl lg:text-5xl">✈</span>
+                    {/* Aircraft display card */}
+                    <div className="glass p-6 md:p-8">
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '24px 0 16px' }}>
+                            <div style={{
+                                width: '120px', height: '120px', borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #1e3a8a 0%, #0a1628 100%)',
+                                border: '1px solid rgba(212,175,55,0.15)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px',
+                            }}>
+                                <span style={{ fontSize: '48px', opacity: 0.9 }}>✈</span>
                             </div>
-                            <p className="font-display text-2xl sm:text-3xl lg:text-4xl text-white">{selected.model}</p>
-                            <p className="font-mono text-xs sm:text-sm text-gold">{selected.manufacturer} · {selected.category}</p>
+                            <p className="font-display text-4xl text-white">{selected.model}</p>
+                            <p className="font-mono text-xs text-gold mt-1">{selected.manufacturer} · {selected.category}</p>
+                            <p className="font-body text-gray-400 text-sm mt-3 max-w-md leading-relaxed">{selected.description}</p>
                         </div>
-                    </div>
 
-                    {/* Specs Grid */}
-                    <div className="glass p-4 sm:p-5">
-                        <p className="section-label mb-3 sm:mb-4">SPECIFICATIONS</p>
-                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                            {specs.map((s, i) => (
-                                <div key={i} className="bg-[#0d0d0d] rounded-lg p-2.5 sm:p-3 border border-[#1c1c1c]">
-                                    <p className="font-mono text-xs text-gray-500 mb-0.5 sm:mb-1">{s.label}</p>
-                                    <p className="font-display text-base sm:text-lg text-white">
-                                        {s.format(selected[s.key])}
-                                        <span className="text-xs text-gray-500 ml-1">{s.unit}</span>
-                                    </p>
-                                </div>
+                        {/* Tabs */}
+                        <div style={{ display: 'flex', gap: '8px', margin: '16px 0', borderBottom: '1px solid #1c1c1c', paddingBottom: '0' }}>
+                            {[
+                                { key: 'specs', label: 'Specifications' },
+                                { key: 'insight', label: isPro ? 'Broker Insight' : 'Broker Insight (Pro)' },
+                                { key: 'cockpit', label: isPro ? 'Cockpit Brief' : 'Cockpit Brief (Pro)' },
+                            ].map((t) => (
+                                <button
+                                    key={t.key}
+                                    onClick={() => setActiveTab(t.key)}
+                                    style={{
+                                        padding: '8px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize: '10px',
+                                        letterSpacing: '0.1em', cursor: 'pointer', background: 'none', border: 'none',
+                                        borderBottom: activeTab === t.key ? '2px solid #D4AF37' : '2px solid transparent',
+                                        color: activeTab === t.key ? '#D4AF37' : 'rgba(255,255,255,0.4)',
+                                        marginBottom: '-1px', transition: 'all 0.15s',
+                                    }}
+                                >
+                                    {t.label.toUpperCase()}
+                                </button>
                             ))}
                         </div>
+
+                        {/* Specs Tab */}
+                        {activeTab === 'specs' && (
+                            <div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                                    {[
+                                        { label: 'Range', value: `${selected.range.toLocaleString()} nm` },
+                                        { label: 'Speed', value: `${selected.speed} kts` },
+                                        { label: 'Max Passengers', value: selected.paxMax },
+                                        { label: 'Service Ceiling', value: `${selected.ceiling.toLocaleString()} ft` },
+                                        { label: 'Cabin Length', value: `${selected.cabin.length} ft` },
+                                        { label: 'Cabin Width', value: `${selected.cabin.width} ft` },
+                                    ].map((s, i) => (
+                                        <div key={i} style={{ padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
+                                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{s.label}</p>
+                                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#D4AF37', lineHeight: 1 }}>{s.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(30,58,138,0.08)', border: '1px solid rgba(30,58,138,0.2)' }}>
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '6px' }}>CHARTER / HR</p>
+                                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '24px', color: '#fff' }}>${selected.charterHr.toLocaleString()}</p>
+                                    </div>
+                                    <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(30,58,138,0.08)', border: '1px solid rgba(30,58,138,0.2)' }}>
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', marginBottom: '6px' }}>PURCHASE (NEW)</p>
+                                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '24px', color: '#fff' }}>${selected.purchase}M</p>
+                                    </div>
+                                </div>
+
+                                {/* Compare button */}
+                                {isPro && (
+                                    <button
+                                        onClick={() => toggleCompare(selected.id)}
+                                        style={{
+                                            marginTop: '14px', width: '100%', padding: '10px',
+                                            borderRadius: '8px', fontFamily: 'JetBrains Mono, monospace', fontSize: '11px',
+                                            letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.2s',
+                                            background: compareIds.includes(selected.id) ? 'rgba(212,175,55,0.1)' : 'transparent',
+                                            border: compareIds.includes(selected.id) ? '1px solid rgba(212,175,55,0.4)' : '1px solid #1c1c1c',
+                                            color: compareIds.includes(selected.id) ? '#D4AF37' : 'rgba(255,255,255,0.4)',
+                                        }}
+                                    >
+                                        {compareIds.includes(selected.id) ? 'ADDED TO COMPARE' : 'ADD TO COMPARE (MAX 3)'}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Broker Insight Tab */}
+                        {activeTab === 'insight' && (
+                            <div style={{ marginTop: '16px' }}>
+                                {isPro ? (
+                                    <div style={{ padding: '20px', borderRadius: '12px', background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.12)' }}>
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.15em', marginBottom: '12px' }}>HOW TO SELL THIS AIRCRAFT</p>
+                                        <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.85 }}>
+                                            {selected.brokerInsight}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <ProLock navigate={navigate} label="Broker Insights tell you exactly how to position and sell each aircraft.">
+                                        <div style={{ padding: '20px', borderRadius: '12px', background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.12)' }}>
+                                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.15em', marginBottom: '12px' }}>HOW TO SELL THIS AIRCRAFT</p>
+                                            <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.85 }}>
+                                                {selected.brokerInsight}
+                                            </p>
+                                        </div>
+                                    </ProLock>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Cockpit Brief Tab */}
+                        {activeTab === 'cockpit' && (
+                            <div style={{ marginTop: '16px' }}>
+                                {isPro ? (
+                                    <div className="space-y-3">
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.15em', marginBottom: '12px' }}>COCKPIT BRIEF — {selected.model}</p>
+                                        {[
+                                            { label: 'Avionics', value: 'Honeywell Primus Elite / Garmin G5000 (model dependent)' },
+                                            { label: 'Crew', value: '2 pilots required, type-rated' },
+                                            { label: 'Climb Rate', value: 'FL450 in approximately 20 minutes from brake release' },
+                                            { label: 'Runway', value: `${Math.round(selected.range * 0.08).toLocaleString()} ft balanced field length (approx)` },
+                                            { label: 'Fuel Burn', value: `${Math.round(selected.charterHr * 0.055).toLocaleString()} lbs/hr at cruise` },
+                                            { label: 'Reserves', value: 'NBAA IFR — 45min alternate + 30min final' },
+                                        ].map((item, i) => (
+                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #1c1c1c' }}>
+                                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em' }}>{item.label.toUpperCase()}</p>
+                                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.7)', textAlign: 'right', maxWidth: '60%' }}>{item.value}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <ProLock navigate={navigate} label="Cockpit briefs give you technical depth for client conversations.">
+                                        <div className="space-y-3">
+                                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.15em', marginBottom: '12px' }}>COCKPIT BRIEF</p>
+                                            {[{ label: 'Avionics', value: '————' }, { label: 'Crew', value: '————' }, { label: 'Climb Rate', value: '————' }].map((item, i) => (
+                                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #1c1c1c' }}>
+                                                    <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{item.label.toUpperCase()}</p>
+                                                    <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>{item.value}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </ProLock>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                    {/* 3D Cockpit View */}
-                    {isPro ? (
-                        <div className="glass p-4 sm:p-5">
-                            <p className="section-label mb-3">3D AIRCRAFT VIEW</p>
-                            <div className="rounded-xl overflow-hidden border border-[#1c1c1c]" style={{ height: '220px' }}>
-                                <CockpitViewer />
-                            </div>
-                            <p className="font-mono text-xs text-gray-600 mt-2 text-center">
-                                Drag to rotate · {selected.model}
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="border border-[#D4AF37]/20 bg-[#D4AF37]/5 rounded-xl p-6 text-center">
-                            <p className="font-mono text-xs text-gold mb-1 tracking-widest">3D AIRCRAFT VIEW</p>
-                            <p className="text-white/60 text-sm mb-3">Interactive 3D view available on Pro</p>
-                            <button
-                                onClick={() => navigate('/app/billing')}
-                                className="font-display text-sm px-5 py-2 rounded-lg transition-colors"
-                                style={{ background: '#D4AF37', color: '#0a0a0a' }}
-                            >
-                                Upgrade to Pro
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Broker Insight */}
-                    {isPro ? (
-                        <div className="glass-gold p-4 sm:p-5">
-                            <p className="section-label mb-2">BROKER INSIGHT</p>
-                            <p className="font-body text-sm sm:text-base text-white leading-relaxed">{selected.broker_insight}</p>
-                        </div>
-                    ) : (
-                        <div className="border border-[#D4AF37]/20 bg-[#D4AF37]/5 rounded-xl p-6 text-center">
-                            <p className="font-mono text-xs text-gold mb-1 tracking-widest">BROKER INSIGHT</p>
-                            <p className="text-white/60 text-sm mb-3">Sales positioning and client objection handling — available on Pro</p>
-                            <button
-                                onClick={() => navigate('/app/billing')}
-                                className="font-display text-sm px-5 py-2 rounded-lg transition-colors"
-                                style={{ background: '#D4AF37', color: '#0a0a0a' }}
-                            >
-                                Upgrade to Pro
-                            </button>
-                        </div>
+                    {/* Compare panel — Pro only */}
+                    {isPro && compareIds.length > 0 && (
+                        <ComparePanel aircraft={compareAircraft} onRemove={(id) => setCompareIds((p) => p.filter((x) => x !== id))} navigate={navigate} />
                     )}
                 </div>
 
-                {/* Right — Fleet List */}
-                <div className="glass p-4 sm:p-5">
-                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                {/* Right — Aircraft List */}
+                <div className="space-y-2">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <p className="section-label">SELECT AIRCRAFT ({filtered.length})</p>
-                        {isPro && (
-                            <p className="font-mono text-xs text-gray-500">
-                                {compareList.length === 0 ? 'Tap + to compare' : `${compareList.length}/3 selected`}
-                            </p>
-                        )}
                     </div>
-                    <div className="space-y-2 sm:space-y-3 max-h-[600px] sm:max-h-[800px] overflow-y-auto pr-1">
-                        {filtered.map((jet) => (
+                    <div style={{ maxHeight: '72vh', overflowY: 'auto', paddingRight: '4px' }} className="space-y-2">
+                        {filtered.map((a) => (
                             <div
-                                key={jet.id}
-                                className={`rounded-xl border transition-all ${selected.id === jet.id ? 'border-gold bg-gold/5' : 'border-[#1c1c1c] hover:border-gulf'}`}
+                                key={a.id}
+                                onClick={() => handleSelect(a)}
+                                style={{
+                                    padding: '12px 14px', borderRadius: '12px', cursor: 'pointer',
+                                    border: `1px solid ${selected?.id === a.id ? 'rgba(212,175,55,0.4)' : '#1c1c1c'}`,
+                                    background: selected?.id === a.id ? 'rgba(212,175,55,0.05)' : '#0d0d0d',
+                                    transition: 'all 0.15s',
+                                }}
+                                onMouseEnter={(e) => { if (selected?.id !== a.id) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+                                onMouseLeave={(e) => { if (selected?.id !== a.id) e.currentTarget.style.borderColor = '#1c1c1c' }}
                             >
-                                <button
-                                    onClick={() => setSelected(jet)}
-                                    className="w-full text-left p-3 sm:p-4"
-                                >
-                                    <div className="flex items-start gap-3">
-                                        <div
-                                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5"
-                                            style={{ background: jet.color, boxShadow: selected.id === jet.id ? `0 0 20px ${jet.color}` : 'none' }}
-                                        >
-                                            <span className="text-white text-xs sm:text-sm">✈</span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                                                <p className="font-display text-base sm:text-xl text-white">{jet.model}</p>
-                                                <span className="font-mono text-xs text-gray-500 flex-shrink-0 ml-2">{jet.category}</span>
-                                            </div>
-                                            <p className="font-mono text-xs text-gray-400 mb-1 sm:mb-2">
-                                                {jet.manufacturer} · {jet.range_nm.toLocaleString()}nm · {jet.passengers} pax
-                                            </p>
-                                            <div className="flex items-center gap-3 sm:gap-4">
-                                                <div>
-                                                    <p className="font-mono text-xs text-gray-600">Charter/hr</p>
-                                                    <p className="font-display text-sm text-gold">${jet.hourly_rate_usd.toLocaleString()}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="font-mono text-xs text-gray-600">Purchase</p>
-                                                    <p className="font-display text-sm text-gold">${(jet.purchase_price_usd / 1000000).toFixed(1)}M</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: selected?.id === a.id ? '#D4AF37' : '#fff', letterSpacing: '0.04em' }}>{a.model}</p>
+                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>{a.category.split(' ').map(w => w[0]).join('')}</span>
+                                </div>
+                                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>
+                                    {a.manufacturer} · {a.range.toLocaleString()}nm · {a.paxMax} pax
+                                </p>
+                                <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                                    <div>
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '8px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em' }}>CHARTER/HR</p>
+                                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>${(a.charterHr / 1000).toFixed(0)}k</p>
                                     </div>
-                                </button>
-
-                                {/* Compare toggle — Pro only */}
-                                {isPro && (
-                                    <div className="px-3 sm:px-4 pb-3 pt-1 border-t border-[#1c1c1c]">
+                                    <div>
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '8px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em' }}>PURCHASE</p>
+                                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>${a.purchase}M</p>
+                                    </div>
+                                    {isPro && (
                                         <button
-                                            onClick={() => toggleCompare(jet)}
-                                            className={`font-mono text-xs px-3 py-1 rounded-lg border transition-all ${inCompare(jet)
-                                                    ? 'border-gold text-gold bg-gold/10'
-                                                    : compareList.length >= 3 && !inCompare(jet)
-                                                        ? 'border-[#1c1c1c] text-gray-600 cursor-not-allowed'
-                                                        : 'border-[#2a2a2a] text-gray-500 hover:border-gold/40 hover:text-gold'
-                                                }`}
-                                            disabled={compareList.length >= 3 && !inCompare(jet)}
+                                            onClick={(e) => { e.stopPropagation(); toggleCompare(a.id) }}
+                                            style={{
+                                                marginLeft: 'auto', padding: '2px 8px', borderRadius: '5px', border: 'none', cursor: 'pointer',
+                                                background: compareIds.includes(a.id) ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)',
+                                                color: compareIds.includes(a.id) ? '#D4AF37' : 'rgba(255,255,255,0.3)',
+                                                fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', letterSpacing: '0.08em',
+                                                transition: 'all 0.15s',
+                                            }}
                                         >
-                                            {inCompare(jet) ? '✓ In compare' : '+ Compare'}
+                                            {compareIds.includes(a.id) ? 'COMPARING' : 'COMPARE'}
                                         </button>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-
-            {/* Compare Panel — full width overlay */}
-            {showCompare && isPro && compareList.length >= 2 && (
-                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.85)' }}>
-                    <div
-                        className="w-full max-w-5xl rounded-2xl border border-[#1c1c1c] overflow-hidden"
-                        style={{ background: '#0d0d0d', maxHeight: '90vh', overflowY: 'auto' }}
-                    >
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1c1c1c] sticky top-0" style={{ background: '#0d0d0d' }}>
-                            <p className="font-display text-xl text-white">COMPARE AIRCRAFT</p>
-                            <button onClick={() => setShowCompare(false)} className="text-gray-400 hover:text-white text-xl transition-colors">✕</button>
-                        </div>
-
-                        <div className="p-6 overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr>
-                                        <td className="font-mono text-xs text-gray-600 pb-4 pr-6 w-32">SPEC</td>
-                                        {compareList.map(jet => (
-                                            <td key={jet.id} className="pb-4 pr-6 text-center">
-                                                <div
-                                                    className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center"
-                                                    style={{ background: jet.color }}
-                                                >
-                                                    <span className="text-white text-sm">✈</span>
-                                                </div>
-                                                <p className="font-display text-lg text-white">{jet.model}</p>
-                                                <p className="font-mono text-xs text-gold">{jet.manufacturer}</p>
-                                            </td>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {specs.map((s, i) => {
-                                        const values = compareList.map(j => j[s.key])
-                                        const best = s.key === 'purchase_price_usd' || s.key === 'hourly_rate_usd'
-                                            ? Math.min(...values)
-                                            : Math.max(...values)
-                                        return (
-                                            <tr key={i} className="border-t border-[#1c1c1c]">
-                                                <td className="py-3 pr-6 font-mono text-xs text-gray-500">{s.label}</td>
-                                                {compareList.map(jet => {
-                                                    const val = jet[s.key]
-                                                    const isBest = val === best
-                                                    return (
-                                                        <td key={jet.id} className="py-3 pr-6 text-center">
-                                                            <span
-                                                                className="font-display text-base"
-                                                                style={{ color: isBest ? '#D4AF37' : 'rgba(255,255,255,0.6)' }}
-                                                            >
-                                                                {s.format(val)}
-                                                                <span className="text-xs ml-1 font-mono" style={{ color: isBest ? '#D4AF37' : '#4b5563' }}>{s.unit}</span>
-                                                            </span>
-                                                        </td>
-                                                    )
-                                                })}
-                                            </tr>
-                                        )
-                                    })}
-                                    <tr className="border-t border-[#1c1c1c]">
-                                        <td className="py-3 pr-6 font-mono text-xs text-gray-500">Broker Insight</td>
-                                        {compareList.map(jet => (
-                                            <td key={jet.id} className="py-3 pr-6 align-top">
-                                                <p className="font-body text-xs text-gray-400 leading-relaxed">{jet.broker_insight}</p>
-                                            </td>
-                                        ))}
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="px-6 py-4 border-t border-[#1c1c1c] flex items-center justify-between" style={{ background: '#111111' }}>
-                            <p className="font-mono text-xs text-gray-600">Gold = best value in each category</p>
-                            <button
-                                onClick={() => { setCompareList([]); setShowCompare(false) }}
-                                className="font-mono text-xs text-gray-400 hover:text-white transition-colors"
-                            >
-                                Clear compare
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     )
 }
