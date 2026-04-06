@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { useAuth } from '../../context/AuthContext'
+import { useProPreview } from '../../context/proPreview'
 
 const insights = [
     'G650 vs G700: The G700 has 20% more cabin volume. For clients flying 6+ hours, the upgrade conversation becomes obvious when you show them the numbers side by side.',
@@ -73,23 +74,17 @@ export default function Dashboard() {
     const [time, setTime] = useState('')
     const [insightIndex, setInsightIndex] = useState(0)
     const [insightVisible, setInsightVisible] = useState(true)
-    const [proPreview, setProPreview] = useState(() => {
-        return sessionStorage.getItem('altus_pro_preview') === 'true'
-    })
     const [usage, setUsage] = useState({ sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 })
     const navigate = useNavigate()
     const { plan } = useAuth()
+    const [proPreview, setGlobalProPreview] = useProPreview()
     const isPro = plan === 'pro' || proPreview
 
     const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
     const chartData = getLast6Months()
 
-    // Toggle pro preview — persists to sessionStorage + signals AppLayout
     const toggleProPreview = () => {
-        const newVal = !proPreview
-        setProPreview(newVal)
-        sessionStorage.setItem('altus_pro_preview', String(newVal))
-        window.dispatchEvent(new CustomEvent('altusProPreviewChange', { detail: { isPro: newVal } }))
+        setGlobalProPreview(!proPreview)
     }
 
     useEffect(() => {
@@ -145,7 +140,6 @@ export default function Dashboard() {
                     <p className="font-mono text-gold text-xs sm:text-sm mt-1">{time} IST</p>
                 </div>
 
-                {/* Pro preview toggle — dev tool, no banner, just the button */}
                 <button
                     onClick={toggleProPreview}
                     style={{
