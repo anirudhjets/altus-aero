@@ -24,15 +24,14 @@ const steps = [
 
 export default function Welcome() {
     const navigate = useNavigate()
-    const { user } = useAuth()
+    const { user, loading } = useAuth()
 
     useEffect(() => {
+        if (loading) return
         if (!user) {
             navigate('/login', { replace: true })
         }
-        // Intentionally not redirecting when hasOnboarded is true
-        // Welcome screen always plays on every login — remove this note when ready to gate
-    }, [user, navigate])
+    }, [user, loading, navigate])
 
     const handleEnter = () => {
         navigate('/app/dashboard', { replace: true })
