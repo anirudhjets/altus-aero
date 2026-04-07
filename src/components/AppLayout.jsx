@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { useProPreview } from '../context/proPreview'
 import Chatbot from './Chatbot'
 
 /* ─── LIGHT MODE CSS ─────────────────────────────────────────────── */
@@ -66,9 +67,7 @@ export default function AppLayout() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [profileOpen, setProfileOpen] = useState(false)
     const [time, setTime] = useState('')
-    const [devProPreview, setDevProPreview] = useState(() => {
-        return sessionStorage.getItem('altus_pro_preview') === 'true'
-    })
+    const [devProPreview] = useProPreview()
     const profileRef = useRef(null)
     const mobileProfileRef = useRef(null)
     const location = useLocation()
@@ -135,13 +134,6 @@ export default function AppLayout() {
             const el = document.getElementById('hide-landinghero-in-app')
             if (el) el.remove()
         }
-    }, [])
-
-    // Listen for pro preview toggle from dashboard
-    useEffect(() => {
-        const handler = (e) => setDevProPreview(e.detail.isPro)
-        window.addEventListener('altusProPreviewChange', handler)
-        return () => window.removeEventListener('altusProPreviewChange', handler)
     }, [])
 
     useEffect(() => {

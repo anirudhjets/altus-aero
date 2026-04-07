@@ -3,6 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useProPreview } from '../../context/proPreview'
 
+const FREE_LIMIT = 20
+const WINDOW_HOURS = 24
+
 function getLiveUsage() {
     try {
         const monthKey = new Date().toISOString().slice(0, 7)
@@ -13,16 +16,32 @@ function getLiveUsage() {
     }
 }
 
+function getPlanLimitStatus() {
+    try {
+        const raw = JSON.parse(localStorage.getItem('altus_plan_limit') || '{}')
+        const now = Date.now()
+        const windowStart = raw.windowStart || now
+        const windowEnd = windowStart + WINDOW_HOURS * 3600000
+        if (now > windowEnd) return { count: 0, locked: false }
+        const count = raw.count || 0
+        return { count, locked: count >= FREE_LIMIT, resetsAt: count >= FREE_LIMIT ? windowEnd : null }
+    } catch {
+        return { count: 0, locked: false }
+    }
+}
+
 const FREE_FEATURES = [
-    'Dashboard with market education content',
+    'Dashboard with market intelligence and rotating broker insights',
     'Fleet — browse all 14 aircraft with full specifications',
-    'Cost calculator — unlimited calculations',
+    'Charter Cost Calculator — 20 calculations per 24 hours',
+    'Charter vs Ownership Calculator — unlimited',
     'Market Intel — 24-hour delayed signals',
     'Flight tracking — previous day data',
 ]
 
 const PRO_FEATURES = [
     'Everything in Free',
+    'Charter Cost Calculator — unlimited calculations, no cooldown',
     'Fleet — Broker Insight on every aircraft',
     'Fleet — Cockpit Brief per aircraft',
     'Fleet — side-by-side comparison (up to 3 aircraft)',
@@ -43,18 +62,20 @@ export default function Billing() {
     const [searchParams] = useSearchParams()
     const [annual, setAnnual] = useState(false)
     const [usage, setUsage] = useState({ sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 })
+    const [limitStatus, setLimitStatus] = useState(getPlanLimitStatus)
 
     const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
 
-    // Reload usage on every mount so numbers are always fresh
     useEffect(() => {
         setUsage(getLiveUsage())
-        // Refresh every 5 seconds in case user is using the app in another tab
-        const iv = setInterval(() => setUsage(getLiveUsage()), 5000)
+        setLimitStatus(getPlanLimitStatus())
+        const iv = setInterval(() => {
+            setUsage(getLiveUsage())
+            setLimitStatus(getPlanLimitStatus())
+        }, 5000)
         return () => clearInterval(iv)
     }, [])
 
-    // Auto-open checkout if redirected from homepage GET PRO button
     useEffect(() => {
         if (searchParams.get('plan') === 'pro' && !isPro) {
             setTimeout(() => {
@@ -65,20 +86,19 @@ export default function Billing() {
     }, [searchParams, isPro])
 
     const handleRazorpay = () => {
-        // Razorpay KYC pending — opens support email until wired
         window.open('mailto:anirudh.jets@gmail.com?subject=Altus Aero Pro Upgrade&body=I would like to upgrade to Pro. Please send payment details.', '_blank')
     }
+
+    const calcsRemaining = Math.max(0, FREE_LIMIT - (limitStatus.count || 0))
+    const isCalcLocked = !isPro && limitStatus.locked
 
     return (
         <div className="space-y-4 md:space-y-6 max-w-3xl mx-auto">
 
-            {/* Header */}
             <div>
                 <p className="section-label">SUBSCRIPTION</p>
                 <h1 className="font-display text-3xl md:text-4xl text-white">BILLING</h1>
-                <p className="font-body text-gray-400 text-sm mt-1">
-                    Your plan, usage, and subscription management.
-                </p>
+                <p className="font-body text-gray-400 text-sm mt-1">Your plan, usage, and subscription management.</p>
             </div>
 
             {/* Current Plan */}
@@ -104,8 +124,7 @@ export default function Billing() {
                         )}
                     </div>
                     <span style={{
-                        fontFamily: 'JetBrains Mono, monospace', fontSize: '11px',
-                        padding: '6px 14px', borderRadius: '6px',
+                        fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', padding: '6px 14px', borderRadius: '6px',
                         color: isPro ? '#4ade80' : '#6b7280',
                         background: isPro ? 'rgba(74,222,128,0.08)' : 'rgba(107,114,128,0.08)',
                         border: `1px solid ${isPro ? 'rgba(74,222,128,0.2)' : 'rgba(107,114,128,0.2)'}`,
@@ -131,26 +150,29 @@ export default function Billing() {
                     {[
                         { label: 'Sessions', value: String(usage.sessions || 1), sub: 'platform logins' },
                         { label: 'Days Active', value: String(usage.days?.length || 1), sub: 'unique days this month' },
-                        { label: 'Routes Planned', value: String(usage.routesPlanned || 0), sub: isPro ? 'unlimited' : 'calculated on Plan page' },
+                        {
+                            label: 'Routes Planned',
+                            value: isPro ? String(usage.routesPlanned || 0) : `${limitStatus.count || 0} / ${FREE_LIMIT}`,
+                            sub: isPro ? 'unlimited' : isCalcLocked ? 'limit reached — resets in 24h' : `${calcsRemaining} remaining today`,
+                            highlight: !isPro && isCalcLocked,
+                        },
                         { label: 'Fleet Views', value: String(usage.fleetViews || 0), sub: 'aircraft profiles opened' },
                     ].map((u, i) => (
-                        <div key={i} style={{ padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div key={i} style={{ padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: `1px solid ${u.highlight ? 'rgba(248,113,113,0.2)' : 'rgba(255,255,255,0.06)'}` }}>
                             <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{u.label}</p>
-                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#D4AF37', lineHeight: 1 }}>{u.value}</p>
-                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>{u.sub}</p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: u.highlight ? '#f87171' : '#D4AF37', lineHeight: 1 }}>{u.value}</p>
+                            <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: u.highlight ? 'rgba(248,113,113,0.6)' : 'rgba(255,255,255,0.2)', marginTop: '4px' }}>{u.sub}</p>
                         </div>
                     ))}
                 </div>
                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.15)', marginTop: '12px' }}>
-                    Usage tracked locally on this device. Routes Planned increments each time you run a calculation on the Plan page. Fleet Views increments each time you open an aircraft profile.
+                    Usage tracked locally on this device. Free users get {FREE_LIMIT} charter calculations per 24-hour window. Ownership calculator is always unlimited.
                 </p>
             </div>
 
-            {/* Upgrade section — only shown to free users */}
-            {!isPro || isProPreview ? (
+            {/* Upgrade section */}
+            {(!isPro || isProPreview) ? (
                 <div id="upgrade-section" className="space-y-4">
-
-                    {/* Toggle */}
                     <div className="glass p-5 md:p-6">
                         <p className="section-label mb-4">CHOOSE YOUR PLAN</p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
@@ -210,13 +232,9 @@ export default function Billing() {
                                 </ul>
                                 <button
                                     onClick={handleRazorpay}
-                                    style={{
-                                        width: '100%', padding: '13px', background: '#D4AF37', color: '#0a0a0a',
-                                        border: 'none', borderRadius: '10px', fontFamily: 'Bebas Neue, sans-serif',
-                                        fontSize: '14px', letterSpacing: '0.15em', cursor: 'pointer', transition: 'opacity 0.2s',
-                                    }}
-                                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-                                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                                    style={{ width: '100%', padding: '13px', background: '#D4AF37', color: '#0a0a0a', border: 'none', borderRadius: '10px', fontFamily: 'Bebas Neue, sans-serif', fontSize: '14px', letterSpacing: '0.15em', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
+                                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                                 >
                                     {annual ? 'UPGRADE — ₹23,988/yr' : 'UPGRADE — ₹2,499/mo'}
                                 </button>
@@ -228,19 +246,15 @@ export default function Billing() {
                     </div>
                 </div>
             ) : (
-                /* Pro subscriber management */
                 <div className="glass p-5 md:p-6 space-y-5">
                     <p className="section-label">MANAGE SUBSCRIPTION</p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
                             <div>
-                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#fff', fontWeight: 500 }}>Billing & Invoices</p>
+                                <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#fff', fontWeight: 500 }}>Billing and Invoices</p>
                                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>View payment history and download invoices</p>
                             </div>
-                            <button
-                                onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Billing%20Query', '_blank')}
-                                style={{ padding: '8px 16px', borderRadius: '8px', background: 'transparent', border: '1px solid #1c1c1c', color: 'rgba(255,255,255,0.5)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.1em', cursor: 'pointer' }}
-                            >
+                            <button onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Billing%20Query', '_blank')} style={{ padding: '8px 16px', borderRadius: '8px', background: 'transparent', border: '1px solid #1c1c1c', color: 'rgba(255,255,255,0.5)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.1em', cursor: 'pointer' }}>
                                 CONTACT
                             </button>
                         </div>
@@ -249,10 +263,7 @@ export default function Billing() {
                                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#fff', fontWeight: 500 }}>Cancel Subscription</p>
                                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>Access continues until the end of your billing period</p>
                             </div>
-                            <button
-                                onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Cancel%20Subscription', '_blank')}
-                                style={{ padding: '8px 16px', borderRadius: '8px', background: 'transparent', border: '1px solid #7f1d1d', color: '#f87171', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.1em', cursor: 'pointer' }}
-                            >
+                            <button onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Cancel%20Subscription', '_blank')} style={{ padding: '8px 16px', borderRadius: '8px', background: 'transparent', border: '1px solid #7f1d1d', color: '#f87171', fontFamily: 'Bebas Neue, sans-serif', fontSize: '12px', letterSpacing: '0.1em', cursor: 'pointer' }}>
                                 CANCEL
                             </button>
                         </div>
@@ -260,7 +271,6 @@ export default function Billing() {
                 </div>
             )}
 
-            {/* Education note */}
             <div style={{ padding: '16px', borderRadius: '10px', background: '#0d0d0d', border: '1px solid #1c1c1c' }}>
                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', marginBottom: '6px' }}>A NOTE ON FREE FOREVER</p>
                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
