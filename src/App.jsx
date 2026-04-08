@@ -4,6 +4,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Homepage from './pages/index.jsx'
 import Login from './pages/login.jsx'
 import Welcome from './pages/welcome.jsx'
+import Privacy from './pages/privacy.jsx'
+import Terms from './pages/terms.jsx'
+import NotFound from './pages/404.jsx'
 import AppLayout from './components/AppLayout.jsx'
 import Dashboard from './pages/app/dashboard.jsx'
 import Intel from './pages/app/intel.jsx'
@@ -12,6 +15,7 @@ import Track from './pages/app/track.jsx'
 import Plan from './pages/app/plan.jsx'
 import Billing from './pages/app/billing.jsx'
 import Settings from './pages/app/settings.jsx'
+import CookieBanner from './components/CookieBanner.jsx'
 
 export default function App() {
   return (
@@ -21,6 +25,8 @@ export default function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route
             path="/app"
             element={
@@ -38,7 +44,9 @@ export default function App() {
             <Route path="billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
+        <CookieBanner />
       </BrowserRouter>
     </AuthProvider>
   )

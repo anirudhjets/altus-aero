@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /welcome
+
+Sitemap: https://altus-aero.vercel.app/sitemap.xml
