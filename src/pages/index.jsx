@@ -3,135 +3,6 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import ThreeJetHero from '../components/ThreeJetHero'
 
-/* ─── PRIVACY POLICY MODAL ────────────────────────────────────────── */
-function PrivacyModal({ onClose }) {
-    useEffect(() => {
-        document.body.style.overflow = 'hidden'
-        return () => { document.body.style.overflow = '' }
-    }, [])
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
-        >
-            <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 24 }}
-                onClick={(e) => e.stopPropagation()}
-                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '40px', maxWidth: '620px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
-            >
-                <button
-                    onClick={onClose}
-                    style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '18px', cursor: 'pointer' }}
-                >
-                    ✕
-                </button>
-                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '12px' }}>LEGAL</p>
-                <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '32px', color: '#fff', letterSpacing: '0.05em', marginBottom: '24px' }}>Privacy Policy</h2>
-                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.9 }}>
-                    <p style={{ marginBottom: '20px', color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Last updated: April 2026</p>
-
-                    <p style={{ marginBottom: '20px' }}>
-                        Altus Aero is run by Anirudh Shinde, based in Mumbai, India. Here is what you need to know about how this platform handles your data.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>WHAT WE COLLECT</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        When you create an account, we collect your email address and name. We also collect basic usage data — which pages you visit and how often you log in. We do not sell your data to anyone.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>HOW WE USE IT</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        Your data is used to operate the platform and send you account-related emails when necessary. Subscription payments are handled by Razorpay. We do not store your payment details on our side.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>THIRD-PARTY SERVICES</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        We use Supabase for authentication and data storage, Vercel for hosting, and Razorpay for payments. Each maintains their own privacy policy.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>QUESTIONS</p>
-                    <p>
-                        Write to <a href="mailto:anirudh.jets@gmail.com" style={{ color: '#D4AF37' }}>anirudh.jets@gmail.com</a> and I will get back to you.
-                    </p>
-                </div>
-            </motion.div>
-        </motion.div>
-    )
-}
-
-/* ─── TERMS OF SERVICE MODAL ─────────────────────────────────────── */
-function TermsModal({ onClose }) {
-    useEffect(() => {
-        document.body.style.overflow = 'hidden'
-        return () => { document.body.style.overflow = '' }
-    }, [])
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
-        >
-            <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 24 }}
-                onClick={(e) => e.stopPropagation()}
-                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '40px', maxWidth: '620px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
-            >
-                <button
-                    onClick={onClose}
-                    style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '18px', cursor: 'pointer' }}
-                >
-                    ✕
-                </button>
-                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '12px' }}>LEGAL</p>
-                <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '32px', color: '#fff', letterSpacing: '0.05em', marginBottom: '24px' }}>Terms of Service</h2>
-                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.9 }}>
-                    <p style={{ marginBottom: '20px', color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Last updated: April 2026</p>
-
-                    <p style={{ marginBottom: '20px' }}>
-                        By using Altus Aero, you agree to these terms. The platform is operated by Anirudh Shinde, Mumbai, India.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>WHAT THIS PLATFORM IS</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        Altus Aero is a broker intelligence and education tool. All charter pricing estimates shown are indicative only and not binding quotes. Verify market data independently before presenting anything to a client.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>SUBSCRIPTIONS</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        Pro subscriptions are billed monthly or annually. You can cancel at any time and your access continues until the end of that billing period. If there is an error with a charge, contact us within 48 hours at anirudh.jets@gmail.com.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>INTELLECTUAL PROPERTY</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        All content on Altus Aero including broker insights, educational material, and the platform design is owned by Anirudh Shinde. Please do not reproduce or redistribute it without written permission.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>LIABILITY</p>
-                    <p style={{ marginBottom: '20px' }}>
-                        Altus Aero is not liable for business decisions made based on data from the platform. Always verify independently before acting on anything shown here.
-                    </p>
-
-                    <p style={{ marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontFamily: 'Bebas Neue, sans-serif', fontSize: '15px', letterSpacing: '0.08em' }}>QUESTIONS</p>
-                    <p>
-                        Write to <a href="mailto:anirudh.jets@gmail.com" style={{ color: '#D4AF37' }}>anirudh.jets@gmail.com</a>
-                    </p>
-                </div>
-            </motion.div>
-        </motion.div>
-    )
-}
-
 /* ─── NAV ─────────────────────────────────────────────────────────── */
 function Nav() {
     const [open, setOpen] = useState(false)
@@ -593,7 +464,6 @@ function Founder() {
                         <div className="absolute top-0 right-0 w-48 h-48 rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
 
                         <div className="flex flex-col sm:flex-row gap-7 items-start relative z-10">
-                            {/* Avatar */}
                             <div className="flex-shrink-0">
                                 <div
                                     style={{
@@ -616,7 +486,6 @@ function Founder() {
                                 </div>
                             </div>
 
-                            {/* Text */}
                             <div className="flex-1">
                                 <p
                                     style={{
@@ -815,7 +684,7 @@ function CTABanner() {
 }
 
 /* ─── FOOTER ─────────────────────────────────────────────────────── */
-function Footer({ onPrivacy, onTerms }) {
+function Footer() {
     const cols = [
         {
             label: 'Platform',
@@ -878,19 +747,19 @@ function Footer({ onPrivacy, onTerms }) {
                 <div className="pt-8 border-t border-[#1c1c1c] flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="font-mono text-xs text-gray-700">© 2026 Altus Aero · Anirudh Shinde. All rights reserved.</p>
                     <div className="flex items-center gap-4">
-                        <button
-                            onClick={onPrivacy}
-                            className="font-mono text-xs text-gray-600 hover:text-gray-300 transition-colors bg-transparent border-none cursor-pointer"
+                        <Link
+                            to="/privacy"
+                            className="font-mono text-xs text-gray-600 hover:text-gray-300 transition-colors"
                         >
                             Privacy Policy
-                        </button>
+                        </Link>
                         <span className="font-mono text-xs text-gray-800">·</span>
-                        <button
-                            onClick={onTerms}
-                            className="font-mono text-xs text-gray-600 hover:text-gray-300 transition-colors bg-transparent border-none cursor-pointer"
+                        <Link
+                            to="/terms"
+                            className="font-mono text-xs text-gray-600 hover:text-gray-300 transition-colors"
                         >
                             Terms of Service
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -900,9 +769,6 @@ function Footer({ onPrivacy, onTerms }) {
 
 /* ─── MAIN EXPORT ─────────────────────────────────────────────────── */
 export default function Index() {
-    const [showPrivacy, setShowPrivacy] = useState(false)
-    const [showTerms, setShowTerms] = useState(false)
-
     return (
         <div style={{ background: '#0a0a0a', minHeight: '100vh' }}>
             <Nav />
@@ -914,14 +780,7 @@ export default function Index() {
             <HowItWorks />
             <Pricing />
             <CTABanner />
-            <Footer onPrivacy={() => setShowPrivacy(true)} onTerms={() => setShowTerms(true)} />
-
-            <AnimatePresence>
-                {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
-            </AnimatePresence>
-            <AnimatePresence>
-                {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
-            </AnimatePresence>
+            <Footer />
         </div>
     )
 }
