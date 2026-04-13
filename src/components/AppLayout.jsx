@@ -200,7 +200,7 @@ export default function AppLayout() {
             <motion.aside
                 animate={{ width: collapsed ? 56 : 224 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
-                style={{ background: '#080808', borderRight: '1px solid rgba(255,255,255,0.05)', display: 'none', flexDirection: 'column', flexShrink: 0, overflow: 'hidden' }}
+                style={{ background: '#080808', borderRight: '1px solid rgba(255,255,255,0.05)', flexDirection: 'column', flexShrink: 0, overflow: 'hidden' }}
                 className="hidden md:flex flex-col"
             >
                 {/* Logo */}
