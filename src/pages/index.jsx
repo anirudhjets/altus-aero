@@ -84,7 +84,7 @@ function Nav() {
         >
             <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                <Link to="/" onClick={() => window.scrollTo({top:0,behavior:'smooth'})} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
                     <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#D4AF37', letterSpacing: '0.25em' }}>ALTUS</span>
                     <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', background: '#D4AF37', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.15em', borderRadius: '2px' }}>AERO</span>
                 </Link>
@@ -148,7 +148,7 @@ function Nav() {
                                 <a
                                     key={l.href}
                                     href={l.href}
-                                    onClick={() => setOpen(false)}
+                                    onClick={(e) => { e.preventDefault(); setOpen(false); setTimeout(() => document.querySelector(l.href)?.scrollIntoView({behavior:'smooth'}), 80) }}
                                     style={{ ...EYEBROW, color: '#999999', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', textDecoration: 'none', display: 'block' }}
                                 >
                                     {l.label}
