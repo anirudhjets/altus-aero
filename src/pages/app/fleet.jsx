@@ -47,7 +47,7 @@ function ProLock({ navigate, label, children }) {
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 background: 'rgba(0,0,0,0.78)', gap: '12px', padding: '24px',
             }}>
-                <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.25em' }}>PRO FEATURE</p>
+                <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.25em' }}>PRO FEATURE</p>
                 {label && <p style={{ ...B, fontSize: '13px', color: '#999999', textAlign: 'center', maxWidth: '220px', lineHeight: 1.6 }}>{label}</p>}
                 <button
                     onClick={() => navigate('/app/billing')}
@@ -197,13 +197,13 @@ export default function Fleet() {
 
             {/* Free tier notice */}
             {!isPro && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', padding: '14px 20px', marginBottom: '32px', border: '1px solid rgba(212,175,55,0.25)', borderRadius: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', padding: '14px 20px', marginBottom: '32px', border: '1px solid rgba(200,200,200,0.25)', borderRadius: '6px' }}>
                     <p style={{ ...M, fontSize: '9px', color: '#999999', letterSpacing: '0.1em' }}>BROKER INSIGHT · COCKPIT BRIEF · COMPARE — PRO FEATURES</p>
                     <button
                         onClick={() => navigate('/app/billing')}
-                        style={{ ...M, fontSize: '9px', letterSpacing: '0.15em', padding: '8px 20px', borderRadius: '9999px', background: 'transparent', color: '#D4AF37', border: '1px solid #D4AF37', cursor: 'pointer', transition: 'all 0.15s' }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = '#D4AF37'; e.currentTarget.style.color = '#000000' }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#D4AF37' }}
+                        style={{ ...M, fontSize: '9px', letterSpacing: '0.15em', padding: '8px 20px', borderRadius: '9999px', background: 'transparent', color: '#C8C8C8', border: '1px solid #C8C8C8', cursor: 'pointer', transition: 'all 0.15s' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#C8C8C8'; e.currentTarget.style.color = '#000000' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#C8C8C8' }}
                     >
                         UPGRADE TO PRO
                     </button>
@@ -268,13 +268,13 @@ export default function Fleet() {
                     {activeTab === 'insight' && (
                         isPro ? (
                             <div>
-                                <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '20px' }}>HOW TO SELL THIS AIRCRAFT</p>
+                                <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '20px' }}>HOW TO SELL THIS AIRCRAFT</p>
                                 <p style={{ ...B, fontSize: '15px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.9 }}>{selected.brokerInsight}</p>
                             </div>
                         ) : (
                             <ProLock navigate={navigate} label="Broker Insights tell you exactly how to position and sell each aircraft.">
                                 <div>
-                                    <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '20px' }}>HOW TO SELL THIS AIRCRAFT</p>
+                                    <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '20px' }}>HOW TO SELL THIS AIRCRAFT</p>
                                     <p style={{ ...B, fontSize: '15px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.9 }}>{selected.brokerInsight}</p>
                                 </div>
                             </ProLock>
@@ -285,7 +285,7 @@ export default function Fleet() {
                     {activeTab === 'cockpit' && (
                         isPro ? (
                             <div>
-                                <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '20px' }}>COCKPIT BRIEF — {selected.model}</p>
+                                <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '20px' }}>COCKPIT BRIEF — {selected.model}</p>
                                 {cockpitRows.map((item, i) => (
                                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '13px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                                         <p style={{ ...M, fontSize: '9px', color: '#999999', letterSpacing: '0.1em', flexShrink: 0, marginRight: '24px' }}>{item.label.toUpperCase()}</p>
@@ -296,7 +296,7 @@ export default function Fleet() {
                         ) : (
                             <ProLock navigate={navigate} label="Cockpit briefs give you technical depth for client conversations.">
                                 <div>
-                                    <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '20px' }}>COCKPIT BRIEF</p>
+                                    <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '20px' }}>COCKPIT BRIEF</p>
                                     {[{ label: 'Avionics', value: '————' }, { label: 'Crew Required', value: '————' }, { label: 'Climb Rate', value: '————' }].map((item, i) => (
                                         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '13px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                                             <p style={{ ...M, fontSize: '9px', color: '#999999', letterSpacing: '0.1em' }}>{item.label.toUpperCase()}</p>
@@ -324,7 +324,7 @@ export default function Fleet() {
                                     onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '2px' }}>
-                                        <p style={{ ...D, fontSize: '20px', color: isSel ? '#D4AF37' : '#ffffff', lineHeight: 1 }}>{a.model}</p>
+                                        <p style={{ ...D, fontSize: '20px', color: isSel ? '#C8C8C8' : '#ffffff', lineHeight: 1 }}>{a.model}</p>
                                         <p style={{ ...M, fontSize: '8px', color: '#999999' }}>{a.category.split(' ').map(w => w[0]).join('')}</p>
                                     </div>
                                     <p style={{ ...M, fontSize: '9px', color: '#999999', marginBottom: '6px' }}>{a.manufacturer}</p>

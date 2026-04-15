@@ -17,8 +17,8 @@ html[data-theme="light"] .glass {
   border-color: rgba(0,0,0,0.09) !important;
 }
 html[data-theme="light"] .glass-gold {
-  background: rgba(212,175,55,0.07) !important;
-  border-color: rgba(212,175,55,0.3) !important;
+  background: rgba(200,200,200,0.07) !important;
+  border-color: rgba(200,200,200,0.3) !important;
 }
 html[data-theme="light"] .stat-card {
   background: #fff !important;
@@ -32,12 +32,12 @@ html[data-theme="light"] .nav-link:hover {
   color: #111 !important;
 }
 html[data-theme="light"] .nav-link.active {
-  background: rgba(212,175,55,0.1) !important;
+  background: rgba(200,200,200,0.1) !important;
   color: #0a0a0a !important;
-  border-color: rgba(212,175,55,0.3) !important;
+  border-color: rgba(200,200,200,0.3) !important;
 }
 html[data-theme="light"] .section-label { color: rgba(0,0,0,0.38) !important; }
-html[data-theme="light"] .btn-primary { background: #D4AF37 !important; color: #0a0a0a !important; }
+html[data-theme="light"] .btn-primary { background: #C8C8C8 !important; color: #0a0a0a !important; }
 html[data-theme="light"] aside {
   background: rgba(248,247,244,0.99) !important;
   border-right-color: rgba(0,0,0,0.09) !important;
@@ -165,9 +165,9 @@ export default function AppLayout() {
                 <p style={{ ...EYEBROW, color: '#444' }}>Plan</p>
                 <span style={{
                     ...MONO, fontSize: '10px', letterSpacing: '0.12em',
-                    color: isPro ? '#D4AF37' : '#555',
-                    background: isPro ? 'rgba(212,175,55,0.08)' : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${isPro ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.08)'}`,
+                    color: isPro ? '#C8C8C8' : '#555',
+                    background: isPro ? 'rgba(200,200,200,0.08)' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${isPro ? 'rgba(200,200,200,0.2)' : 'rgba(255,255,255,0.08)'}`,
                     padding: '2px 8px', borderRadius: '9999px',
                 }}>
                     {isPro ? 'PRO' : 'FREE'}
@@ -209,8 +209,8 @@ export default function AppLayout() {
                         {!collapsed && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                 <Link to="/app/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#D4AF37', letterSpacing: '0.25em' }}>ALTUS</span>
-                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#D4AF37', color: '#0a0a0a', padding: '2px 6px', letterSpacing: '0.12em', borderRadius: '2px' }}>AERO</span>
+                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#C8C8C8', letterSpacing: '0.25em' }}>ALTUS</span>
+                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#C8C8C8', color: '#0a0a0a', padding: '2px 6px', letterSpacing: '0.12em', borderRadius: '2px' }}>AERO</span>
                                 </Link>
                             </motion.div>
                         )}
@@ -218,7 +218,7 @@ export default function AppLayout() {
                     <button
                         onClick={() => setCollapsed(!collapsed)}
                         style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', fontSize: '12px', padding: '4px', transition: 'color 0.2s', flexShrink: 0 }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
                         onMouseLeave={e => e.currentTarget.style.color = '#444'}
                     >
                         {collapsed ? '→' : '←'}
@@ -238,14 +238,14 @@ export default function AppLayout() {
                         onMouseEnter={e => { if (!profileOpen) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
                         onMouseLeave={e => { if (!profileOpen) e.currentTarget.style.background = 'transparent' }}
                     >
-                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#1e3a8a', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', color: '#D4AF37' }}>{userInitials}</span>
+                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#2a2a2a', border: '1px solid rgba(200,200,200,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', color: '#C8C8C8' }}>{userInitials}</span>
                         </div>
                         <AnimatePresence>
                             {!collapsed && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
                                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{username}</p>
-                                    <p style={{ ...MONO, fontSize: '9px', color: isPro ? '#D4AF37' : '#444', letterSpacing: '0.1em' }}>{isPro ? 'PRO' : 'FREE'}</p>
+                                    <p style={{ ...MONO, fontSize: '9px', color: isPro ? '#C8C8C8' : '#444', letterSpacing: '0.1em' }}>{isPro ? 'PRO' : 'FREE'}</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -307,8 +307,8 @@ export default function AppLayout() {
                             ☰
                         </button>
                         <Link to="/app/dashboard" className="md:hidden" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#D4AF37', letterSpacing: '0.2em' }}>ALTUS</span>
-                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#D4AF37', color: '#0a0a0a', padding: '2px 6px', letterSpacing: '0.12em', borderRadius: '2px' }}>AERO</span>
+                            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#C8C8C8', letterSpacing: '0.2em' }}>ALTUS</span>
+                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#C8C8C8', color: '#0a0a0a', padding: '2px 6px', letterSpacing: '0.12em', borderRadius: '2px' }}>AERO</span>
                         </Link>
                         <div className="hidden md:flex" style={{ alignItems: 'center', gap: '8px' }}>
                             <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
@@ -317,13 +317,13 @@ export default function AppLayout() {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <span style={{ ...MONO, fontSize: '12px', color: '#D4AF37', letterSpacing: '0.06em' }}>{time} IST</span>
+                        <span style={{ ...MONO, fontSize: '12px', color: '#C8C8C8', letterSpacing: '0.06em' }}>{time} IST</span>
                         {!isPro && (
                             <button
                                 onClick={() => navigate('/app/billing')}
                                 style={{
                                     ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '7px 16px',
-                                    background: '#D4AF37', color: '#0a0a0a', border: 'none', borderRadius: '9999px',
+                                    background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px',
                                     cursor: 'pointer', transition: 'opacity 0.2s',
                                 }}
                                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
@@ -333,7 +333,7 @@ export default function AppLayout() {
                             </button>
                         )}
                         {isPro && (
-                            <span style={{ ...MONO, fontSize: '10px', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.25)', padding: '5px 12px', borderRadius: '9999px', letterSpacing: '0.15em' }}>
+                            <span style={{ ...MONO, fontSize: '10px', color: '#C8C8C8', border: '1px solid rgba(200,200,200,0.25)', padding: '5px 12px', borderRadius: '9999px', letterSpacing: '0.15em' }}>
                                 PRO
                             </span>
                         )}
@@ -381,8 +381,8 @@ export default function AppLayout() {
                         >
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                 <Link to="/app/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#D4AF37', letterSpacing: '0.2em' }}>ALTUS</span>
-                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#D4AF37', color: '#0a0a0a', padding: '2px 6px', borderRadius: '2px' }}>AERO</span>
+                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#C8C8C8', letterSpacing: '0.2em' }}>ALTUS</span>
+                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#C8C8C8', color: '#0a0a0a', padding: '2px 6px', borderRadius: '2px' }}>AERO</span>
                                 </Link>
                                 <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', fontSize: '16px' }}>✕</button>
                             </div>
@@ -392,12 +392,12 @@ export default function AppLayout() {
                                     onClick={toggleProfile}
                                     style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '10px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                                 >
-                                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e3a8a', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '13px', color: '#D4AF37' }}>{userInitials}</span>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#2a2a2a', border: '1px solid rgba(200,200,200,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '13px', color: '#C8C8C8' }}>{userInitials}</span>
                                     </div>
                                     <div style={{ textAlign: 'left', flex: 1 }}>
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 600, color: '#fff' }}>{username}</p>
-                                        <p style={{ ...MONO, fontSize: '9px', color: isPro ? '#D4AF37' : '#444', letterSpacing: '0.1em' }}>{isPro ? 'PRO' : 'FREE'} · tap to manage</p>
+                                        <p style={{ ...MONO, fontSize: '9px', color: isPro ? '#C8C8C8' : '#444', letterSpacing: '0.1em' }}>{isPro ? 'PRO' : 'FREE'} · tap to manage</p>
                                     </div>
                                     <span style={{ color: '#333', fontSize: '10px' }}>▾</span>
                                 </button>
@@ -410,7 +410,7 @@ export default function AppLayout() {
                                         >
                                             <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                 <p style={{ ...EYEBROW, color: '#444' }}>Plan</p>
-                                                <span style={{ ...MONO, fontSize: '10px', color: isPro ? '#D4AF37' : '#555', background: isPro ? 'rgba(212,175,55,0.08)' : 'rgba(255,255,255,0.04)', border: `1px solid ${isPro ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.08)'}`, padding: '2px 8px', borderRadius: '9999px' }}>
+                                                <span style={{ ...MONO, fontSize: '10px', color: isPro ? '#C8C8C8' : '#555', background: isPro ? 'rgba(200,200,200,0.08)' : 'rgba(255,255,255,0.04)', border: `1px solid ${isPro ? 'rgba(200,200,200,0.2)' : 'rgba(255,255,255,0.08)'}`, padding: '2px 8px', borderRadius: '9999px' }}>
                                                     {isPro ? 'PRO' : 'FREE'}
                                                 </span>
                                             </div>

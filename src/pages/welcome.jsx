@@ -57,7 +57,7 @@ export default function Welcome() {
                     inset: 0,
                     opacity: 0.1,
                     backgroundImage:
-                        'linear-gradient(rgba(212,175,55,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.1) 1px, transparent 1px)',
+                        'linear-gradient(rgba(200,200,200,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(200,200,200,0.1) 1px, transparent 1px)',
                     backgroundSize: '60px 60px',
                     pointerEvents: 'none',
                 }}
@@ -69,7 +69,7 @@ export default function Welcome() {
                     position: 'absolute',
                     inset: 0,
                     background:
-                        'radial-gradient(ellipse at 50% 30%, rgba(30,58,138,0.12) 0%, transparent 65%)',
+                        'radial-gradient(ellipse at 50% 30%, rgba(60,60,60,0.12) 0%, transparent 65%)',
                     pointerEvents: 'none',
                 }}
             />
@@ -100,7 +100,7 @@ export default function Welcome() {
                         style={{
                             fontFamily: 'Bebas Neue, sans-serif',
                             fontSize: '38px',
-                            color: '#D4AF37',
+                            color: '#C8C8C8',
                             letterSpacing: '0.2em',
                         }}
                     >
@@ -110,7 +110,7 @@ export default function Welcome() {
                         style={{
                             fontFamily: 'Bebas Neue, sans-serif',
                             fontSize: '13px',
-                            background: '#D4AF37',
+                            background: '#C8C8C8',
                             color: '#0a0a0a',
                             padding: '4px 10px',
                             letterSpacing: '0.1em',
@@ -186,7 +186,7 @@ export default function Welcome() {
                                 style={{
                                     fontFamily: 'Bebas Neue, sans-serif',
                                     fontSize: '13px',
-                                    color: '#D4AF37',
+                                    color: '#C8C8C8',
                                     letterSpacing: '0.18em',
                                     marginBottom: '7px',
                                 }}
@@ -218,7 +218,7 @@ export default function Welcome() {
                         onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.84')}
                         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                         style={{
-                            background: '#D4AF37',
+                            background: '#C8C8C8',
                             color: '#0a0a0a',
                             border: 'none',
                             borderRadius: '12px',

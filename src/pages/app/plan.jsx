@@ -68,7 +68,7 @@ function ProLock({ navigate, label, children }) {
                 {children}
             </div>
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.78)', gap: '12px', padding: '28px' }}>
-                <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.25em' }}>PRO FEATURE</p>
+                <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.25em' }}>PRO FEATURE</p>
                 {label && <p style={{ ...B, fontSize: '13px', color: '#999999', textAlign: 'center', maxWidth: '240px', lineHeight: 1.6 }}>{label}</p>}
                 <button
                     onClick={() => navigate('/app/billing')}
@@ -277,7 +277,7 @@ export default function Plan() {
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '24px', marginBottom: '28px' }}>
                             <div>
                                 <p style={{ ...M, fontSize: '8px', color: '#999999', letterSpacing: '0.15em', marginBottom: '4px' }}>PER SEAT</p>
-                                <p style={{ ...D, fontSize: '32px', color: '#D4AF37', lineHeight: 1 }}>
+                                <p style={{ ...D, fontSize: '32px', color: '#C8C8C8', lineHeight: 1 }}>
                                     ${result.perSeatMin.toLocaleString()} – ${result.perSeatMax.toLocaleString()}
                                 </p>
                             </div>
@@ -306,13 +306,13 @@ export default function Plan() {
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '28px', marginBottom: '28px' }}>
                         {isPro ? (
                             <div>
-                                <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '16px' }}>CLIENT FRAMING</p>
+                                <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '16px' }}>CLIENT FRAMING</p>
                                 <p style={{ ...B, fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.85 }}>{getClientFraming(result)}</p>
                             </div>
                         ) : (
                             <ProLock navigate={navigate} label="Client Framing shows you exactly how to present this number so the client understands the value.">
                                 <div>
-                                    <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '16px' }}>CLIENT FRAMING</p>
+                                    <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '16px' }}>CLIENT FRAMING</p>
                                     <p style={{ ...B, fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.85 }}>
                                         At approximately $X per seat — comparable to business class, but with full privacy and no connections — the conversation is not about price. It is about what the client is buying per dollar.
                                     </p>
@@ -325,13 +325,13 @@ export default function Plan() {
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '28px', marginBottom: '28px' }}>
                         {isPro ? (
                             <div>
-                                <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '16px' }}>ROUTE OPTIMISATION</p>
+                                <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '16px' }}>ROUTE OPTIMISATION</p>
                                 <p style={{ ...B, fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.85 }}>{getRouteOptimisation(result)}</p>
                             </div>
                         ) : (
                             <ProLock navigate={navigate} label="Route Optimisation suggests the best aircraft category for this budget and route.">
                                 <div>
-                                    <p style={{ ...M, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em', marginBottom: '16px' }}>ROUTE OPTIMISATION</p>
+                                    <p style={{ ...M, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em', marginBottom: '16px' }}>ROUTE OPTIMISATION</p>
                                     <p style={{ ...B, fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.85 }}>
                                         Consider a different aircraft category for this route and passenger count. Pro unlocks the full optimisation.
                                     </p>

@@ -100,7 +100,7 @@ export default function Billing() {
                 </div>
                 <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
                     <div>
-                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '52px', lineHeight: 1.0, color: isPro ? '#D4AF37' : '#333' }}>{isPro ? 'PRO' : 'FREE'}</p>
+                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '52px', lineHeight: 1.0, color: isPro ? '#C8C8C8' : '#333' }}>{isPro ? 'PRO' : 'FREE'}</p>
                         <p style={{ ...MONO, fontSize: '10px', color: '#444', marginTop: '6px', letterSpacing: '0.08em' }}>
                             {isPro ? 'Full platform access · All features active' : 'Core features · Upgrade to unlock everything'}
                         </p>
@@ -110,7 +110,7 @@ export default function Billing() {
                             </p>
                         )}
                         {isProPreview && plan !== 'pro' && (
-                            <p style={{ ...MONO, fontSize: '9px', color: 'rgba(212,175,55,0.4)', marginTop: '6px', letterSpacing: '0.06em' }}>Viewing as Pro · Preview mode active</p>
+                            <p style={{ ...MONO, fontSize: '9px', color: 'rgba(200,200,200,0.4)', marginTop: '6px', letterSpacing: '0.06em' }}>Viewing as Pro · Preview mode active</p>
                         )}
                     </div>
                     <span style={{
@@ -145,7 +145,7 @@ export default function Billing() {
                     ].map((u, i) => (
                         <div key={i} style={{ padding: '20px', background: '#0a0a0a' }}>
                             <p style={{ ...EYEBROW, marginBottom: '8px' }}>{u.label}</p>
-                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: u.highlight ? '#f87171' : '#D4AF37', lineHeight: 1 }}>{u.value}</p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: u.highlight ? '#f87171' : '#C8C8C8', lineHeight: 1 }}>{u.value}</p>
                             <p style={{ ...MONO, fontSize: '9px', color: u.highlight ? 'rgba(248,113,113,0.5)' : '#333', marginTop: '4px' }}>{u.sub}</p>
                         </div>
                     ))}
@@ -168,7 +168,7 @@ export default function Billing() {
                             <span style={{ ...MONO, fontSize: '10px', color: !annual ? '#ffffff' : '#444' }}>Monthly</span>
                             <button
                                 onClick={() => setAnnual(!annual)}
-                                style={{ width: '44px', height: '24px', borderRadius: '9999px', background: annual ? '#D4AF37' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
+                                style={{ width: '44px', height: '24px', borderRadius: '9999px', background: annual ? '#C8C8C8' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
                             >
                                 <span style={{ position: 'absolute', top: '3px', left: annual ? '23px' : '3px', width: '18px', height: '18px', borderRadius: '50%', background: annual ? '#0a0a0a' : '#333', transition: 'left 0.2s' }} />
                             </button>
@@ -187,7 +187,7 @@ export default function Billing() {
                                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
                                     {FREE_FEATURES.map((f, i) => (
                                         <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                                            <span style={{ color: '#D4AF37', flexShrink: 0 }}>—</span>
+                                            <span style={{ color: '#C8C8C8', flexShrink: 0 }}>—</span>
                                             <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#444' }}>{f}</p>
                                         </li>
                                     ))}
@@ -196,11 +196,11 @@ export default function Billing() {
                             </div>
 
                             {/* Pro */}
-                            <div style={{ padding: '32px', background: '#080808', display: 'flex', flexDirection: 'column', borderLeft: '1px solid rgba(212,175,55,0.15)', position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '50%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5), transparent)' }} />
+                            <div style={{ padding: '32px', background: '#080808', display: 'flex', flexDirection: 'column', borderLeft: '1px solid rgba(200,200,200,0.15)', position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '50%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(200,200,200,0.5), transparent)' }} />
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                                     <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.05em' }}>Pro</p>
-                                    <span style={{ ...MONO, fontSize: '9px', letterSpacing: '0.12em', color: '#0a0a0a', background: '#D4AF37', padding: '3px 10px', borderRadius: '9999px' }}>RECOMMENDED</span>
+                                    <span style={{ ...MONO, fontSize: '9px', letterSpacing: '0.12em', color: '#0a0a0a', background: '#C8C8C8', padding: '3px 10px', borderRadius: '9999px' }}>RECOMMENDED</span>
                                 </div>
                                 <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '44px', color: '#ffffff', lineHeight: 1, marginBottom: '4px' }}>₹{annual ? '1,999' : '2,499'}</p>
                                 <p style={{ ...EYEBROW, color: '#333', marginBottom: annual ? '4px' : '24px' }}>/month</p>
@@ -208,14 +208,14 @@ export default function Billing() {
                                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
                                     {PRO_FEATURES.map((f, i) => (
                                         <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                                            <span style={{ color: '#D4AF37', flexShrink: 0 }}>—</span>
+                                            <span style={{ color: '#C8C8C8', flexShrink: 0 }}>—</span>
                                             <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>{f}</p>
                                         </li>
                                     ))}
                                 </ul>
                                 <button
                                     onClick={handleRazorpay}
-                                    style={{ ...MONO, fontSize: '11px', letterSpacing: '0.15em', padding: '14px', background: '#D4AF37', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                                    style={{ ...MONO, fontSize: '11px', letterSpacing: '0.15em', padding: '14px', background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer', transition: 'opacity 0.2s' }}
                                     onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                                     onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                                 >

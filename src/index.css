@@ -31,7 +31,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #D4AF37;
+    background: #C8C8C8;
     border-radius: 10px;
   }
 }
@@ -47,7 +47,7 @@
   }
 
   .glass:hover {
-    border-color: #1e3a8a;
+    border-color: #2a2a2a;
   }
 
   .glass-gold {
@@ -60,18 +60,18 @@
   }
 
   .glass-gold:hover {
-    border-color: #D4AF37;
+    border-color: #C8C8C8;
   }
 
   .text-gold-gradient {
-    background: linear-gradient(135deg, #D4AF37 0%, #f5e27a 50%, #D4AF37 100%);
+    background: linear-gradient(135deg, #C8C8C8 0%, #f5e27a 50%, #C8C8C8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #D4AF37, #9A7B1E);
+    background: linear-gradient(135deg, #C8C8C8, #888888);
     color: #0a0a0a;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1rem;
@@ -94,7 +94,7 @@
 
   .btn-secondary {
     background: transparent;
-    color: #D4AF37;
+    color: #C8C8C8;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1rem;
     letter-spacing: 0.1em;
@@ -110,7 +110,7 @@
   }
 
   .btn-secondary:hover {
-    border-color: #D4AF37;
+    border-color: #C8C8C8;
     background: rgba(212, 175, 55, 0.08);
     transform: translateY(-2px);
   }
@@ -124,7 +124,7 @@
   }
 
   .stat-card:hover {
-    border-color: #D4AF37;
+    border-color: #C8C8C8;
     box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
   }
 
@@ -145,20 +145,20 @@
 
   .nav-link:hover {
     background: rgba(212, 175, 55, 0.08);
-    color: #D4AF37;
+    color: #C8C8C8;
   }
 
   .nav-link.active {
     background: rgba(212, 175, 55, 0.1);
-    color: #D4AF37;
-    border-left: 2px solid #D4AF37;
+    color: #C8C8C8;
+    border-left: 2px solid #C8C8C8;
   }
 
   .section-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75rem;
     letter-spacing: 0.2em;
-    color: #D4AF37;
+    color: #C8C8C8;
     text-transform: uppercase;
     margin-bottom: 0.75rem;
   }

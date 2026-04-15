@@ -47,11 +47,11 @@ function ProLock({ navigate, label, children }) {
                 position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 background: 'rgba(8,8,8,0.88)', backdropFilter: 'blur(2px)', gap: '10px', padding: '16px',
             }}>
-                <span style={{ ...MONO, fontSize: '9px', color: '#D4AF37', letterSpacing: '0.2em' }}>PRO FEATURE</span>
+                <span style={{ ...MONO, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em' }}>PRO FEATURE</span>
                 {label && <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#555', textAlign: 'center', maxWidth: '240px', lineHeight: 1.5 }}>{label}</p>}
                 <button
                     onClick={() => navigate('/app/billing')}
-                    style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 20px', background: '#D4AF37', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer' }}
+                    style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 20px', background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer' }}
                 >
                     UPGRADE TO PRO
                 </button>
@@ -80,12 +80,12 @@ export default function Intel() {
                 </div>
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', alignSelf: 'flex-start', flexShrink: 0,
-                    background: isPro ? 'rgba(74,222,128,0.06)' : 'rgba(212,175,55,0.06)',
-                    border: `1px solid ${isPro ? 'rgba(74,222,128,0.2)' : 'rgba(212,175,55,0.2)'}`,
+                    background: isPro ? 'rgba(74,222,128,0.06)' : 'rgba(200,200,200,0.06)',
+                    border: `1px solid ${isPro ? 'rgba(74,222,128,0.2)' : 'rgba(200,200,200,0.2)'}`,
                     borderRadius: '9999px',
                 }}>
-                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isPro ? '#4ade80' : '#D4AF37', flexShrink: 0, display: 'inline-block' }} />
-                    <span style={{ ...MONO, fontSize: '9px', color: isPro ? '#4ade80' : '#D4AF37', letterSpacing: '0.12em' }}>
+                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isPro ? '#4ade80' : '#C8C8C8', flexShrink: 0, display: 'inline-block' }} />
+                    <span style={{ ...MONO, fontSize: '9px', color: isPro ? '#4ade80' : '#C8C8C8', letterSpacing: '0.12em' }}>
                         {isPro ? 'LIVE DATA' : '24HR DELAYED'}
                     </span>
                 </div>
@@ -93,11 +93,11 @@ export default function Intel() {
 
             {/* Free tier banner */}
             {!isPro && (
-                <div style={{ padding: '14px 20px', border: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ padding: '14px 20px', border: '1px solid rgba(200,200,200,0.15)', background: 'rgba(200,200,200,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#555' }}>
                         You are seeing 24-hour delayed signals. Pro unlocks live data and Broker Context on every signal.
                     </p>
-                    <button onClick={() => navigate('/app/billing')} style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 16px', background: '#D4AF37', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer', flexShrink: 0 }}>
+                    <button onClick={() => navigate('/app/billing')} style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 16px', background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer', flexShrink: 0 }}>
                         GO PRO
                     </button>
                 </div>
@@ -107,7 +107,7 @@ export default function Intel() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'rgba(255,255,255,0.04)' }}>
                 {SIGNALS.map((signal) => {
                     const isExpanded = expanded === signal.id
-                    const valueColor = signal.direction === 'up' ? '#4ade80' : signal.direction === 'down' ? '#D4AF37' : '#ffffff'
+                    const valueColor = signal.direction === 'up' ? '#4ade80' : signal.direction === 'down' ? '#C8C8C8' : '#ffffff'
                     return (
                         <div key={signal.id} style={{ background: '#0a0a0a', overflow: 'hidden' }}>
                             <div
@@ -131,14 +131,14 @@ export default function Intel() {
                                     <p style={{ ...MONO, fontSize: '9px', color: '#333', letterSpacing: '0.08em', marginBottom: '16px' }}>{updatedLabel} · {signal.note}</p>
 
                                     {isPro ? (
-                                        <div style={{ padding: '20px', border: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.02)' }}>
-                                            <p style={{ ...EYEBROW, color: '#D4AF37', marginBottom: '12px' }}>Broker Context</p>
+                                        <div style={{ padding: '20px', border: '1px solid rgba(200,200,200,0.15)', background: 'rgba(200,200,200,0.02)' }}>
+                                            <p style={{ ...EYEBROW, color: '#C8C8C8', marginBottom: '12px' }}>Broker Context</p>
                                             <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>{signal.brokerContext}</p>
                                         </div>
                                     ) : (
                                         <ProLock navigate={navigate} label="Broker Context explains what each signal means for your next deal.">
-                                            <div style={{ padding: '20px', border: '1px solid rgba(212,175,55,0.15)', background: 'rgba(212,175,55,0.02)' }}>
-                                                <p style={{ ...EYEBROW, color: '#D4AF37', marginBottom: '12px' }}>Broker Context</p>
+                                            <div style={{ padding: '20px', border: '1px solid rgba(200,200,200,0.15)', background: 'rgba(200,200,200,0.02)' }}>
+                                                <p style={{ ...EYEBROW, color: '#C8C8C8', marginBottom: '12px' }}>Broker Context</p>
                                                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>{signal.brokerContext}</p>
                                             </div>
                                         </ProLock>

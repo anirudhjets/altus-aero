@@ -5,7 +5,7 @@ const Section = ({ title, children }) => (
         <h2 style={{
             fontFamily: 'Bebas Neue, sans-serif',
             fontSize: '20px',
-            color: '#D4AF37',
+            color: '#C8C8C8',
             letterSpacing: '0.15em',
             marginBottom: '14px',
         }}>{title}</h2>
@@ -42,7 +42,7 @@ export default function Terms() {
                 inset: 0,
                 opacity: 0.06,
                 backgroundImage:
-                    'linear-gradient(rgba(212,175,55,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.15) 1px, transparent 1px)',
+                    'linear-gradient(rgba(200,200,200,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(200,200,200,0.15) 1px, transparent 1px)',
                 backgroundSize: '60px 60px',
                 pointerEvents: 'none',
             }} />
@@ -59,7 +59,7 @@ export default function Terms() {
                     marginBottom: '48px',
                     transition: 'color 0.2s',
                 }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#D4AF37'}
+                    onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
                 >
                     ← BACK TO SITE
@@ -67,8 +67,8 @@ export default function Terms() {
 
                 <div style={{ marginBottom: '52px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#D4AF37', letterSpacing: '0.2em' }}>ALTUS</span>
-                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', background: '#D4AF37', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.1em', borderRadius: '4px' }}>AERO</span>
+                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#C8C8C8', letterSpacing: '0.2em' }}>ALTUS</span>
+                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', background: '#C8C8C8', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.1em', borderRadius: '4px' }}>AERO</span>
                     </div>
                     <h1 style={{
                         fontFamily: 'Bebas Neue, sans-serif',
@@ -87,8 +87,8 @@ export default function Terms() {
                 </div>
 
                 <div style={{
-                    background: 'rgba(212,175,55,0.05)',
-                    border: '1px solid rgba(212,175,55,0.15)',
+                    background: 'rgba(200,200,200,0.05)',
+                    border: '1px solid rgba(200,200,200,0.15)',
                     borderRadius: '12px',
                     padding: '20px 24px',
                     marginBottom: '48px',
@@ -198,7 +198,7 @@ export default function Terms() {
 
                 <Section title="12. CONTACT">
                     <P>For any questions about these Terms, contact us at:</P>
-                    <P style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#D4AF37' }}>
+                    <P style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#C8C8C8' }}>
                         anirudh.jets@gmail.com
                     </P>
                 </Section>
@@ -212,11 +212,11 @@ export default function Terms() {
                     flexWrap: 'wrap',
                 }}>
                     <Link to="/privacy" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none', letterSpacing: '0.08em' }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
                     >PRIVACY POLICY</Link>
                     <Link to="/" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none', letterSpacing: '0.08em' }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#D4AF37'}
+                        onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
                     >BACK TO HOME</Link>
                 </div>
