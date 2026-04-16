@@ -8,10 +8,10 @@ export default {
     extend: {
       colors: {
         jet: "#0a0a0a",
-        gulf: "#2a2a2a",
-        gold: "#C8C8C8",
-        "gold-dim": "#888888",
-        "gulf-dark": "#111111",
+        gulf: "#0a1a1a",
+        gold: "#0ABFBC",
+        "gold-dim": "#079E9B",
+        "gulf-dark": "#061212",
       },
       fontFamily: {
         display: ["Bebas Neue", "sans-serif"],

@@ -11,8 +11,8 @@ const PILL_PRIMARY = {
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
     color: '#0a0a0a',
-    background: '#C8C8C8',
-    border: '1px solid #C8C8C8',
+    background: '#0ABFBC',
+    border: '1px solid #0ABFBC',
     borderRadius: '9999px',
     padding: '12px 28px',
     cursor: 'pointer',
@@ -85,8 +85,10 @@ function Nav() {
             <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
                 <Link to="/" onClick={() => window.scrollTo({top:0,behavior:'smooth'})} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#C8C8C8', letterSpacing: '0.25em' }}>ALTUS</span>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', background: '#C8C8C8', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.15em', borderRadius: '2px' }}>AERO</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
+                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
+                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
+                  </div>
                 </Link>
 
                 <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }} className="hidden md:flex">
@@ -128,9 +130,9 @@ function Nav() {
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '5px', padding: '4px' }}
                     aria-label="Toggle menu"
                 >
-                    <span style={{ display: 'block', height: '1px', width: '22px', background: open ? '#C8C8C8' : '#999999', transition: 'all 0.3s', transform: open ? 'rotate(45deg) translate(4px, 4px)' : 'none' }} />
+                    <span style={{ display: 'block', height: '1px', width: '22px', background: open ? '#0ABFBC' : '#999999', transition: 'all 0.3s', transform: open ? 'rotate(45deg) translate(4px, 4px)' : 'none' }} />
                     <span style={{ display: 'block', height: '1px', width: '16px', background: '#999999', transition: 'all 0.3s', opacity: open ? 0 : 1 }} />
-                    <span style={{ display: 'block', height: '1px', width: '22px', background: open ? '#C8C8C8' : '#999999', transition: 'all 0.3s', transform: open ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }} />
+                    <span style={{ display: 'block', height: '1px', width: '22px', background: open ? '#0ABFBC' : '#999999', transition: 'all 0.3s', transform: open ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }} />
                 </button>
             </div>
 
@@ -197,11 +199,11 @@ function Hero() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    style={{ ...EYEBROW, color: '#C8C8C8', marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+                    style={{ ...EYEBROW, color: '#0ABFBC', marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
                 >
-                    <span style={{ display: 'inline-block', width: '32px', height: '1px', background: '#C8C8C8', opacity: 0.5 }} />
+                    <span style={{ display: 'inline-block', width: '32px', height: '1px', background: '#0ABFBC', opacity: 0.5 }} />
                     Broker Intelligence Platform
-                    <span style={{ display: 'inline-block', width: '32px', height: '1px', background: '#C8C8C8', opacity: 0.5 }} />
+                    <span style={{ display: 'inline-block', width: '32px', height: '1px', background: '#0ABFBC', opacity: 0.5 }} />
                 </motion.p>
 
                 <motion.h1
@@ -219,7 +221,7 @@ function Hero() {
                 >
                     THE BROKER
                     <br />
-                    <span style={{ color: 'transparent', WebkitTextStroke: '1px rgba(200,200,200,0.6)' }}>WHO EDUCATES</span>
+                    <span style={{ color: 'transparent', WebkitTextStroke: '1px rgba(10,191,188,0.6)' }}>WHO EDUCATES</span>
                     <br />
                     CLOSES.
                 </motion.h1>
@@ -270,7 +272,7 @@ function Hero() {
                         { value: '2026', label: 'Market ready' },
                     ].map((s, i) => (
                         <div key={i} style={{ textAlign: 'center' }}>
-                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: '#C8C8C8', lineHeight: 1 }}>{s.value}</p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: '#0ABFBC', lineHeight: 1 }}>{s.value}</p>
                             <p style={{ ...EYEBROW, color: '#999999', marginTop: '6px', fontSize: '10px' }}>{s.label}</p>
                         </div>
                     ))}
@@ -305,11 +307,11 @@ function Manifesto() {
                         letterSpacing: '0.02em',
                     }}>
                         The world's first platform that{' '}
-                        <span style={{ color: '#C8C8C8' }}>teaches you to become a jet broker</span>{' '}
+                        <span style={{ color: '#0ABFBC' }}>teaches you to become a jet broker</span>{' '}
                         while giving you the tools to{' '}
-                        <span style={{ color: '#C8C8C8' }}>operate like one.</span>
+                        <span style={{ color: '#0ABFBC' }}>operate like one.</span>
                     </p>
-                    <div style={{ width: '1px', height: '48px', background: 'rgba(200,200,200,0.3)', margin: '48px auto 0' }} />
+                    <div style={{ width: '1px', height: '48px', background: 'rgba(10,191,188,0.3)', margin: '48px auto 0' }} />
                 </Reveal>
             </div>
         </section>
@@ -366,7 +368,7 @@ function Features() {
                     <p style={{ ...EYEBROW, marginBottom: '20px' }}>Platform Features</p>
                     <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px, 6vw, 80px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginBottom: '16px' }}>
                         BUILT FOR BROKERS WHO<br />
-                        <span style={{ color: '#C8C8C8' }}>TAKE THE TIME TO LEARN.</span>
+                        <span style={{ color: '#0ABFBC' }}>TAKE THE TIME TO LEARN.</span>
                     </h2>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#999999', maxWidth: '480px', lineHeight: 1.7 }}>
                         Steve Varsano's principle: educate the client, and the sale takes care of itself. Every tool in Altus Aero is built on that belief.
@@ -386,9 +388,9 @@ function Features() {
                                     textTransform: 'uppercase',
                                     padding: '10px 20px',
                                     borderRadius: '9999px',
-                                    border: active === t.id ? '1px solid #C8C8C8' : '1px solid rgba(255,255,255,0.12)',
-                                    background: active === t.id ? 'rgba(200,200,200,0.08)' : 'transparent',
-                                    color: active === t.id ? '#C8C8C8' : '#999999',
+                                    border: active === t.id ? '1px solid #0ABFBC' : '1px solid rgba(255,255,255,0.12)',
+                                    background: active === t.id ? 'rgba(10,191,188,0.08)' : 'transparent',
+                                    color: active === t.id ? '#0ABFBC' : '#999999',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                     display: 'flex',
@@ -403,9 +405,9 @@ function Features() {
                                     letterSpacing: '0.1em',
                                     padding: '2px 7px',
                                     borderRadius: '9999px',
-                                    background: t.badge === 'Free' ? 'rgba(74,222,128,0.1)' : 'rgba(200,200,200,0.1)',
-                                    color: t.badge === 'Free' ? '#4ade80' : '#C8C8C8',
-                                    border: t.badge === 'Free' ? '1px solid rgba(74,222,128,0.2)' : '1px solid rgba(200,200,200,0.2)',
+                                    background: t.badge === 'Free' ? 'rgba(74,222,128,0.1)' : 'rgba(10,191,188,0.1)',
+                                    color: t.badge === 'Free' ? '#4ade80' : '#0ABFBC',
+                                    border: t.badge === 'Free' ? '1px solid rgba(74,222,128,0.2)' : '1px solid rgba(10,191,188,0.2)',
                                 }}>
                                     {t.badge}
                                 </span>
@@ -424,7 +426,7 @@ function Features() {
                         style={{ marginTop: '40px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', overflow: 'hidden' }}
                     >
                         <div style={{ background: '#0a0a0a', padding: '48px' }}>
-                            <p style={{ ...EYEBROW, color: tab.badge === 'Free' ? '#4ade80' : '#C8C8C8', marginBottom: '20px' }}>
+                            <p style={{ ...EYEBROW, color: tab.badge === 'Free' ? '#4ade80' : '#0ABFBC', marginBottom: '20px' }}>
                                 {tab.badge === 'Free' ? 'FREE FEATURE' : 'PRO FEATURE'}
                             </p>
                             <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(28px, 3vw, 44px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginBottom: '20px' }}>
@@ -436,7 +438,7 @@ function Features() {
                             <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 {tab.points.map((p, i) => (
                                     <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
-                                        <span style={{ color: '#C8C8C8', flexShrink: 0, marginTop: '1px' }}>—</span>{p}
+                                        <span style={{ color: '#0ABFBC', flexShrink: 0, marginTop: '1px' }}>—</span>{p}
                                     </li>
                                 ))}
                             </ul>
@@ -456,11 +458,11 @@ function Features() {
                                                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#999999' }}>{d.label}</p>
                                                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#444', marginTop: '3px' }}>{d.note}</p>
                                             </div>
-                                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: d.positive ? '#4ade80' : '#C8C8C8', lineHeight: 1 }}>{d.value}</p>
+                                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: d.positive ? '#4ade80' : '#0ABFBC', lineHeight: 1 }}>{d.value}</p>
                                         </div>
                                     ))}
-                                    <div style={{ padding: '16px 20px', border: '1px solid rgba(200,200,200,0.15)', background: 'rgba(200,200,200,0.03)', marginTop: '4px' }}>
-                                        <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '10px', marginBottom: '8px' }}>Broker Context</p>
+                                    <div style={{ padding: '16px 20px', border: '1px solid rgba(10,191,188,0.15)', background: 'rgba(10,191,188,0.03)', marginTop: '4px' }}>
+                                        <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px', marginBottom: '8px' }}>Broker Context</p>
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#999999', lineHeight: 1.65 }}>Pre-owned values at 3-year low — buyer's market. Urgency argument is legitimate right now.</p>
                                     </div>
                                 </div>
@@ -468,7 +470,7 @@ function Features() {
                             {tab.visual === 'fleet' && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <p style={{ ...EYEBROW, color: '#444' }}>Aircraft Profile</p>
-                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '72px', color: '#C8C8C8', lineHeight: 1.0 }}>G650ER</p>
+                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '72px', color: '#0ABFBC', lineHeight: 1.0 }}>G650ER</p>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.04)' }}>
                                         {[{ label: 'Range', value: '7,500nm' }, { label: 'Speed', value: '516 kts' }, { label: 'Category', value: 'Ultra Long' }, { label: 'Passengers', value: '13–18' }].map((d, i) => (
                                             <div key={i} style={{ padding: '14px 16px', background: '#0a0a0a' }}>
@@ -477,8 +479,8 @@ function Features() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div style={{ borderLeft: '1px solid #C8C8C8', paddingLeft: '16px' }}>
-                                        <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '10px', marginBottom: '8px' }}>Broker Insight — Pro</p>
+                                    <div style={{ borderLeft: '1px solid #0ABFBC', paddingLeft: '16px' }}>
+                                        <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px', marginBottom: '8px' }}>Broker Insight — Pro</p>
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#999999', lineHeight: 1.65 }}>Lead with nonstop capability on routes where competitors require a tech stop.</p>
                                     </div>
                                 </div>
@@ -494,10 +496,10 @@ function Features() {
                                         <div key={i} style={{ padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)', background: '#0a0a0a' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                                                 <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#ffffff' }}>{f.route}</p>
-                                                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', border: f.status === 'En Route' ? '1px solid rgba(74,222,128,0.25)' : '1px solid rgba(200,200,200,0.25)', color: f.status === 'En Route' ? '#4ade80' : '#C8C8C8', background: f.status === 'En Route' ? 'rgba(74,222,128,0.06)' : 'rgba(200,200,200,0.06)' }}>{f.status}</span>
+                                                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', border: f.status === 'En Route' ? '1px solid rgba(74,222,128,0.25)' : '1px solid rgba(10,191,188,0.25)', color: f.status === 'En Route' ? '#4ade80' : '#0ABFBC', background: f.status === 'En Route' ? 'rgba(74,222,128,0.06)' : 'rgba(10,191,188,0.06)' }}>{f.status}</span>
                                             </div>
                                             <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#444', marginBottom: f.progress > 0 ? '8px' : 0 }}>{f.aircraft}</p>
-                                            {f.progress > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }}><div style={{ height: '1px', background: '#C8C8C8', width: `${f.progress}%` }} /></div>}
+                                            {f.progress > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }}><div style={{ height: '1px', background: '#0ABFBC', width: `${f.progress}%` }} /></div>}
                                         </div>
                                     ))}
                                 </div>
@@ -513,8 +515,8 @@ function Features() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div style={{ padding: '20px', border: '1px solid rgba(200,200,200,0.2)', background: 'rgba(200,200,200,0.03)' }}>
-                                        <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '10px', marginBottom: '8px' }}>Estimated Charter Cost</p>
+                                    <div style={{ padding: '20px', border: '1px solid rgba(10,191,188,0.2)', background: 'rgba(10,191,188,0.03)' }}>
+                                        <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px', marginBottom: '8px' }}>Estimated Charter Cost</p>
                                         <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '48px', color: '#ffffff', lineHeight: 1.0 }}>$122k – $154k</p>
                                         <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#444', marginTop: '6px' }}>One way · G650ER class</p>
                                     </div>
@@ -528,19 +530,19 @@ function Features() {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     <p style={{ ...EYEBROW, color: '#444', marginBottom: '8px' }}>AI Advisor — Pro</p>
                                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                        <div style={{ background: 'rgba(60,60,60,0.15)', border: '1px solid rgba(60,60,60,0.3)', padding: '12px 16px', maxWidth: '80%' }}>
+                                        <div style={{ background: 'rgba(10,60,58,0.15)', border: '1px solid rgba(10,60,58,0.3)', padding: '12px 16px', maxWidth: '80%' }}>
                                             <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#ffffff' }}>Which jet for Mumbai to London with 8 passengers?</p>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                         <div style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.06)', padding: '12px 16px', maxWidth: '85%' }}>
-                                            <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '9px', marginBottom: '8px' }}>Advisor</p>
+                                            <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '9px', marginBottom: '8px' }}>Advisor</p>
                                             <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#999999', lineHeight: 1.65 }}>G650ER qualifies nonstop at 4,387nm with reserves. Charter rate ~$14,000/hr. Standard on this route.</p>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.06)', background: '#0a0a0a' }}>
                                         {[0, 1, 2].map((dot) => (
-                                            <motion.span key={dot} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }} style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#C8C8C8', display: 'inline-block' }} />
+                                            <motion.span key={dot} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }} style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#0ABFBC', display: 'inline-block' }} />
                                         ))}
                                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#444' }}>Advisor is typing...</span>
                                     </div>
@@ -561,9 +563,9 @@ function ChatbotShowcase() {
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
                     <Reveal>
-                        <span style={{ ...EYEBROW, background: '#C8C8C8', color: '#0a0a0a', padding: '4px 12px', borderRadius: '9999px', display: 'inline-block', marginBottom: '32px' }}>PRO FEATURE</span>
+                        <span style={{ ...EYEBROW, background: '#0ABFBC', color: '#0a0a0a', padding: '4px 12px', borderRadius: '9999px', display: 'inline-block', marginBottom: '32px' }}>PRO FEATURE</span>
                         <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px, 5vw, 72px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginBottom: '24px' }}>
-                            A 20-YEAR AVIATION<br /><span style={{ color: '#C8C8C8' }}>ADVISOR. ON DEMAND.</span>
+                            A 20-YEAR AVIATION<br /><span style={{ color: '#0ABFBC' }}>ADVISOR. ON DEMAND.</span>
                         </h2>
                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#999999', lineHeight: 1.75, marginBottom: '32px' }}>
                             Pro subscribers get the Altus Aero AI Advisor — powered by Claude AI. Ask it anything relevant to a working jet broker: aircraft specs, route qualification, how to handle price objections, deal structure, negotiation angles.
@@ -571,7 +573,7 @@ function ChatbotShowcase() {
                         <ul style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '40px' }}>
                             {['Aircraft performance, range, and route qualification', 'Sales positioning and objection handling', 'Deal structure guidance and negotiation tactics', 'Available 24/7 — no waiting, no appointments'].map((p, i) => (
                                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>
-                                    <span style={{ color: '#C8C8C8', flexShrink: 0 }}>—</span>{p}
+                                    <span style={{ color: '#0ABFBC', flexShrink: 0 }}>—</span>{p}
                                 </li>
                             ))}
                         </ul>
@@ -588,11 +590,11 @@ function ChatbotShowcase() {
                     <Reveal delay={0.15}>
                         <div style={{ border: '1px solid rgba(255,255,255,0.06)', background: '#0a0a0a' }}>
                             <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#2a2a2a', border: '1px solid rgba(200,200,200,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', color: '#C8C8C8' }}>AI</span>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', color: '#0ABFBC' }}>AI</span>
                                 </div>
                                 <div>
-                                    <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '10px' }}>ALTUS AI ADVISOR</p>
+                                    <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px' }}>ALTUS AI ADVISOR</p>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                                         <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
                                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#444' }}>Pro · Aviation broker intelligence</span>
@@ -601,24 +603,24 @@ function ChatbotShowcase() {
                             </div>
                             <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <div style={{ background: 'rgba(60,60,60,0.15)', border: '1px solid rgba(60,60,60,0.3)', padding: '12px 16px', maxWidth: '85%' }}>
+                                    <div style={{ background: 'rgba(10,60,58,0.15)', border: '1px solid rgba(10,60,58,0.3)', padding: '12px 16px', maxWidth: '85%' }}>
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#ffffff' }}>Which aircraft for Mumbai to London with 8 passengers?</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                     <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '12px 16px', maxWidth: '90%', background: 'rgba(255,255,255,0.02)' }}>
-                                        <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '9px', marginBottom: '8px' }}>Advisor</p>
+                                        <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '9px', marginBottom: '8px' }}>Advisor</p>
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#999999', lineHeight: 1.65 }}>G650ER at 4,387nm qualifies nonstop with reserves. Charter rate ~$14,000/hr. Standard recommendation on this route.</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <div style={{ background: 'rgba(60,60,60,0.15)', border: '1px solid rgba(60,60,60,0.3)', padding: '12px 16px', maxWidth: '85%' }}>
+                                    <div style={{ background: 'rgba(10,60,58,0.15)', border: '1px solid rgba(10,60,58,0.3)', padding: '12px 16px', maxWidth: '85%' }}>
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#ffffff' }}>Client says it's too expensive. What do I say?</p>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
                                     {[0, 1, 2].map((dot) => (
-                                        <motion.span key={dot} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }} style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#C8C8C8', display: 'inline-block' }} />
+                                        <motion.span key={dot} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }} style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#0ABFBC', display: 'inline-block' }} />
                                     ))}
                                     <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#444', marginLeft: '4px' }}>Advisor is typing...</span>
                                 </div>
@@ -641,12 +643,12 @@ function Founder() {
                     <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '56px', position: 'relative', overflow: 'hidden', background: '#080808' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative', zIndex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#2a2a2a', border: '1px solid rgba(200,200,200,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#C8C8C8' }}>AS</span>
+                                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#0ABFBC' }}>AS</span>
                                 </div>
                                 <div>
                                     <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#ffffff', letterSpacing: '0.05em', lineHeight: 1 }}>Anirudh Shinde</p>
-                                    <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '10px', marginTop: '5px' }}>Founder · Mumbai, India</p>
+                                    <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px', marginTop: '5px' }}>Founder · Mumbai, India</p>
                                 </div>
                             </div>
 
@@ -694,7 +696,7 @@ function HowItWorks() {
                 <Reveal>
                     <p style={{ ...EYEBROW, marginBottom: '20px' }}>How It Works</p>
                     <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px, 6vw, 80px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em' }}>
-                        THREE STEPS TO BECOMING<br /><span style={{ color: '#C8C8C8' }}>THE BROKER CLIENTS TRUST.</span>
+                        THREE STEPS TO BECOMING<br /><span style={{ color: '#0ABFBC' }}>THE BROKER CLIENTS TRUST.</span>
                     </h2>
                 </Reveal>
                 <div style={{ marginTop: '64px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.06)' }}>
@@ -742,14 +744,14 @@ function Pricing() {
                 <Reveal style={{ textAlign: 'center', marginBottom: '64px' }}>
                     <p style={{ ...EYEBROW, marginBottom: '20px' }}>Pricing</p>
                     <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px, 6vw, 80px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginBottom: '24px' }}>
-                        LEARN FOR FREE.<br /><span style={{ color: '#C8C8C8' }}>CLOSE WITH PRO.</span>
+                        LEARN FOR FREE.<br /><span style={{ color: '#0ABFBC' }}>CLOSE WITH PRO.</span>
                     </h2>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#999999', maxWidth: '360px', margin: '0 auto 32px' }}>No credit card needed to start. Upgrade when you are ready to use the full toolkit.</p>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: !annual ? '#ffffff' : '#444' }}>Monthly</span>
                         <button
                             onClick={() => setAnnual(!annual)}
-                            style={{ width: '44px', height: '24px', borderRadius: '9999px', background: annual ? '#C8C8C8' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
+                            style={{ width: '44px', height: '24px', borderRadius: '9999px', background: annual ? '#0ABFBC' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
                         >
                             <span style={{ position: 'absolute', top: '3px', left: annual ? '23px' : '3px', width: '18px', height: '18px', borderRadius: '50%', background: annual ? '#0a0a0a' : '#555', transition: 'left 0.2s' }} />
                         </button>
@@ -770,7 +772,7 @@ function Pricing() {
                                 <ul style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '40px' }}>
                                     {freeFeatures.map((f, i) => (
                                         <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#999999' }}>
-                                            <span style={{ color: '#C8C8C8', flexShrink: 0 }}>—</span>{f}
+                                            <span style={{ color: '#0ABFBC', flexShrink: 0 }}>—</span>{f}
                                         </li>
                                     ))}
                                 </ul>
@@ -787,20 +789,20 @@ function Pricing() {
                     </Reveal>
 
                     <Reveal delay={0.1}>
-                        <div style={{ padding: '48px', background: '#080808', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box', borderLeft: '1px solid rgba(200,200,200,0.15)' }}>
+                        <div style={{ padding: '48px', background: '#080808', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box', borderLeft: '1px solid rgba(10,191,188,0.15)' }}>
                             <div style={{ flex: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                                     <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#ffffff', letterSpacing: '0.05em' }}>Pro</p>
-                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', letterSpacing: '0.12em', color: '#0a0a0a', background: '#C8C8C8', padding: '4px 10px', borderRadius: '9999px' }}>RECOMMENDED</span>
+                                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', letterSpacing: '0.12em', color: '#0a0a0a', background: '#0ABFBC', padding: '4px 10px', borderRadius: '9999px' }}>RECOMMENDED</span>
                                 </div>
-                                <p style={{ ...EYEBROW, color: '#C8C8C8', fontSize: '10px', marginBottom: '32px' }}>Full platform + AI advisor</p>
+                                <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px', marginBottom: '32px' }}>Full platform + AI advisor</p>
                                 <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '56px', color: '#ffffff', lineHeight: 1.0, marginBottom: '8px' }}>₹{annual ? '1,999' : '2,499'}</p>
                                 <p style={{ ...EYEBROW, color: '#444', fontSize: '10px', marginBottom: annual ? '4px' : '40px' }}>/month</p>
                                 {annual && <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#4ade80', marginBottom: '40px' }}>₹23,988 billed annually — save ₹6,000</p>}
                                 <ul style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '40px' }}>
                                     {proFeatures.map((f, i) => (
                                         <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>
-                                            <span style={{ color: '#C8C8C8', flexShrink: 0 }}>—</span>{f}
+                                            <span style={{ color: '#0ABFBC', flexShrink: 0 }}>—</span>{f}
                                         </li>
                                     ))}
                                 </ul>
@@ -826,12 +828,12 @@ function CTABanner() {
     return (
         <section style={{ padding: '120px 24px', background: '#080808', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
             <Reveal>
-                <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', padding: '96px 48px', border: '1px solid rgba(200,200,200,0.15)', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '40%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(200,200,200,0.5), transparent)' }} />
-                    <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '40%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(200,200,200,0.25), transparent)' }} />
+                <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', padding: '96px 48px', border: '1px solid rgba(10,191,188,0.15)', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '40%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(10,191,188,0.5), transparent)' }} />
+                    <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '40%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(10,191,188,0.25), transparent)' }} />
                     <p style={{ ...EYEBROW, marginBottom: '24px' }}>Get Started Today</p>
                     <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px, 6vw, 80px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginBottom: '24px' }}>
-                        JOIN BROKERS WHO LEARN<br /><span style={{ color: '#C8C8C8' }}>BEFORE THEY SELL.</span>
+                        JOIN BROKERS WHO LEARN<br /><span style={{ color: '#0ABFBC' }}>BEFORE THEY SELL.</span>
                     </h2>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: '#999999', marginBottom: '48px', maxWidth: '360px', margin: '0 auto 48px', lineHeight: 1.7 }}>
                         Free forever for the essentials. Pro when you are ready to close at a professional level.
@@ -888,8 +890,10 @@ function Footer() {
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '48px', marginBottom: '64px' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '20px', color: '#C8C8C8', letterSpacing: '0.25em' }}>ALTUS</span>
-                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', background: '#C8C8C8', color: '#0a0a0a', padding: '3px 7px', letterSpacing: '0.15em', borderRadius: '2px' }}>AERO</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
+                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
+                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
+                  </div>
                         </div>
                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#444', lineHeight: 1.7, marginBottom: '16px', maxWidth: '240px' }}>Broker intelligence built on the Varsano method. Teach first. Sell second.</p>
                         <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#333', letterSpacing: '0.08em' }}>Mumbai, India · 2026</p>

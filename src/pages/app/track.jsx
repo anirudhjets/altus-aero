@@ -21,7 +21,7 @@ const PREV_DAY_FLIGHTS = LIVE_FLIGHTS.slice(0, 4)
 
 const STATUS = {
     'En Route': { color: '#4ade80', bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.2)' },
-    'Scheduled': { color: '#C8C8C8', bg: 'rgba(200,200,200,0.06)', border: 'rgba(200,200,200,0.2)' },
+    'Scheduled': { color: '#0ABFBC', bg: 'rgba(10,191,188,0.06)', border: 'rgba(10,191,188,0.2)' },
     'Landed': { color: '#444', bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)' },
 }
 
@@ -30,9 +30,9 @@ function ProLock({ navigate, label, children }) {
         <div style={{ position: 'relative', overflow: 'hidden' }}>
             <div style={{ filter: 'blur(3px)', userSelect: 'none', pointerEvents: 'none' }}>{children}</div>
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(8,8,8,0.88)', backdropFilter: 'blur(2px)', gap: '10px', padding: '16px' }}>
-                <span style={{ ...MONO, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em' }}>PRO FEATURE</span>
+                <span style={{ ...MONO, fontSize: '9px', color: '#0ABFBC', letterSpacing: '0.2em' }}>PRO FEATURE</span>
                 {label && <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#555', textAlign: 'center', maxWidth: '240px', lineHeight: 1.5 }}>{label}</p>}
-                <button onClick={() => navigate('/app/billing')} style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 20px', background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer' }}>
+                <button onClick={() => navigate('/app/billing')} style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 20px', background: '#0ABFBC', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer' }}>
                     UPGRADE TO PRO
                 </button>
             </div>
@@ -44,9 +44,9 @@ function FlightMap({ flights, isPro }) {
     return (
         <div style={{
             width: '100%', height: '240px', background: 'linear-gradient(135deg, #080e1a 0%, #0d1a2e 100%)',
-            border: '1px solid rgba(60,60,60,0.2)', position: 'relative', overflow: 'hidden',
+            border: '1px solid rgba(10,60,58,0.2)', position: 'relative', overflow: 'hidden',
         }}>
-            <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'linear-gradient(rgba(60,60,60,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(60,60,60,0.6) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+            <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'linear-gradient(rgba(10,60,58,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(10,60,58,0.6) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
             {flights.filter(f => f.status === 'En Route').map((f, i) => (
                 <div key={f.id} style={{ position: 'absolute', top: `${20 + i * 20}%`, left: `${15 + i * 14}%`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                     <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 10px rgba(74,222,128,0.5)' }} />
@@ -55,7 +55,7 @@ function FlightMap({ flights, isPro }) {
             ))}
             {!isPro && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(8,8,8,0.7)', backdropFilter: 'blur(4px)', gap: '8px' }}>
-                    <p style={{ ...MONO, fontSize: '9px', color: '#C8C8C8', letterSpacing: '0.2em' }}>PRO FEATURE</p>
+                    <p style={{ ...MONO, fontSize: '9px', color: '#0ABFBC', letterSpacing: '0.2em' }}>PRO FEATURE</p>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#444', textAlign: 'center' }}>Live interactive map with real-time aircraft positions</p>
                 </div>
             )}
@@ -102,12 +102,12 @@ export default function Track() {
                 </div>
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', alignSelf: 'flex-start', flexShrink: 0,
-                    background: isPro ? 'rgba(74,222,128,0.06)' : 'rgba(200,200,200,0.06)',
-                    border: `1px solid ${isPro ? 'rgba(74,222,128,0.2)' : 'rgba(200,200,200,0.2)'}`,
+                    background: isPro ? 'rgba(74,222,128,0.06)' : 'rgba(10,191,188,0.06)',
+                    border: `1px solid ${isPro ? 'rgba(74,222,128,0.2)' : 'rgba(10,191,188,0.2)'}`,
                     borderRadius: '9999px',
                 }}>
-                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isPro ? '#4ade80' : '#C8C8C8', flexShrink: 0, display: 'inline-block' }} />
-                    <span style={{ ...MONO, fontSize: '9px', color: isPro ? '#4ade80' : '#C8C8C8', letterSpacing: '0.12em' }}>
+                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isPro ? '#4ade80' : '#0ABFBC', flexShrink: 0, display: 'inline-block' }} />
+                    <span style={{ ...MONO, fontSize: '9px', color: isPro ? '#4ade80' : '#0ABFBC', letterSpacing: '0.12em' }}>
                         {isPro ? `LIVE · ${time} IST` : 'PREV DAY'}
                     </span>
                 </div>
@@ -115,11 +115,11 @@ export default function Track() {
 
             {/* Free tier prompt */}
             {!isPro && (
-                <div style={{ padding: '14px 20px', border: '1px solid rgba(200,200,200,0.15)', background: 'rgba(200,200,200,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ padding: '14px 20px', border: '1px solid rgba(10,191,188,0.15)', background: 'rgba(10,191,188,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
                     <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#555' }}>
                         Showing {PREV_DAY_FLIGHTS.length} flights from yesterday. Pro shows {LIVE_FLIGHTS.length} live flights with interactive map.
                     </p>
-                    <button onClick={() => navigate('/app/billing')} style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 16px', background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer', flexShrink: 0 }}>
+                    <button onClick={() => navigate('/app/billing')} style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 16px', background: '#0ABFBC', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer', flexShrink: 0 }}>
                         GO PRO
                     </button>
                 </div>
@@ -143,9 +143,9 @@ export default function Track() {
                         style={{
                             ...MONO, fontSize: '9px', letterSpacing: '0.12em', padding: '7px 14px', whiteSpace: 'nowrap',
                             cursor: 'pointer', transition: 'all 0.15s', border: '1px solid', borderRadius: '9999px',
-                            background: filter === c ? 'rgba(200,200,200,0.06)' : 'transparent',
-                            borderColor: filter === c ? 'rgba(200,200,200,0.3)' : 'rgba(255,255,255,0.08)',
-                            color: filter === c ? '#C8C8C8' : '#444',
+                            background: filter === c ? 'rgba(10,191,188,0.06)' : 'transparent',
+                            borderColor: filter === c ? 'rgba(10,191,188,0.3)' : 'rgba(255,255,255,0.08)',
+                            color: filter === c ? '#0ABFBC' : '#444',
                         }}
                     >
                         {c.toUpperCase()}
@@ -203,8 +203,8 @@ export default function Track() {
                                         </div>
 
                                         {isPro && (
-                                            <div style={{ marginTop: '1px', padding: '16px 18px', border: '1px solid rgba(200,200,200,0.12)', background: 'rgba(200,200,200,0.02)' }}>
-                                                <p style={{ ...EYEBROW, color: '#C8C8C8', marginBottom: '8px' }}>Route Context</p>
+                                            <div style={{ marginTop: '1px', padding: '16px 18px', border: '1px solid rgba(10,191,188,0.12)', background: 'rgba(10,191,188,0.02)' }}>
+                                                <p style={{ ...EYEBROW, color: '#0ABFBC', marginBottom: '8px' }}>Route Context</p>
                                                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#555', lineHeight: 1.75 }}>
                                                     {f.nm > 4000
                                                         ? `${f.nm.toLocaleString()}nm — ultra-long-range routing. Only ULR aircraft qualify nonstop. Charter demand on this route is currently elevated.`

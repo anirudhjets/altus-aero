@@ -62,7 +62,7 @@ function getUsageStats() {
 
 const STATUS_COLOR = {
     'En Route': { color: '#4ade80', bg: 'rgba(74,222,128,0.08)', border: 'rgba(74,222,128,0.2)' },
-    'Scheduled': { color: '#C8C8C8', bg: 'rgba(200,200,200,0.08)', border: 'rgba(200,200,200,0.2)' },
+    'Scheduled': { color: '#0ABFBC', bg: 'rgba(10,191,188,0.08)', border: 'rgba(10,191,188,0.2)' },
     'Landed': { color: '#555', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.08)' },
 }
 
@@ -106,16 +106,16 @@ export default function Dashboard() {
                 <div>
                     <p style={EYEBROW}>Market Intelligence</p>
                     <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(28px, 5vw, 48px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginTop: '6px' }}>{date}</h1>
-                    <p style={{ ...MONO, fontSize: '14px', color: '#C8C8C8', marginTop: '4px', letterSpacing: '0.06em' }}>{time} IST</p>
+                    <p style={{ ...MONO, fontSize: '14px', color: '#0ABFBC', marginTop: '4px', letterSpacing: '0.06em' }}>{time} IST</p>
                 </div>
                 <button
                     onClick={() => setGlobalProPreview(!proPreview)}
                     style={{
                         ...MONO, fontSize: '10px', letterSpacing: '0.12em', padding: '8px 16px',
                         borderRadius: '9999px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid',
-                        borderColor: proPreview ? 'rgba(200,200,200,0.4)' : 'rgba(255,255,255,0.1)',
-                        background: proPreview ? 'rgba(200,200,200,0.06)' : 'transparent',
-                        color: proPreview ? '#C8C8C8' : '#444',
+                        borderColor: proPreview ? 'rgba(10,191,188,0.4)' : 'rgba(255,255,255,0.1)',
+                        background: proPreview ? 'rgba(10,191,188,0.06)' : 'transparent',
+                        color: proPreview ? '#0ABFBC' : '#444',
                     }}
                 >
                     {proPreview ? 'VIEWING: PRO' : 'PREVIEW PRO'}
@@ -123,8 +123,8 @@ export default function Dashboard() {
             </div>
 
             {/* Insight */}
-            <div style={{ padding: '20px 24px', border: '1px solid rgba(200,200,200,0.2)', background: 'rgba(200,200,200,0.03)', display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                <span style={{ ...MONO, fontSize: '9px', color: '#0a0a0a', background: '#C8C8C8', padding: '3px 10px', letterSpacing: '0.15em', flexShrink: 0, borderRadius: '9999px', marginTop: '2px' }}>INSIGHT</span>
+            <div style={{ padding: '20px 24px', border: '1px solid rgba(10,191,188,0.2)', background: 'rgba(10,191,188,0.03)', display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                <span style={{ ...MONO, fontSize: '9px', color: '#0a0a0a', background: '#0ABFBC', padding: '3px 10px', letterSpacing: '0.15em', flexShrink: 0, borderRadius: '9999px', marginTop: '2px' }}>INSIGHT</span>
                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.75, transition: 'opacity 0.4s', opacity: insightVisible ? 1 : 0 }}>
                     {insights[insightIndex]}
                 </p>
@@ -146,7 +146,7 @@ export default function Dashboard() {
                         onMouseLeave={e => e.currentTarget.style.background = '#0a0a0a'}
                     >
                         <p style={{ ...EYEBROW, marginBottom: '10px' }}>{s.label}</p>
-                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: '#C8C8C8', lineHeight: 1.0 }}>{s.value}</p>
+                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: '#0ABFBC', lineHeight: 1.0 }}>{s.value}</p>
                         <p style={{ ...MONO, fontSize: '9px', color: '#444', marginTop: '6px', letterSpacing: '0.08em' }}>{s.sub}</p>
                     </button>
                 ))}
@@ -160,7 +160,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                         <p style={EYEBROW}>Fleet Shortlist</p>
                         <button onClick={() => navigate('/app/fleet')} style={{ ...MONO, fontSize: '9px', color: '#444', background: 'transparent', border: 'none', cursor: 'pointer', letterSpacing: '0.1em' }}
-                            onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
+                            onMouseEnter={e => e.currentTarget.style.color = '#0ABFBC'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
                             VIEW ALL →
                         </button>
                     </div>
@@ -188,7 +188,7 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                         <p style={EYEBROW}>Live VABB Traffic</p>
                         <button onClick={() => navigate('/app/track')} style={{ ...MONO, fontSize: '9px', color: '#444', background: 'transparent', border: 'none', cursor: 'pointer', letterSpacing: '0.1em' }}
-                            onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
+                            onMouseEnter={e => e.currentTarget.style.color = '#0ABFBC'} onMouseLeave={e => e.currentTarget.style.color = '#444'}>
                             {isPro ? 'TRACKER →' : 'PRO →'}
                         </button>
                     </div>
@@ -206,7 +206,7 @@ export default function Dashboard() {
                                     <p style={{ ...MONO, fontSize: '9px', color: '#444', marginBottom: f.progress > 0 ? '8px' : 0 }}>{f.aircraft} · {f.dep} → {f.eta}</p>
                                     {f.progress > 0 && (
                                         <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }}>
-                                            <div style={{ height: '1px', background: '#C8C8C8', width: `${f.progress}%` }} />
+                                            <div style={{ height: '1px', background: '#0ABFBC', width: `${f.progress}%` }} />
                                         </div>
                                     )}
                                 </div>
@@ -223,12 +223,12 @@ export default function Dashboard() {
                         <AreaChart data={chartData}>
                             <defs>
                                 <linearGradient id="charter" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#C8C8C8" stopOpacity={0.25} />
-                                    <stop offset="95%" stopColor="#C8C8C8" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#0ABFBC" stopOpacity={0.25} />
+                                    <stop offset="95%" stopColor="#0ABFBC" stopOpacity={0} />
                                 </linearGradient>
                                 <linearGradient id="ownership" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#2a2a2a" stopOpacity={0.4} />
-                                    <stop offset="95%" stopColor="#2a2a2a" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#0a1a1a" stopOpacity={0.4} />
+                                    <stop offset="95%" stopColor="#0a1a1a" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
                             <XAxis dataKey="month" tick={{ fill: '#333', fontSize: 9, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
@@ -237,12 +237,12 @@ export default function Dashboard() {
                                 contentStyle={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, fontFamily: 'JetBrains Mono', fontSize: 10 }}
                                 formatter={v => [`$${v.toLocaleString()}`, '']}
                             />
-                            <Area type="monotone" dataKey="charter" stroke="#C8C8C8" fill="url(#charter)" strokeWidth={1.5} name="Charter" />
-                            <Area type="monotone" dataKey="ownership" stroke="#2a2a2a" fill="url(#ownership)" strokeWidth={1.5} name="Ownership" />
+                            <Area type="monotone" dataKey="charter" stroke="#0ABFBC" fill="url(#charter)" strokeWidth={1.5} name="Charter" />
+                            <Area type="monotone" dataKey="ownership" stroke="#0a1a1a" fill="url(#ownership)" strokeWidth={1.5} name="Ownership" />
                         </AreaChart>
                     </ResponsiveContainer>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
-                        {[{ color: '#C8C8C8', label: 'Charter' }, { color: '#2a2a2a', label: 'Ownership' }].map(l => (
+                        {[{ color: '#0ABFBC', label: 'Charter' }, { color: '#0a1a1a', label: 'Ownership' }].map(l => (
                             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span style={{ width: '8px', height: '1px', background: l.color, display: 'inline-block' }} />
                                 <span style={{ ...MONO, fontSize: '9px', color: '#444' }}>{l.label}</span>
@@ -251,7 +251,7 @@ export default function Dashboard() {
                     </div>
                     <div style={{ marginTop: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.06)', background: '#080808' }}>
                         <p style={{ ...EYEBROW, marginBottom: '6px' }}>Breakeven</p>
-                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#C8C8C8', lineHeight: 1 }}>200 – 250 hrs</p>
+                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#0ABFBC', lineHeight: 1 }}>200 – 250 hrs</p>
                         <p style={{ ...MONO, fontSize: '9px', color: '#444', marginTop: '4px' }}>flight hours per year</p>
                     </div>
                 </div>
@@ -279,20 +279,20 @@ export default function Dashboard() {
                     ].map((u, i) => (
                         <div key={i} style={{ padding: '20px', background: '#0a0a0a' }}>
                             <p style={{ ...EYEBROW, marginBottom: '8px' }}>{u.label}</p>
-                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: '#C8C8C8', lineHeight: 1 }}>{u.value}</p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '36px', color: '#0ABFBC', lineHeight: 1 }}>{u.value}</p>
                             <p style={{ ...MONO, fontSize: '9px', color: '#333', marginTop: '4px' }}>{u.sub}</p>
                         </div>
                     ))}
                 </div>
 
                 {!isPro && (
-                    <div style={{ marginTop: '1px', padding: '16px 20px', background: 'rgba(200,200,200,0.03)', border: '1px solid rgba(200,200,200,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                    <div style={{ marginTop: '1px', padding: '16px 20px', background: 'rgba(10,191,188,0.03)', border: '1px solid rgba(10,191,188,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#555' }}>
                             Upgrade to Pro for unlimited usage, live data, and the AI advisor.
                         </p>
                         <button
                             onClick={() => navigate('/app/billing')}
-                            style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 20px', background: '#C8C8C8', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer' }}
+                            style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 20px', background: '#0ABFBC', color: '#0a0a0a', border: 'none', borderRadius: '9999px', cursor: 'pointer' }}
                         >
                             UPGRADE TO PRO
                         </button>
@@ -300,8 +300,8 @@ export default function Dashboard() {
                 )}
 
                 {isPro && plan !== 'pro' && (
-                    <div style={{ marginTop: '12px', padding: '10px 16px', border: '1px solid rgba(200,200,200,0.1)' }}>
-                        <p style={{ ...MONO, fontSize: '9px', color: 'rgba(200,200,200,0.5)', letterSpacing: '0.08em' }}>Pro preview active — toggle off on the header button to return to Free view</p>
+                    <div style={{ marginTop: '12px', padding: '10px 16px', border: '1px solid rgba(10,191,188,0.1)' }}>
+                        <p style={{ ...MONO, fontSize: '9px', color: 'rgba(10,191,188,0.5)', letterSpacing: '0.08em' }}>Pro preview active — toggle off on the header button to return to Free view</p>
                     </div>
                 )}
             </div>
@@ -320,13 +320,13 @@ export default function Dashboard() {
                         style={{
                             padding: '24px', background: '#0a0a0a', border: 'none', cursor: 'pointer', textAlign: 'center',
                             transition: 'background 0.2s',
-                            borderTop: a.highlight ? '1px solid rgba(200,200,200,0.2)' : 'none',
+                            borderTop: a.highlight ? '1px solid rgba(10,191,188,0.2)' : 'none',
                         }}
                         onMouseEnter={e => e.currentTarget.style.background = '#0d0d0d'}
                         onMouseLeave={e => e.currentTarget.style.background = '#0a0a0a'}
                     >
-                        <span style={{ fontSize: '20px', display: 'block', marginBottom: '8px', color: a.highlight ? '#C8C8C8' : '#555' }}>{a.icon}</span>
-                        <p style={{ ...MONO, fontSize: '10px', letterSpacing: '0.12em', color: a.highlight ? '#C8C8C8' : '#555' }}>{a.label.toUpperCase()}</p>
+                        <span style={{ fontSize: '20px', display: 'block', marginBottom: '8px', color: a.highlight ? '#0ABFBC' : '#555' }}>{a.icon}</span>
+                        <p style={{ ...MONO, fontSize: '10px', letterSpacing: '0.12em', color: a.highlight ? '#0ABFBC' : '#555' }}>{a.label.toUpperCase()}</p>
                         {a.pro && !isPro && <p style={{ ...MONO, fontSize: '8px', color: '#333', marginTop: '4px' }}>PRO ONLY</p>}
                     </button>
                 ))}

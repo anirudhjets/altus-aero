@@ -34,7 +34,7 @@ const Field = ({ label, hint, children }) => (
 const Toggle = ({ value, onChange }) => (
     <button
         onClick={() => onChange(!value)}
-        style={{ width: '44px', height: '24px', borderRadius: '9999px', background: value ? '#C8C8C8' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
+        style={{ width: '44px', height: '24px', borderRadius: '9999px', background: value ? '#0ABFBC' : 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}
     >
         <span style={{ position: 'absolute', top: '3px', left: value ? '23px' : '3px', width: '18px', height: '18px', borderRadius: '50%', background: value ? '#0a0a0a' : '#333', transition: 'left 0.2s' }} />
     </button>
@@ -117,7 +117,7 @@ export default function Settings() {
             disabled={disabled}
             style={{
                 ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '9px 20px',
-                background: danger ? 'transparent' : disabled ? 'rgba(200,200,200,0.3)' : '#C8C8C8',
+                background: danger ? 'transparent' : disabled ? 'rgba(10,191,188,0.3)' : '#0ABFBC',
                 color: danger ? '#f87171' : '#0a0a0a',
                 border: danger ? '1px solid rgba(127,29,29,0.5)' : 'none',
                 borderRadius: '9999px', cursor: disabled ? 'not-allowed' : 'pointer', transition: 'opacity 0.2s',
@@ -147,9 +147,9 @@ export default function Settings() {
                         onClick={() => setActiveTab(tab.key)}
                         style={{
                             ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '8px 16px', whiteSpace: 'nowrap',
-                            background: activeTab === tab.key ? '#C8C8C8' : 'transparent',
+                            background: activeTab === tab.key ? '#0ABFBC' : 'transparent',
                             color: activeTab === tab.key ? '#0a0a0a' : '#444',
-                            border: activeTab === tab.key ? '1px solid #C8C8C8' : '1px solid rgba(255,255,255,0.08)',
+                            border: activeTab === tab.key ? '1px solid #0ABFBC' : '1px solid rgba(255,255,255,0.08)',
                             borderRadius: '9999px', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0,
                         }}
                     >
@@ -163,15 +163,15 @@ export default function Settings() {
                 <Section title="PROFILE">
                     <Field label="Your Profile" hint="Display name and current plan.">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#2a2a2a', border: '1px solid rgba(200,200,200,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#C8C8C8' }}>{initials}</span>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#0ABFBC' }}>{initials}</span>
                             </div>
                             <div>
                                 <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#ffffff', fontWeight: 600 }}>{displayName}</p>
                                 <span style={{
-                                    ...MONO, fontSize: '9px', letterSpacing: '0.12em', color: isPro ? '#C8C8C8' : '#444',
-                                    background: isPro ? 'rgba(200,200,200,0.08)' : 'rgba(255,255,255,0.04)',
-                                    border: `1px solid ${isPro ? 'rgba(200,200,200,0.2)' : 'rgba(255,255,255,0.08)'}`,
+                                    ...MONO, fontSize: '9px', letterSpacing: '0.12em', color: isPro ? '#0ABFBC' : '#444',
+                                    background: isPro ? 'rgba(10,191,188,0.08)' : 'rgba(255,255,255,0.04)',
+                                    border: `1px solid ${isPro ? 'rgba(10,191,188,0.2)' : 'rgba(255,255,255,0.08)'}`,
                                     padding: '2px 8px', borderRadius: '9999px', display: 'inline-block', marginTop: '4px',
                                 }}>
                                     {isPro ? 'PRO' : 'FREE'}
@@ -184,7 +184,7 @@ export default function Settings() {
                         <Field label="Display Name" hint="Shown in the sidebar and profile.">
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <input type="text" value={newName} onChange={e => setNewName(e.target.value)} maxLength={40} placeholder="Your full name" style={inputStyle}
-                                    onFocus={e => e.target.style.borderColor = 'rgba(200,200,200,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                                    onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                                 {nameError && <p style={{ ...MONO, fontSize: '9px', color: '#f87171' }}>{nameError}</p>}
                                 {nameMsg && <p style={{ ...MONO, fontSize: '9px', color: '#4ade80' }}>{nameMsg}</p>}
                                 <PillBtn onClick={handleNameUpdate} disabled={nameLoading}>{nameLoading ? 'SAVING...' : 'SAVE NAME'}</PillBtn>
@@ -207,9 +207,9 @@ export default function Settings() {
                         <Field label="New Password" hint="Minimum 6 characters.">
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="New password" style={inputStyle}
-                                    onFocus={e => e.target.style.borderColor = 'rgba(200,200,200,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                                    onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                                 <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Confirm new password" style={inputStyle}
-                                    onFocus={e => e.target.style.borderColor = 'rgba(200,200,200,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                                    onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
                                 {passwordError && <p style={{ ...MONO, fontSize: '9px', color: '#f87171' }}>{passwordError}</p>}
                                 {passwordMsg && <p style={{ ...MONO, fontSize: '9px', color: '#4ade80' }}>{passwordMsg}</p>}
                                 <PillBtn onClick={handlePasswordUpdate} disabled={passwordLoading}>{passwordLoading ? 'UPDATING...' : 'UPDATE PASSWORD'}</PillBtn>
@@ -288,9 +288,9 @@ export default function Settings() {
                                         style={{
                                             flex: 1, padding: '10px', ...MONO, fontSize: '10px', letterSpacing: '0.12em',
                                             cursor: 'pointer', transition: 'all 0.2s',
-                                            background: theme === t.value ? 'rgba(200,200,200,0.08)' : 'transparent',
-                                            color: theme === t.value ? '#C8C8C8' : '#444',
-                                            border: theme === t.value ? '1px solid rgba(200,200,200,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                                            background: theme === t.value ? 'rgba(10,191,188,0.08)' : 'transparent',
+                                            color: theme === t.value ? '#0ABFBC' : '#444',
+                                            border: theme === t.value ? '1px solid rgba(10,191,188,0.3)' : '1px solid rgba(255,255,255,0.08)',
                                             borderRadius: '9999px',
                                         }}
                                     >
@@ -315,7 +315,7 @@ export default function Settings() {
                     <Section title="CURRENT PLAN">
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
                             <div>
-                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '44px', color: isPro ? '#C8C8C8' : '#333', lineHeight: 1 }}>{isPro ? 'PRO' : 'FREE'}</p>
+                                <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '44px', color: isPro ? '#0ABFBC' : '#333', lineHeight: 1 }}>{isPro ? 'PRO' : 'FREE'}</p>
                                 <p style={{ ...MONO, fontSize: '9px', color: '#444', marginTop: '6px' }}>{isPro ? 'Full platform access · AI advisor included' : 'Core features · Upgrade to unlock everything'}</p>
                                 {isPro && <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '24px', color: '#ffffff', marginTop: '8px', lineHeight: 1 }}>₹2,499<span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: '#444' }}>/mo</span></p>}
                             </div>

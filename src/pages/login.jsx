@@ -139,8 +139,10 @@ export default function Login() {
       >
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '48px' }}>
-          <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#C8C8C8', letterSpacing: '0.25em' }}>ALTUS</span>
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', background: '#C8C8C8', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.15em', borderRadius: '2px' }}>AERO</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
+                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
+                  </div>
         </div>
 
         {/* Tab switcher */}
@@ -151,10 +153,10 @@ export default function Login() {
               onClick={() => switchTab(t.id)}
               style={{
                 flex: 1, padding: '12px', background: 'transparent', border: 'none',
-                borderBottom: tab === t.id ? '1px solid #C8C8C8' : '1px solid transparent',
+                borderBottom: tab === t.id ? '1px solid #0ABFBC' : '1px solid transparent',
                 fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', letterSpacing: '0.15em',
                 cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-1px',
-                color: tab === t.id ? '#C8C8C8' : '#555',
+                color: tab === t.id ? '#0ABFBC' : '#555',
               }}
             >
               {t.label}
@@ -180,7 +182,7 @@ export default function Login() {
                   onChange={e => setFullName(e.target.value)}
                   onKeyDown={handleKeyDown}
                   style={inputStyle}
-                  onFocus={e => e.target.style.borderColor = 'rgba(200,200,200,0.5)'}
+                  onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.5)'}
                   onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.12)'}
                 />
               </motion.div>
@@ -195,7 +197,7 @@ export default function Login() {
               onChange={e => setEmail(e.target.value)}
               onKeyDown={handleKeyDown}
               style={inputStyle}
-              onFocus={e => e.target.style.borderColor = 'rgba(200,200,200,0.5)'}
+              onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.5)'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.12)'}
             />
           </div>
@@ -208,7 +210,7 @@ export default function Login() {
               onChange={e => setPassword(e.target.value)}
               onKeyDown={handleKeyDown}
               style={inputStyle}
-              onFocus={e => e.target.style.borderColor = 'rgba(200,200,200,0.5)'}
+              onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.5)'}
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.12)'}
             />
           </div>
@@ -239,7 +241,7 @@ export default function Login() {
           disabled={loading}
           style={{
             width: '100%', marginTop: '16px', padding: '14px',
-            background: loading ? 'rgba(200,200,200,0.4)' : '#C8C8C8',
+            background: loading ? 'rgba(10,191,188,0.4)' : '#0ABFBC',
             color: '#0a0a0a', border: 'none', borderRadius: '9999px',
             fontFamily: 'JetBrains Mono, monospace', fontSize: '12px',
             letterSpacing: '0.15em', cursor: loading ? 'not-allowed' : 'pointer',

@@ -5,7 +5,7 @@ const Section = ({ title, children }) => (
         <h2 style={{
             fontFamily: 'Bebas Neue, sans-serif',
             fontSize: '20px',
-            color: '#C8C8C8',
+            color: '#0ABFBC',
             letterSpacing: '0.15em',
             marginBottom: '14px',
         }}>{title}</h2>
@@ -42,7 +42,7 @@ export default function Privacy() {
                 inset: 0,
                 opacity: 0.06,
                 backgroundImage:
-                    'linear-gradient(rgba(200,200,200,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(200,200,200,0.15) 1px, transparent 1px)',
+                    'linear-gradient(rgba(10,191,188,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(10,191,188,0.15) 1px, transparent 1px)',
                 backgroundSize: '60px 60px',
                 pointerEvents: 'none',
             }} />
@@ -59,7 +59,7 @@ export default function Privacy() {
                     marginBottom: '48px',
                     transition: 'color 0.2s',
                 }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
+                    onMouseEnter={e => e.currentTarget.style.color = '#0ABFBC'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
                 >
                     ← BACK TO SITE
@@ -67,8 +67,10 @@ export default function Privacy() {
 
                 <div style={{ marginBottom: '52px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#C8C8C8', letterSpacing: '0.2em' }}>ALTUS</span>
-                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '11px', background: '#C8C8C8', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.1em', borderRadius: '4px' }}>AERO</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
+                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
+                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
+                  </div>
                     </div>
                     <h1 style={{
                         fontFamily: 'Bebas Neue, sans-serif',
@@ -87,8 +89,8 @@ export default function Privacy() {
                 </div>
 
                 <div style={{
-                    background: 'rgba(200,200,200,0.05)',
-                    border: '1px solid rgba(200,200,200,0.15)',
+                    background: 'rgba(10,191,188,0.05)',
+                    border: '1px solid rgba(10,191,188,0.15)',
                     borderRadius: '12px',
                     padding: '20px 24px',
                     marginBottom: '48px',
@@ -147,7 +149,7 @@ export default function Privacy() {
                     <P><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Authentication Cookies</strong><br />
                         Supabase sets a session cookie to keep you logged in. This cookie is essential for the platform to function and cannot be disabled.</P>
                     <P><strong style={{ color: 'rgba(255,255,255,0.7)' }}>localStorage</strong><br />
-                        We store your usage statistics (sessions, routes planned, fleet views) in your browser's localStorage under the key <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#C8C8C8' }}>altus_usage</span>. This data stays on your device.</P>
+                        We store your usage statistics (sessions, routes planned, fleet views) in your browser's localStorage under the key <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#0ABFBC' }}>altus_usage</span>. This data stays on your device.</P>
                     <P>We do not use advertising cookies, tracking pixels, or third-party analytics cookies at this time.</P>
                 </Section>
 
@@ -198,7 +200,7 @@ export default function Privacy() {
 
                 <Section title="11. CONTACT US">
                     <P>For any privacy-related questions, requests, or concerns, contact us at:</P>
-                    <P style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#C8C8C8' }}>
+                    <P style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#0ABFBC' }}>
                         anirudh.jets@gmail.com
                     </P>
                     <P>We aim to respond to all requests within 7 business days.</P>
@@ -213,11 +215,11 @@ export default function Privacy() {
                     flexWrap: 'wrap',
                 }}>
                     <Link to="/terms" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none', letterSpacing: '0.08em' }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
+                        onMouseEnter={e => e.currentTarget.style.color = '#0ABFBC'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
                     >TERMS OF SERVICE</Link>
                     <Link to="/" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'rgba(255,255,255,0.25)', textDecoration: 'none', letterSpacing: '0.08em' }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#C8C8C8'}
+                        onMouseEnter={e => e.currentTarget.style.color = '#0ABFBC'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
                     >BACK TO HOME</Link>
                 </div>
