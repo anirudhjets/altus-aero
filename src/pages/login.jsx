@@ -39,7 +39,7 @@ export default function Login() {
 
   useEffect(() => {
     if (authLoading) return
-    if (user) navigate('/app/dashboard', { replace: true })
+    if (user) navigate('/welcome', { replace: true })
   }, [user, authLoading, navigate])
 
   const switchTab = (t) => {
