@@ -90,7 +90,7 @@ export default function Login() {
     setError('')
     const { error: err } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/welcome` },
+      options: { redirectTo: 'https://altusaero.in/welcome' },
     })
     if (err) {
       setError(err.message || 'Google sign in failed.')
