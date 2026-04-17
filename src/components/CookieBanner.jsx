@@ -58,7 +58,7 @@ export default function CookieBanner() {
                 minWidth: '200px',
             }}>
                 We use essential cookies to keep you signed in and track usage locally on your device. No advertising cookies.{' '}
-                <Link to="/privacy" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                <Link to="/privacy" style={{ color: '#0ABFBC', textDecoration: 'none' }}>
                     Privacy Policy
                 </Link>
             </p>
@@ -66,7 +66,7 @@ export default function CookieBanner() {
             <button
                 onClick={handleAccept}
                 style={{
-                    background: '#D4AF37',
+                    background: '#0ABFBC',
                     color: '#0a0a0a',
                     border: 'none',
                     borderRadius: '8px',

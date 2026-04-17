@@ -136,7 +136,7 @@ export default function Billing() {
                         <span style={{ ...MONO, fontSize: '9px', color: '#4ade80', letterSpacing: '0.12em' }}>LIVE</span>
                     </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.04)' }} className="grid grid-cols-2 sm:grid-cols-4">
+                <div style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.04)' }} className="grid grid-cols-2 sm:grid-cols-4">
                     {[
                         { label: 'Sessions', value: String(usage.sessions || 1), sub: 'logins' },
                         { label: 'Days Active', value: String(usage.days?.length || 1), sub: 'unique days' },
@@ -178,7 +178,7 @@ export default function Billing() {
                         </div>
 
                         {/* Plans */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.05)' }} className="grid grid-cols-1 sm:grid-cols-2">
+                        <div style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.05)' }} className="grid grid-cols-1 sm:grid-cols-2">
                             {/* Free */}
                             <div style={{ padding: '32px', background: '#0a0a0a', display: 'flex', flexDirection: 'column' }}>
                                 <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.05em', marginBottom: '6px' }}>Free</p>

@@ -82,7 +82,7 @@ function Nav() {
                 transition: 'all 0.4s ease',
             }}
         >
-            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(20px, 4vw, 48px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
                 <Link to="/" onClick={() => window.scrollTo({top:0,behavior:'smooth'})} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
@@ -423,7 +423,7 @@ function Features() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.35 }}
-                        style={{ marginTop: '40px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', overflow: 'hidden' }}
+                        className="grid-cols-1 md:grid-cols-2" style={{ marginTop: '40px', display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', overflow: 'hidden' }}
                     >
                         <div style={{ background: '#0a0a0a', padding: '48px' }}>
                             <p style={{ ...EYEBROW, color: tab.badge === 'Free' ? '#4ade80' : '#0ABFBC', marginBottom: '20px' }}>
@@ -561,7 +561,7 @@ function ChatbotShowcase() {
     return (
         <section style={{ padding: '120px 24px', background: '#080808', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+                <div className="grid-cols-1 md:grid-cols-2" style={{ display: 'grid', gap: '80px', alignItems: 'center' }}>
                     <Reveal>
                         <span style={{ ...EYEBROW, background: '#0ABFBC', color: '#0a0a0a', padding: '4px 12px', borderRadius: '9999px', display: 'inline-block', marginBottom: '32px' }}>PRO FEATURE</span>
                         <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px, 5vw, 72px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginBottom: '24px' }}>
@@ -640,7 +640,7 @@ function Founder() {
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
                 <Reveal>
                     <p style={{ ...EYEBROW, marginBottom: '64px', textAlign: 'center' }}>Behind the Platform</p>
-                    <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '56px', position: 'relative', overflow: 'hidden', background: '#080808' }}>
+                    <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: 'clamp(24px, 5vw, 56px)', position: 'relative', overflow: 'hidden', background: '#080808' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative', zIndex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                 <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -699,7 +699,7 @@ function HowItWorks() {
                         THREE STEPS TO BECOMING<br /><span style={{ color: '#0ABFBC' }}>THE BROKER CLIENTS TRUST.</span>
                     </h2>
                 </Reveal>
-                <div style={{ marginTop: '64px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.06)' }}>
+                <div className="grid-cols-1 md:grid-cols-3" style={{ marginTop: '64px', display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.06)' }}>
                     {steps.map((s, i) => (
                         <Reveal key={i} delay={i * 0.1}>
                             <div style={{ padding: '48px', background: '#080808', height: '100%', boxSizing: 'border-box' }}>
@@ -761,7 +761,7 @@ function Pricing() {
                     </div>
                 </Reveal>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.06)' }}>
+                <div className="grid-cols-1 md:grid-cols-2" style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.06)' }}>
                     <Reveal>
                         <div style={{ padding: '48px', background: '#0a0a0a', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' }}>
                             <div style={{ flex: 1 }}>
@@ -828,7 +828,7 @@ function CTABanner() {
     return (
         <section style={{ padding: '120px 24px', background: '#080808', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
             <Reveal>
-                <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', padding: '96px 48px', border: '1px solid rgba(10,191,188,0.15)', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', padding: 'clamp(32px, 6vw, 96px) clamp(20px, 4vw, 48px)', border: '1px solid rgba(10,191,188,0.15)', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '40%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(10,191,188,0.5), transparent)' }} />
                     <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '40%', height: '1px', background: 'linear-gradient(to right, transparent, rgba(10,191,188,0.25), transparent)' }} />
                     <p style={{ ...EYEBROW, marginBottom: '24px' }}>Get Started Today</p>
@@ -887,7 +887,7 @@ function Footer() {
     return (
         <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#0a0a0a', padding: '80px 24px' }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '48px', marginBottom: '64px' }}>
+                <div className="grid-cols-2 md:grid-cols-4" style={{ display: 'grid', gap: '48px', marginBottom: '64px' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>

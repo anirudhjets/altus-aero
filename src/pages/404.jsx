@@ -22,14 +22,14 @@ export default function NotFound() {
                 inset: 0,
                 opacity: 0.07,
                 backgroundImage:
-                    'linear-gradient(rgba(212,175,55,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.1) 1px, transparent 1px)',
+                    'linear-gradient(rgba(10,191,188,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(10,191,188,0.05) 1px, transparent 1px)',
                 backgroundSize: '60px 60px',
                 pointerEvents: 'none',
             }} />
             <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'radial-gradient(ellipse at 50% 40%, rgba(30,58,138,0.1) 0%, transparent 65%)',
+                background: 'radial-gradient(ellipse at 50% 40%, rgba(10,191,188,0.05) 0%, transparent 65%)',
                 pointerEvents: 'none',
             }} />
 
@@ -41,8 +41,10 @@ export default function NotFound() {
                     transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '48px' }}
                 >
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '26px', color: '#D4AF37', letterSpacing: '0.2em' }}>ALTUS</span>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '10px', background: '#D4AF37', color: '#0a0a0a', padding: '3px 8px', letterSpacing: '0.1em', borderRadius: '4px' }}>AERO</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '26px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
+                        <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
+                    </div>
                 </motion.div>
 
                 <motion.div
@@ -53,7 +55,7 @@ export default function NotFound() {
                     <p style={{
                         fontFamily: 'JetBrains Mono, monospace',
                         fontSize: '11px',
-                        color: 'rgba(212,175,55,0.5)',
+                        color: 'rgba(10,191,188,0.5)',
                         letterSpacing: '0.2em',
                         marginBottom: '16px',
                     }}>ERROR 404</p>
@@ -111,7 +113,7 @@ export default function NotFound() {
                         <Link
                             to={user ? '/app/dashboard' : '/'}
                             style={{
-                                background: '#D4AF37',
+                                background: '#0ABFBC',
                                 color: '#0a0a0a',
                                 border: 'none',
                                 borderRadius: '10px',

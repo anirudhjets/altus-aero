@@ -211,10 +211,10 @@ export default function Fleet() {
             )}
 
             {/* Main grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 280px', gap: '0' }}>
+            <div className="fleet-main-grid grid-cols-1" style={{ display: 'grid', gap: '0' }}>
 
                 {/* Left — detail panel */}
-                <div style={{ borderRight: '1px solid rgba(255,255,255,0.08)', paddingRight: '40px' }}>
+                <div className="fleet-detail-panel">
 
                     {/* Monumental name */}
                     <div style={{ marginBottom: '28px' }}>

@@ -51,8 +51,8 @@
   }
 
   .glass-gold {
-    background: rgba(212, 175, 55, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(10, 191, 188, 0.05);
+    border: 1px solid rgba(10, 191, 188, 0.2);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-radius: 12px;
@@ -64,7 +64,7 @@
   }
 
   .text-gold-gradient {
-    background: linear-gradient(135deg, #0ABFBC 0%, #f5e27a 50%, #0ABFBC 100%);
+    background: linear-gradient(135deg, #0ABFBC 0%, #0ABFBC 50%, #0ABFBC 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -88,7 +88,7 @@
   }
 
   .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 30px rgba(10, 191, 188, 0.4);
     transform: translateY(-2px);
   }
 
@@ -100,7 +100,7 @@
     letter-spacing: 0.1em;
     padding: 0.75rem 2rem;
     border-radius: 6px;
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    border: 1px solid rgba(10, 191, 188, 0.4);
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
@@ -111,7 +111,7 @@
 
   .btn-secondary:hover {
     border-color: #0ABFBC;
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(10, 191, 188, 0.08);
     transform: translateY(-2px);
   }
 
@@ -125,7 +125,7 @@
 
   .stat-card:hover {
     border-color: #0ABFBC;
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 30px rgba(10, 191, 188, 0.1);
   }
 
   .nav-link {
@@ -144,12 +144,12 @@
   }
 
   .nav-link:hover {
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(10, 191, 188, 0.08);
     color: #0ABFBC;
   }
 
   .nav-link.active {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(10, 191, 188, 0.1);
     color: #0ABFBC;
     border-left: 2px solid #0ABFBC;
   }
@@ -165,8 +165,8 @@
 
   .grid-bg {
     background-image:
-      linear-gradient(rgba(30, 58, 138, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(30, 58, 138, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(10, 191, 188, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(10, 191, 188, 0.04) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
@@ -199,4 +199,23 @@
     40% { box-shadow: 0 0 12px 3px rgba(10,191,188,1); width: 100%; }
     100% { box-shadow: 0 0 4px 1px rgba(10,191,188,0.3); width: 100%; }
   }
+}
+
+/* ── FLEET RESPONSIVE ── */
+.fleet-detail-panel {
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding-right: 40px;
+}
+@media (min-width: 768px) {
+  .fleet-main-grid { grid-template-columns: minmax(0,1fr) 280px; }
+}
+@media (max-width: 767px) {
+  .fleet-detail-panel {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+  }
+  .fleet-main-grid > div:nth-child(2) { order: -1; }
 }

@@ -65,7 +65,7 @@ export default function Chatbot() {
                 style={{
                     position: 'fixed', bottom: '80px', right: '20px',
                     width: '48px', height: '48px', borderRadius: '50%',
-                    background: '#1e3a8a', border: '1px solid rgba(212,175,55,0.2)',
+                    background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.2)',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.5)', zIndex: 100,
                 }}
@@ -77,14 +77,14 @@ export default function Chatbot() {
                         <motion.span key="close" initial={{ opacity: 0, rotate: -90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0, rotate: 90 }} transition={{ duration: 0.15 }} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: '#fff', lineHeight: 1 }}>✕</motion.span>
                     ) : (
                         <motion.svg key="chat" initial={{ opacity: 0, rotate: 90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0, rotate: -90 }} transition={{ duration: 0.15 }} width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#0ABFBC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </motion.svg>
                     )}
                 </AnimatePresence>
             </motion.button>
 
             {!open && (
-                <div style={{ position: 'fixed', bottom: '106px', right: '20px', background: '#D4AF37', color: '#0a0a0a', fontFamily: 'JetBrains Mono, monospace', fontSize: '7px', letterSpacing: '0.1em', padding: '2px 5px', borderRadius: '2px', zIndex: 101, pointerEvents: 'none' }} className="md:bottom-14 md:right-6">
+                <div style={{ position: 'fixed', bottom: '106px', right: '20px', background: '#0ABFBC', color: '#0a0a0a', fontFamily: 'JetBrains Mono, monospace', fontSize: '7px', letterSpacing: '0.1em', padding: '2px 5px', borderRadius: '2px', zIndex: 101, pointerEvents: 'none' }} className="md:bottom-14 md:right-6">
                     AI
                 </div>
             )}
@@ -108,11 +108,11 @@ export default function Chatbot() {
                     >
                         {/* Header */}
                         <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '12px', background: '#080808', flexShrink: 0 }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#1e3a8a', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '10px', color: '#D4AF37' }}>AI</span>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '10px', color: '#0ABFBC' }}>AI</span>
                             </div>
                             <div>
-                                <p style={{ ...MONO, fontSize: '11px', color: '#D4AF37', letterSpacing: '0.15em', lineHeight: 1.2 }}>ALTUS AI ADVISOR</p>
+                                <p style={{ ...MONO, fontSize: '11px', color: '#0ABFBC', letterSpacing: '0.15em', lineHeight: 1.2 }}>ALTUS AI ADVISOR</p>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
                                     <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
                                     <span style={{ ...MONO, fontSize: '9px', color: '#444', letterSpacing: '0.06em' }}>Aviation broker intelligence</span>
@@ -126,10 +126,10 @@ export default function Chatbot() {
                                 <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
                                     <div style={{
                                         maxWidth: '85%', padding: '10px 14px',
-                                        background: msg.role === 'user' ? 'rgba(30,58,138,0.25)' : 'rgba(255,255,255,0.03)',
-                                        border: msg.role === 'user' ? '1px solid rgba(30,58,138,0.4)' : '1px solid rgba(255,255,255,0.06)',
+                                        background: msg.role === 'user' ? 'rgba(10,191,188,0.08)' : 'rgba(255,255,255,0.03)',
+                                        border: msg.role === 'user' ? '1px solid rgba(10,191,188,0.2)' : '1px solid rgba(255,255,255,0.06)',
                                     }}>
-                                        {msg.role === 'assistant' && <p style={{ ...MONO, fontSize: '8px', color: '#D4AF37', letterSpacing: '0.15em', marginBottom: '5px' }}>ADVISOR</p>}
+                                        {msg.role === 'assistant' && <p style={{ ...MONO, fontSize: '8px', color: '#0ABFBC', letterSpacing: '0.15em', marginBottom: '5px' }}>ADVISOR</p>}
                                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: msg.role === 'user' ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>{msg.text}</p>
                                     </div>
                                 </motion.div>
@@ -139,7 +139,7 @@ export default function Chatbot() {
                                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                     <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                         {[0, 1, 2].map(dot => (
-                                            <motion.span key={dot} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }} style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#D4AF37', display: 'inline-block' }} />
+                                            <motion.span key={dot} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }} style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#0ABFBC', display: 'inline-block' }} />
                                         ))}
                                     </div>
                                 </motion.div>
@@ -162,21 +162,21 @@ export default function Chatbot() {
                                     border: '1px solid rgba(255,255,255,0.08)', color: '#fff', outline: 'none',
                                     fontFamily: 'DM Sans, sans-serif', fontSize: '12px', transition: 'border-color 0.2s',
                                 }}
-                                onFocus={e => e.target.style.borderColor = 'rgba(212,175,55,0.4)'}
+                                onFocus={e => e.target.style.borderColor = 'rgba(10,191,188,0.4)'}
                                 onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
                             />
                             <button
                                 onClick={sendMessage}
                                 disabled={!input.trim() || isTyping}
                                 style={{
-                                    width: '36px', height: '36px', background: !input.trim() || isTyping ? 'rgba(212,175,55,0.15)' : '#D4AF37',
+                                    width: '36px', height: '36px', background: !input.trim() || isTyping ? 'rgba(10,191,188,0.15)' : '#0ABFBC',
                                     border: 'none', cursor: !input.trim() || isTyping ? 'not-allowed' : 'pointer',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.2s',
                                     borderRadius: '9999px',
                                 }}
                             >
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                                    <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke={!input.trim() || isTyping ? 'rgba(212,175,55,0.4)' : '#0a0a0a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke={!input.trim() || isTyping ? 'rgba(10,191,188,0.4)' : '#0a0a0a'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </button>
                         </div>

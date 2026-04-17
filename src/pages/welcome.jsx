@@ -96,29 +96,10 @@ export default function Welcome() {
                         marginBottom: '52px',
                     }}
                 >
-                    <span
-                        style={{
-                            fontFamily: 'Bebas Neue, sans-serif',
-                            fontSize: '38px',
-                            color: '#0ABFBC',
-                            letterSpacing: '0.2em',
-                        }}
-                    >
-                        ALTUS
-                    </span>
-                    <span
-                        style={{
-                            fontFamily: 'Bebas Neue, sans-serif',
-                            fontSize: '13px',
-                            background: '#0ABFBC',
-                            color: '#0a0a0a',
-                            padding: '4px 10px',
-                            letterSpacing: '0.1em',
-                            borderRadius: '4px',
-                        }}
-                    >
-                        AERO
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '38px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
+                        <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
+                    </div>
                 </motion.div>
 
                 {/* Headline */}
@@ -157,9 +138,9 @@ export default function Welcome() {
 
                 {/* Platform orientation grid */}
                 <div
+                    className="grid-cols-1 sm:grid-cols-2"
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
                         gap: '10px',
                         marginBottom: '44px',
                         textAlign: 'left',

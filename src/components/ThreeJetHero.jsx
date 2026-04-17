@@ -76,7 +76,7 @@ export default function ThreeJetHero({ progress }) {
                 <Stars radius={120} depth={60} count={5000} factor={4} saturation={0} fade speed={0.5} />
                 <ambientLight intensity={0.8} color="#ffffff" />
                 <directionalLight position={[10, 10, 5]} color="#ffffff" intensity={4} />
-                <directionalLight position={[-8, 4, -5]} color="#D4AF37" intensity={2} />
+                <directionalLight position={[-8, 4, -5]} color="#ffffff" intensity={2} />
                 <pointLight position={[0, 5, 8]} color="#b0c4ff" intensity={2} distance={25} />
                 <pointLight position={[0, -2, 3]} color="#ffffff" intensity={1.5} distance={15} />
                 <JetModel progress={progress} />

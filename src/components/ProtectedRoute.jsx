@@ -19,7 +19,7 @@ export default function ProtectedRoute({ children }) {
           style={{
             width: '32px',
             height: '32px',
-            border: '2px solid rgba(212,175,55,0.15)',
+            border: '2px solid rgba(10,191,188,0.15)',
             borderTop: '2px solid #D4AF37',
             borderRadius: '50%',
             animation: 'spin 0.8s linear infinite',
