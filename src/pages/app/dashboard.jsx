@@ -131,7 +131,7 @@ export default function Dashboard() {
             </div>
 
             {/* Stats Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.05)' }} className="xl:grid-cols-4">
+            <div className="xl:grid-cols-4" style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.05)' }}>
                 {[
                     { label: 'Active Flights', value: '4', sub: 'VABB region now', action: () => navigate('/app/track') },
                     { label: 'Fleet Tracked', value: '14', sub: 'aircraft in database', action: () => navigate('/app/fleet') },
@@ -153,7 +153,7 @@ export default function Dashboard() {
             </div>
 
             {/* 3 Column Layout */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.05)' }} className="grid grid-cols-1 lg:grid-cols-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3" style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.05)' }}>
 
                 {/* Fleet Shortlist */}
                 <div style={{ background: '#0a0a0a', padding: '24px' }}>
@@ -270,7 +270,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.05)' }} className="grid grid-cols-2 sm:grid-cols-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4" style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.05)' }}>
                     {[
                         { label: 'Sessions', value: String(usage.sessions || 1), sub: 'logins' },
                         { label: 'Days Active', value: String(usage.days?.length || 1), sub: 'unique days' },
@@ -307,7 +307,7 @@ export default function Dashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'rgba(255,255,255,0.05)' }} className="grid grid-cols-2 md:grid-cols-4">
+            <div className="grid grid-cols-2 md:grid-cols-4" style={{ display: 'grid', gap: '1px', background: 'rgba(255,255,255,0.05)' }}>
                 {[
                     { label: 'Plan a Route', icon: '◈', path: '/app/plan' },
                     { label: 'Track a Flight', icon: '◉', path: '/app/track', pro: true },

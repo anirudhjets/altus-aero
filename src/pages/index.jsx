@@ -91,7 +91,7 @@ function Nav() {
                   </div>
                 </Link>
 
-                <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }} className="hidden md:flex">
+                <nav className="hidden md:flex" style={{ alignItems: 'center', gap: '2px' }}>
                     {links.map((l) => (
                         <a
                             key={l.href}
