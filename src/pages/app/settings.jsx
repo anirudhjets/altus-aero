@@ -341,7 +341,7 @@ export default function Settings() {
                             </Field>
                             <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '24px' }}>
                                 <Field label="Cancel Subscription" hint="Your access continues until the end of the billing period.">
-                                    <PillBtn onClick={() => window.open('mailto:anirudh.jets@gmail.com?subject=Cancel%20Subscription', '_blank')} danger>CANCEL PLAN</PillBtn>
+                                    <PillBtn onClick={() => window.open('mailto:altusaero@zohomail.in?subject=Cancel%20Subscription', '_blank')} danger>CANCEL PLAN</PillBtn>
                                 </Field>
                             </div>
                         </Section>

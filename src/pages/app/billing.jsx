@@ -238,8 +238,8 @@ export default function Billing() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'rgba(255,255,255,0.04)' }}>
                         {[
-                            { label: 'Billing and Invoices', sub: 'View payment history and download invoices', action: () => window.open('mailto:anirudh.jets@gmail.com?subject=Billing%20Query', '_blank'), btnLabel: 'CONTACT', danger: false },
-                            { label: 'Cancel Subscription', sub: 'Access continues until the end of your billing period', action: () => window.open('mailto:anirudh.jets@gmail.com?subject=Cancel%20Subscription', '_blank'), btnLabel: 'CANCEL', danger: true },
+                            { label: 'Billing and Invoices', sub: 'View payment history and download invoices', action: () => window.open('mailto:altusaero@zohomail.in?subject=Billing%20Query', '_blank'), btnLabel: 'CONTACT', danger: false },
+                            { label: 'Cancel Subscription', sub: 'Access continues until the end of your billing period', action: () => window.open('mailto:altusaero@zohomail.in?subject=Cancel%20Subscription', '_blank'), btnLabel: 'CANCEL', danger: true },
                         ].map((item, i) => (
                             <div key={i} style={{ padding: '20px 24px', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
                                 <div>
@@ -296,7 +296,7 @@ export default function Billing() {
                                 'Open GPay, PhonePe, Paytm, or your bank app.',
                                 'Pay ' + (annual ? '₹23,988' : '₹2,499') + ' to the UPI ID above.',
                                 'Screenshot the payment confirmation.',
-                                'Email the screenshot to anirudh.jets@gmail.com — your account will be upgraded to Pro within 24 hours.',
+                                'Email the screenshot to altusaero@zohomail.in — your account will be upgraded to Pro within 24 hours.',
                             ].map((step, i) => (
                                 <div key={i} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                                     <span style={{ ...MONO, fontSize: '9px', color: '#0ABFBC', flexShrink: 0, marginTop: '3px' }}>{String(i + 1).padStart(2, '0')}</span>

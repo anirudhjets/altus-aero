@@ -107,10 +107,19 @@ export default function Welcome() {
                         marginBottom: '52px',
                     }}
                 >
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
-                        <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '38px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
-                        <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
-                    </div>
+                    <svg viewBox="0 0 300 220" style={{ display: 'block', width: '150px', margin: '0 auto' }} xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="35" x2="150" y2="13" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+  <polygon points="150,35 202,65 202,125 150,155 98,125 98,65" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+  <line x1="118" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="126" y1="92" x2="141" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <line x1="150" y1="60" x2="150" y2="125" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="182" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="159" y1="92" x2="174" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <text x="150" y="185" textAnchor="middle" fill="white" fontFamily="DM Sans, sans-serif" fontWeight="200" fontSize="16" letterSpacing="10">ALTUS AERO</text>
+  <line x1="118" y1="202" x2="182" y2="202" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8"/>
+</svg>
                 </motion.div>
 
                 {/* Headline */}

@@ -209,10 +209,19 @@ export default function AppLayout() {
                         {!collapsed && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                 <Link to="/app/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
-                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
-                  </div>
+                                    <svg viewBox="0 0 300 220" style={{ display: 'block', width: '56px', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="35" x2="150" y2="13" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+  <polygon points="150,35 202,65 202,125 150,155 98,125 98,65" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+  <line x1="118" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="126" y1="92" x2="141" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <line x1="150" y1="60" x2="150" y2="125" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="182" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="159" y1="92" x2="174" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <text x="150" y="185" textAnchor="middle" fill="white" fontFamily="DM Sans, sans-serif" fontWeight="200" fontSize="16" letterSpacing="10">ALTUS AERO</text>
+  <line x1="118" y1="202" x2="182" y2="202" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8"/>
+</svg>
                                 </Link>
                             </motion.div>
                         )}
@@ -309,10 +318,19 @@ export default function AppLayout() {
                             ☰
                         </button>
                         <Link to="/app/dashboard" className="md:hidden" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
-                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
-                  </div>
+                            <svg viewBox="0 0 300 220" style={{ display: 'block', width: '56px', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="35" x2="150" y2="13" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+  <polygon points="150,35 202,65 202,125 150,155 98,125 98,65" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+  <line x1="118" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="126" y1="92" x2="141" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <line x1="150" y1="60" x2="150" y2="125" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="182" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="159" y1="92" x2="174" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <text x="150" y="185" textAnchor="middle" fill="white" fontFamily="DM Sans, sans-serif" fontWeight="200" fontSize="16" letterSpacing="10">ALTUS AERO</text>
+  <line x1="118" y1="202" x2="182" y2="202" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8"/>
+</svg>
                         </Link>
                         <div className="hidden md:flex" style={{ alignItems: 'center', gap: '8px' }}>
                             <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
@@ -385,10 +403,19 @@ export default function AppLayout() {
                         >
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                 <Link to="/app/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
-                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
-                  </div>
+                                    <svg viewBox="0 0 300 220" style={{ display: 'block', width: '56px', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="35" x2="150" y2="13" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+  <polygon points="150,35 202,65 202,125 150,155 98,125 98,65" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+  <line x1="118" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="126" y1="92" x2="141" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <line x1="150" y1="60" x2="150" y2="125" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="182" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="159" y1="92" x2="174" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <text x="150" y="185" textAnchor="middle" fill="white" fontFamily="DM Sans, sans-serif" fontWeight="200" fontSize="16" letterSpacing="10">ALTUS AERO</text>
+  <line x1="118" y1="202" x2="182" y2="202" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8"/>
+</svg>
                                 </Link>
                                 <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', fontSize: '16px' }}>✕</button>
                             </div>

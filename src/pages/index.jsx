@@ -85,10 +85,19 @@ function Nav() {
             <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(20px, 4vw, 48px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
                 <Link to="/" onClick={() => window.scrollTo({top:0,behavior:'smooth'})} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
-                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
-                  </div>
+                    <svg viewBox="0 0 300 220" style={{ display: 'block', width: '68px', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="35" x2="150" y2="13" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+  <polygon points="150,35 202,65 202,125 150,155 98,125 98,65" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+  <line x1="118" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="126" y1="92" x2="141" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <line x1="150" y1="60" x2="150" y2="125" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="182" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="159" y1="92" x2="174" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <text x="150" y="185" textAnchor="middle" fill="white" fontFamily="DM Sans, sans-serif" fontWeight="200" fontSize="16" letterSpacing="10">ALTUS AERO</text>
+  <line x1="118" y1="202" x2="182" y2="202" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8"/>
+</svg>
                 </Link>
 
                 <nav className="hidden md:flex" style={{ alignItems: 'center', gap: '2px' }}>
@@ -666,12 +675,12 @@ function Founder() {
                             </div>
 
                             <a
-                                href="mailto:anirudh.jets@gmail.com"
+                                href="mailto:altusaero@zohomail.in"
                                 style={{ ...PILL_GHOST_DIM, fontSize: '11px', padding: '10px 20px', alignSelf: 'flex-start' }}
                                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffffff'; e.currentTarget.style.color = '#ffffff' }}
                                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#999999'; e.currentTarget.style.color = '#999999' }}
                             >
-                                anirudh.jets@gmail.com
+                                altusaero@zohomail.in
                             </a>
                         </div>
                     </div>
@@ -889,7 +898,7 @@ function Footer() {
             label: 'Company',
             links: [
                 { title: 'About', href: '#founder' },
-                { title: 'Contact', href: 'mailto:anirudh.jets@gmail.com' },
+                { title: 'Contact', href: 'mailto:altusaero@zohomail.in' },
             ],
         },
     ]
@@ -900,10 +909,19 @@ function Footer() {
                 <div className="grid-cols-2 md:grid-cols-4" style={{ display: 'grid', gap: '48px', marginBottom: '64px' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0px' }}>
-                    <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#ffffff', letterSpacing: '0.35em' }}>ALTUS AERO</span>
-                    <div className="logo-line" style={{ height: '1px', width: '100%', background: '#0ABFBC', transition: 'box-shadow 0.4s ease', borderRadius: '1px' }} />
-                  </div>
+                            <svg viewBox="0 0 300 220" style={{ display: 'block', width: '68px', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg">
+  <line x1="150" y1="35" x2="150" y2="13" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+  <polygon points="150,35 202,65 202,125 150,155 98,125 98,65" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+  <line x1="118" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="133" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="126" y1="92" x2="141" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <line x1="150" y1="60" x2="150" y2="125" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="150" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="182" y1="125" x2="167" y2="60" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+  <line x1="159" y1="92" x2="174" y2="92" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  <text x="150" y="185" textAnchor="middle" fill="white" fontFamily="DM Sans, sans-serif" fontWeight="200" fontSize="16" letterSpacing="10">ALTUS AERO</text>
+  <line x1="118" y1="202" x2="182" y2="202" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8"/>
+</svg>
                         </div>
                         <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#444', lineHeight: 1.7, marginBottom: '16px', maxWidth: '240px' }}>Broker intelligence built on the Varsano method. Teach first. Sell second.</p>
                         <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#333', letterSpacing: '0.08em' }}>Mumbai, India · 2026</p>
