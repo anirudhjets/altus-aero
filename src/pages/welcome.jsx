@@ -41,6 +41,13 @@ export default function Welcome() {
         navigate('/app/dashboard', { replace: true })
     }
 
+    if (loading || hasOnboarded === null) return (
+        <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '28px', height: '28px', border: '2px solid rgba(10,191,188,0.15)', borderTop: '2px solid #0ABFBC', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        </div>
+    )
+
     return (
         <div
             style={{
