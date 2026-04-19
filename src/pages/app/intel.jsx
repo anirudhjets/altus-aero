@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useProPreview } from '../../context/proPreview'
@@ -37,6 +37,21 @@ const SIGNALS = [
         detail: 'At 200 flight hours per year, fractional ownership costs align with full charter. Below that, charter almost always wins on total cost.',
         brokerContext: 'The 200-hour crossover is the most useful number in private aviation for client education. Under 200 hours annually — charter wins on cost. Over 200 — fractional or ownership starts to make economic sense. Ask your client about their expected usage before recommending anything. If they say 50-100 hours, charter is the right answer and you should say so. Clients who trust your honesty on this question become acquisition clients when they hit the threshold.',
     },
+    {
+        id: 'gulfstream', category: 'SEGMENT PERFORMANCE', label: 'Gulfstream G650ER Availability', value: '23%', direction: 'down', note: 'available for charter globally',
+        detail: 'Only 23% of the global G650ER fleet is available for charter at any given time. Demand continues to outpace available tail numbers on key routes.',
+        brokerContext: 'Scarcity is a legitimate selling point when it is real. When a client is weighing timing on a long-haul charter, the honest answer is that G650ER availability tightens 3-4 weeks ahead on VABB-EGLL and similar routes. Booking early is not pressure — it is practical. Operators give priority to brokers who bring repeat business. If you are new, lead with flexibility on dates to get access to the better operators.',
+    },
+    {
+        id: 'india', category: 'ROUTE INTELLIGENCE', label: 'India Private Aviation Growth', value: '+34%', direction: 'up', note: 'year-on-year charter inquiries',
+        detail: 'Charter inquiries originating from India up 34% year-on-year. Tier 2 city demand — Pune, Ahmedabad, Hyderabad — growing fastest.',
+        brokerContext: 'The India market is at an inflection point. First-time private flyers are entering at midsize and light jet — the $3,000-6,000/hr range. Do not try to close them on ultra-long-range. Get them on a Citation or Phenom for a domestic route, deliver a seamless experience, and the upgrade conversation happens naturally. The broker who handles the first flight owns the relationship.',
+    },
+    {
+        id: 'positioning', category: 'MARKET STRUCTURE', label: 'Empty Leg Availability', value: '+18%', direction: 'up', note: 'vs same period last year',
+        detail: 'Empty leg listings up 18% year-on-year globally as operators seek to offset positioning costs on one-way routes.',
+        brokerContext: 'Empty legs are a pipeline tool, not a core product. Use them to introduce price-sensitive clients to private aviation at a discount — but set expectations clearly: departure times are fixed, routes are fixed, and the aircraft may change. The client who flies an empty leg once and loves the experience is a full-charter client within 12 months. That is the only reason to work with empty legs.',
+    },
 ]
 
 function ProLock({ navigate, label, children }) {
@@ -60,12 +75,26 @@ function ProLock({ navigate, label, children }) {
     )
 }
 
+function shuffleForSession(arr) {
+    const seed = parseInt(sessionStorage.getItem('altus_intel_seed') || String(Date.now()))
+    sessionStorage.setItem('altus_intel_seed', String(seed))
+    const shuffled = [...arr]
+    let s = seed
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        s = (s * 1664525 + 1013904223) & 0xffffffff
+        const j = Math.abs(s) % (i + 1);
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+}
+
 export default function Intel() {
     const { plan } = useAuth()
     const [isProPreview] = useProPreview()
     const isPro = plan === 'pro' || isProPreview
     const navigate = useNavigate()
     const [expanded, setExpanded] = useState(null)
+    const signals = useMemo(() => shuffleForSession(SIGNALS), [])
     const updatedLabel = isPro ? `Updated ${Math.floor(Math.random() * 4) + 1} minutes ago` : 'Updated 24 hours ago'
 
     return (
@@ -105,7 +134,7 @@ export default function Intel() {
 
             {/* Signals */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'rgba(255,255,255,0.04)' }}>
-                {SIGNALS.map((signal) => {
+                {signals.map((signal) => {
                     const isExpanded = expanded === signal.id
                     const valueColor = signal.direction === 'up' ? '#4ade80' : signal.direction === 'down' ? '#0ABFBC' : '#ffffff'
                     return (

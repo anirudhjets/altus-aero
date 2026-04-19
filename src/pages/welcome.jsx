@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 const steps = [
     {
@@ -24,16 +25,19 @@ const steps = [
 
 export default function Welcome() {
     const navigate = useNavigate()
-    const { user, loading } = useAuth()
+    const { user, loading, hasOnboarded, setHasOnboarded } = useAuth()
 
     useEffect(() => {
         if (loading) return
-        if (!user) {
-            navigate('/login', { replace: true })
-        }
-    }, [user, loading, navigate])
+        if (!user) { navigate('/login', { replace: true }); return }
+        if (hasOnboarded === true) { navigate('/app/dashboard', { replace: true }) }
+    }, [user, loading, hasOnboarded, navigate])
 
-    const handleEnter = () => {
+    const handleEnter = async () => {
+        try {
+            await supabase.from('profiles').update({ has_onboarded: true }).eq('id', user.id)
+            setHasOnboarded(true)
+        } catch { /* silent */ }
         navigate('/app/dashboard', { replace: true })
     }
 

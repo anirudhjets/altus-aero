@@ -96,6 +96,7 @@ export default function Plan() {
     const [categoryIndex, setCategoryIndex] = useState(2)
     const [result, setResult] = useState(null)
     const [error, setError] = useState('')
+    const [copied, setCopied] = useState(false)
 
     const cat = CATEGORIES[categoryIndex]
 
@@ -300,6 +301,17 @@ export default function Plan() {
                         <p style={{ ...M, fontSize: '8px', color: 'rgba(255,255,255,0.2)', marginTop: '12px', lineHeight: 1.7, letterSpacing: '0.04em' }}>
                             Estimates based on current charter market rates for {result.categoryLabel} category aircraft. Always verify with operators before quoting to a client.
                         </p>
+                        <button
+                            onClick={() => {
+                                const text = `ALTUS AERO — CHARTER COST ESTIMATE\n\nRoute: ${origin} → ${destination || 'Manual entry'}\nDistance: ${result.nm.toLocaleString()}nm (${result.adjustedNm.toLocaleString()}nm with reserves)\nAircraft: ${result.categoryLabel} (${result.aircraftExamples})\nPassengers: ${result.pax}\nFlight Time: ${result.hours.toFixed(1)} hrs\n\nEstimated Charter Cost: $${(result.costMin/1000).toFixed(0)}k – $${(result.costMax/1000).toFixed(0)}k\nPer Seat: $${result.perSeatMin.toLocaleString()} – $${result.perSeatMax.toLocaleString()}\n\nEstimates based on current market rates. Verify with operators before quoting.\nPowered by Altus Aero · altusaero.in`
+                                navigator.clipboard.writeText(text)
+                                setCopied(true)
+                                setTimeout(() => setCopied(false), 2500)
+                            }}
+                            style={{ ...M, fontSize: '9px', letterSpacing: '0.15em', marginTop: '16px', padding: '9px 20px', borderRadius: '9999px', cursor: 'pointer', transition: 'all 0.2s', background: copied ? 'rgba(74,222,128,0.1)' : 'transparent', color: copied ? '#4ade80' : '#444', border: copied ? '1px solid rgba(74,222,128,0.3)' : '1px solid rgba(255,255,255,0.1)' }}
+                        >
+                            {copied ? 'COPIED TO CLIPBOARD' : 'COPY RESULT'}
+                        </button>
                     </div>
 
                     {/* Client Framing */}
