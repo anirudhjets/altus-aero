@@ -62,6 +62,8 @@ export default function Billing() {
     const [annual, setAnnual] = useState(false)
     const [usage, setUsage] = useState({ sessions: 0, days: [], routesPlanned: 0, fleetViews: 0 })
     const [limitStatus, setLimitStatus] = useState(getPlanLimitStatus)
+    const [showUPI, setShowUPI] = useState(false)
+    const [copied, setCopied] = useState(false)
     const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })
 
     useEffect(() => {
@@ -76,8 +78,11 @@ export default function Billing() {
         }
     }, [searchParams, isPro])
 
-    const handleRazorpay = () => {
-        window.open('mailto:anirudh.jets@gmail.com?subject=Altus Aero Pro Upgrade&body=I would like to upgrade to Pro. Please send payment details.', '_blank')
+    const handleRazorpay = () => { setShowUPI(true) }
+    const handleCopyUPI = () => {
+        navigator.clipboard.writeText('anirudh.shinde02@okhdfcbank')
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
     }
 
     const calcsRemaining = Math.max(0, FREE_LIMIT - (limitStatus.count || 0))
@@ -265,6 +270,51 @@ export default function Billing() {
                     The Free plan will always exist. You can learn the aircraft, run cost calculations, and study the market without paying anything. Pro is for brokers who are actively pitching clients and need the depth that converts a conversation into a deal.
                 </p>
             </div>
+
+            {showUPI && (
+                <div
+                    onClick={() => setShowUPI(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+                >
+                    <div onClick={e => e.stopPropagation()} style={{ background: '#0a0a0a', border: '1px solid rgba(10,191,188,0.25)', maxWidth: '420px', width: '100%', padding: '40px' }}>
+                        <p style={{ ...MONO, fontSize: '9px', color: '#0ABFBC', letterSpacing: '0.25em', marginBottom: '8px' }}>UPGRADE TO PRO</p>
+                        <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px', color: '#ffffff', lineHeight: 1, marginBottom: '32px' }}>
+                            {annual ? '₹23,988 / YR' : '₹2,499 / MO'}
+                        </p>
+                        <div style={{ padding: '20px', background: '#080808', border: '1px solid rgba(255,255,255,0.06)', marginBottom: '24px' }}>
+                            <p style={{ ...MONO, fontSize: '9px', color: '#555', letterSpacing: '0.15em', marginBottom: '12px' }}>PAY VIA UPI</p>
+                            <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px', color: '#0ABFBC', letterSpacing: '0.04em', marginBottom: '14px', wordBreak: 'break-all' }}>anirudh.shinde02@okhdfcbank</p>
+                            <button
+                                onClick={handleCopyUPI}
+                                style={{ ...MONO, fontSize: '9px', letterSpacing: '0.15em', padding: '8px 18px', background: copied ? 'rgba(74,222,128,0.1)' : 'transparent', color: copied ? '#4ade80' : '#444', border: copied ? '1px solid rgba(74,222,128,0.3)' : '1px solid rgba(255,255,255,0.1)', borderRadius: '9999px', cursor: 'pointer', transition: 'all 0.2s' }}
+                            >
+                                {copied ? 'COPIED' : 'COPY UPI ID'}
+                            </button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
+                            {[
+                                'Open GPay, PhonePe, Paytm, or your bank app.',
+                                'Pay ' + (annual ? '₹23,988' : '₹2,499') + ' to the UPI ID above.',
+                                'Screenshot the payment confirmation.',
+                                'Email the screenshot to anirudh.jets@gmail.com — your account will be upgraded to Pro within 24 hours.',
+                            ].map((step, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                                    <span style={{ ...MONO, fontSize: '9px', color: '#0ABFBC', flexShrink: 0, marginTop: '3px' }}>{String(i + 1).padStart(2, '0')}</span>
+                                    <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: '#555', lineHeight: 1.65 }}>{step}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <button
+                            onClick={() => setShowUPI(false)}
+                            style={{ ...MONO, fontSize: '10px', letterSpacing: '0.15em', padding: '13px', width: '100%', background: 'transparent', color: '#444', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', transition: 'all 0.2s' }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#ffffff' }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#444' }}
+                        >
+                            CLOSE
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
