@@ -22,7 +22,7 @@ const Section = ({ title, children }) => (
 )
 
 const Field = ({ label, hint, children }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }} className="sm:flex-row sm:items-start sm:justify-between">
+    <div style={{ display: 'flex', gap: '12px' }} className="flex-col sm:flex-row sm:items-start sm:justify-between">
         <div style={{ maxWidth: '280px' }}>
             <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{label}</p>
             {hint && <p style={{ ...MONO, fontSize: '9px', color: '#444', marginTop: '4px', lineHeight: 1.6, letterSpacing: '0.04em' }}>{hint}</p>}
