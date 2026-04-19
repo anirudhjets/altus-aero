@@ -108,18 +108,7 @@ export default function Dashboard() {
                     <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(28px, 5vw, 48px)', color: '#ffffff', lineHeight: 1.0, letterSpacing: '0.02em', marginTop: '6px' }}>{date}</h1>
                     <p style={{ ...MONO, fontSize: '14px', color: '#0ABFBC', marginTop: '4px', letterSpacing: '0.06em' }}>{time} IST</p>
                 </div>
-                <button
-                    onClick={() => setGlobalProPreview(!proPreview)}
-                    style={{
-                        ...MONO, fontSize: '10px', letterSpacing: '0.12em', padding: '8px 16px',
-                        borderRadius: '9999px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid',
-                        borderColor: proPreview ? 'rgba(10,191,188,0.4)' : 'rgba(255,255,255,0.1)',
-                        background: proPreview ? 'rgba(10,191,188,0.06)' : 'transparent',
-                        color: proPreview ? '#0ABFBC' : '#444',
-                    }}
-                >
-                    {proPreview ? 'VIEWING: PRO' : 'PREVIEW PRO'}
-                </button>
+                
             </div>
 
             {/* Insight */}
@@ -299,11 +288,7 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {isPro && plan !== 'pro' && (
-                    <div style={{ marginTop: '12px', padding: '10px 16px', border: '1px solid rgba(10,191,188,0.1)' }}>
-                        <p style={{ ...MONO, fontSize: '9px', color: 'rgba(10,191,188,0.5)', letterSpacing: '0.08em' }}>Pro preview active — toggle off on the header button to return to Free view</p>
-                    </div>
-                )}
+
             </div>
 
             {/* Quick Actions */}
