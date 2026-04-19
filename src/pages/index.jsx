@@ -798,13 +798,24 @@ function Pricing() {
                                 <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '56px', color: '#ffffff', lineHeight: 1.0, marginBottom: '8px' }}>₹{annual ? '1,999' : '2,499'}</p>
                                 <p style={{ ...EYEBROW, color: '#444', fontSize: '10px', marginBottom: annual ? '4px' : '40px' }}>/month</p>
                                 {annual && <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#4ade80', marginBottom: '40px' }}>₹23,988 billed annually — save ₹6,000</p>}
-                                <ul style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '40px' }}>
+                                <ul style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
                                     {proFeatures.map((f, i) => (
-                                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>
+                                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: i === proFeatures.length - 1 ? '#ffffff' : 'rgba(255,255,255,0.65)' }}>
                                             <span style={{ color: '#0ABFBC', flexShrink: 0 }}>—</span>{f}
                                         </li>
                                     ))}
                                 </ul>
+                                <div style={{ marginBottom: '40px', padding: '16px', border: '1px solid rgba(10,191,188,0.3)', background: 'rgba(10,191,188,0.04)', borderRadius: '6px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#0a1a1a', border: '1px solid rgba(10,191,188,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '8px', color: '#0ABFBC' }}>AI</span>
+                                        </div>
+                                        <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#0ABFBC', letterSpacing: '0.15em' }}>POWERED BY CLAUDE</p>
+                                    </div>
+                                    <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65 }}>
+                                        Free users get limited aviation responses. Pro unlocks full Claude AI — ask anything, get answers like a 20-year industry veteran.
+                                    </p>
+                                </div>
                             </div>
                             <Link
                                 to="/login"
