@@ -647,8 +647,7 @@ function Founder() {
                                     <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#0ABFBC' }}>AS</span>
                                 </div>
                                 <div>
-                                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#ffffff', letterSpacing: '0.05em', lineHeight: 1 }}>Anirudh Shinde</p>
-                                    <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px', marginTop: '5px' }}>Founder · Mumbai, India</p>
+                                    <p style={{ ...EYEBROW, color: '#0ABFBC', fontSize: '10px' }}>Founder · Mumbai, Maharashtra</p>
                                 </div>
                             </div>
 
